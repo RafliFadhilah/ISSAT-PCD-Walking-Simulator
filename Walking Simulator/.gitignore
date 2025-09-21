@@ -1,0 +1,10 @@
+# Godot 4+ specific ignores
+.godot/
+examples/
+logs/
+demo/
+bin/
+Assets/*
+Assets/Sketchfab/*
+Tools/*
+students/*
