@@ -27,6 +27,15 @@ var sfx_volume: float = 0.8
 # Language settings (for international audience)
 var current_language: String = "en"  # Default to English
 
+# Topeng Nusantara settings
+var selected_mask_type: String = ""  # "preset" or "custom"
+var selected_mask_id: int = -1       # For preset masks (1-7)
+var custom_mask_components: Dictionary = {
+	"base": -1,
+	"mata": -1,
+	"mulut": -1
+}
+
 # Region-specific data
 var region_data: Dictionary = {
 	"Indonesia Barat": {

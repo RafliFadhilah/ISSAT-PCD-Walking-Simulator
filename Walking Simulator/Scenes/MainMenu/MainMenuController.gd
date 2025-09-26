@@ -20,6 +20,7 @@ extends Control
 @onready var subtitle_label: Label = $MainMenuContainer/SubtitleLabel
 @onready var start_game_button: Button = $MainMenuContainer/MainButtons/StartGameButton
 @onready var explore_3d_map_button: Button = $MainMenuContainer/MainButtons/Explore3DMapButton
+@onready var topeng_nusantara_button: Button = $MainMenuContainer/MainButtons/TopengNusantaraButton
 @onready var load_game_button: Button = $MainMenuContainer/MainButtons/LoadGameButton
 @onready var how_to_play_button: Button = $MainMenuContainer/MainButtons/HowToPlayButton
 @onready var about_us_button: Button = $MainMenuContainer/MainButtons/AboutUsButton
@@ -152,7 +153,14 @@ func _on_exit_game_pressed():
 	UnifiedExitDialog.show_main_menu_exit_dialog()
 
 func _on_ethnicity_detection_pressed():
+	play_button_sound()
+	GameLogger.info("🔍 Ethnicity Detection button pressed - navigating to ethnicity detection")
 	get_tree().change_scene_to_file("res://Scenes/EthnicityDetection/EthnicityDetectionScene.tscn")
+
+func _on_topeng_nusantara_pressed():
+	play_button_sound()
+	GameLogger.info("🎭 Topeng Nusantara button pressed - navigating to mask selection")
+	get_tree().change_scene_to_file("res://Scenes/TopengNusantara/TopengSelectionScene.tscn")
 
 func show_load_game_dialog():
 	# Check if save data exists
