@@ -1,0 +1,173 @@
+[gd_scene load_steps=8 format=3 uid="uid://dbq0mcdte3ne5"]
+
+[ext_resource type="Script" uid="uid://d1gy6nxnkgknj" path="res://Player Controller/PlayerControllerTest.gd" id="1_test_script"]
+[ext_resource type="Script" uid="uid://d18olnlnha4vn" path="res://Player Controller/PlayerControllerIntegrated.gd" id="2_integrated"]
+[ext_resource type="Script" uid="uid://cecogymssscdq" path="res://Player Controller/JitterTestHelper.gd" id="3_jitter_helper"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_player"]
+
+[node name="PlayerControllerTest_Integrated" type="Node3D"]
+script = ExtResource("1_test_script")
+
+[node name="JitterTestHelper" type="Node3D" parent="."]
+script = ExtResource("3_jitter_helper")
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="GroundCollision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="GroundMesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("BoxMesh_ground")
+
+[node name="Player" type="CharacterBody3D" parent="." groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+script = ExtResource("2_integrated")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="PlayerBody" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("CapsuleMesh_player")
+
+[node name="CameraPivot" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="CameraArm" type="SpringArm3D" parent="Player/CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+spring_length = 6.0
+margin = 0.1
+
+[node name="Camera3D" type="Camera3D" parent="Player/CameraPivot/CameraArm"]
+current = true
+near = 0.1
+far = 1000.0
+
+[node name="GroundCheck" type="RayCast3D" parent="Player"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 10, 0)
+light_energy = 1.5
+shadow_enabled = true
+
+[node name="Environment" type="Environment" parent="."]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+physics_interpolation_mode = 0
+auto_translate_mode = 0
+editor_description = ""
+background_mode = 1
+background_color = Color(0.5, 0.7, 1, 1)
+script = null
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TestPanel" type="Panel" parent="UI"]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 300.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/TestPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = -15.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "Integrated Player Controller Test"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="InfoLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "Features:"
+horizontal_alignment = 1
+
+[node name="FeaturesLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "✅ Complex Physics (Acceleration/Deceleration)
+✅ Complex Camera (Mouse Look + Spring Arm)
+✅ Input Actions (WASD + Shift + Space)
+✅ Jump Cooldown
+✅ Air Control
+✅ Fall Speed Limiting"
+autowrap_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ControlsLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "Controls:"
+horizontal_alignment = 1
+
+[node name="ControlsText" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "WASD - Move
+Shift - Run
+Space - Jump
+Mouse - Look
+ESC - Exit Scene"
+autowrap_mode = 2
+
+[node name="HSeparator3" type="HSeparator" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "Status: All Systems Integrated"
+horizontal_alignment = 1
+
+[node name="HSeparator4" type="HSeparator" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="JitterTestLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "Jitter Testing:"
+horizontal_alignment = 1
+
+[node name="JitterButtonContainer" type="HBoxContainer" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StartJitterButton" type="Button" parent="UI/TestPanel/VBoxContainer/JitterButtonContainer"]
+layout_mode = 2
+text = "Start Test (J)"
+
+[node name="StopJitterButton" type="Button" parent="UI/TestPanel/VBoxContainer/JitterButtonContainer"]
+layout_mode = 2
+text = "Stop Test (K)"
+
+[node name="ResultsJitterButton" type="Button" parent="UI/TestPanel/VBoxContainer/JitterButtonContainer"]
+layout_mode = 2
+text = "Results (L)"

@@ -389,9 +389,6 @@ func update_fps_monitoring(delta: float):
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
-		# Debug all key presses to see what's being received
-		GameLogger.debug("🎮 [Player Input] Key pressed: %s (keycode: %d)" % [OS.get_keycode_string(event.keycode), event.keycode], "GraphSystem")
-		
 		if event.keycode == KEY_M:
 			# Toggle mouse mode with M key
 			if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -401,17 +398,9 @@ func _input(event):
 				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 				GameLogger.info("Mouse mode: CAPTURED")
 		elif event.keycode == KEY_ESCAPE:
-			# ESC key - let the scene's exit system handle it (don't quit directly)
-			GameLogger.info("🔧 PlayerControllerIntegrated: ESC pressed - letting scene handle exit")
-			# Don't call get_tree().quit() directly - let RegionSceneController handle it
-		elif event.keycode in [KEY_5, KEY_6, KEY_7, KEY_8, KEY_9]:
-			# Pass terrain generation keys to terrain controller
-			GameLogger.info("🔑 [Player Input] Terrain key %s detected - passing to terrain controller..." % OS.get_keycode_string(event.keycode), "GraphSystem")
-			# Don't consume the event - let it propagate to terrain controller
-			return
-		else:
-			# For other keys, consume the event to prevent propagation
-			get_viewport().set_input_as_handled()
+			# ESC for exit
+			GameLogger.info("ESC pressed - exiting game")
+			get_tree().quit()
 	
 	# Handle mouse input for camera
 	if event is InputEventMouseMotion:

@@ -1,9 +1,11 @@
-[gd_resource type="WheelGraphPathConfig" script_class="WheelGraphPathConfig" load_steps=5 format=3]
+[gd_resource type="WheelGraphPathConfig" script_class="WheelGraphPathConfig" load_steps=6 format=3 uid="uid://0ibnhmsoi2x5"]
 
-[ext_resource type="Script" path="res://Systems/Terrain3D/PathSystem/WheelGraphPathConfig.gd" id="1"]
-[ext_resource type="Script" path="res://Systems/Terrain3D/PathSystem/VertexConfig.gd" id="2"]
+[ext_resource type="Script" uid="uid://psmdxa70aeil" path="res://Systems/Terrain3D/PathSystem/WheelGraphPathConfig.gd" id="1"]
+[ext_resource type="Script" uid="uid://bfg56108k1kq6" path="res://Systems/Terrain3D/PathSystem/VertexConfig.gd" id="2"]
 
 [sub_resource type="VertexConfig" id="VertexConfig_hub"]
+resource_local_to_scene = false
+resource_name = ""
 script = ExtResource("2")
 place_objects = true
 object_types = Array[int]([0, 1])
@@ -14,24 +16,17 @@ scale_variation = 0.0
 rotation_random = false
 rotation_range = 0.0
 height_offset = 0.0
-cultural_filter = Array[String](["Indonesian", "Ceremonial"])
-scene_specific = true
-
-[sub_resource type="VertexConfig" id="VertexConfig_outer"]
-script = ExtResource("2")
-place_objects = true
-object_types = Array[int]([0, 1, 2, 3, 4])
-spawn_probability = 0.9
-max_objects_per_vertex = 3
-object_scale = Vector3(0.9, 0.9, 0.9)
-scale_variation = 0.3
-rotation_random = true
-rotation_range = 360.0
-height_offset = 0.0
+npc_scenes = Array[PackedScene]([])
+artifact_scenes = Array[PackedScene]([])
+item_scenes = Array[PackedScene]([])
+marker_scenes = Array[PackedScene]([])
+decoration_scenes = Array[PackedScene]([])
 cultural_filter = Array[String](["Indonesian", "Ceremonial"])
 scene_specific = true
 
 [sub_resource type="VertexConfig" id="VertexConfig_inner"]
+resource_local_to_scene = false
+resource_name = ""
 script = ExtResource("2")
 place_objects = true
 object_types = Array[int]([2, 3])
@@ -42,10 +37,38 @@ scale_variation = 0.15
 rotation_random = true
 rotation_range = 180.0
 height_offset = 0.0
+npc_scenes = Array[PackedScene]([])
+artifact_scenes = Array[PackedScene]([])
+item_scenes = Array[PackedScene]([])
+marker_scenes = Array[PackedScene]([])
+decoration_scenes = Array[PackedScene]([])
 cultural_filter = Array[String](["Indonesian", "Ceremonial"])
 scene_specific = false
 
+[sub_resource type="VertexConfig" id="VertexConfig_outer"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("2")
+place_objects = true
+object_types = Array[int]([0, 1, 2, 3, 4])
+spawn_probability = 0.9
+max_objects_per_vertex = 3
+object_scale = Vector3(0.9, 0.9, 0.9)
+scale_variation = 0.3
+rotation_random = true
+rotation_range = 360.0
+height_offset = 0.0
+npc_scenes = Array[PackedScene]([])
+artifact_scenes = Array[PackedScene]([])
+item_scenes = Array[PackedScene]([])
+marker_scenes = Array[PackedScene]([])
+decoration_scenes = Array[PackedScene]([])
+cultural_filter = Array[String](["Indonesian", "Ceremonial"])
+scene_specific = true
+
 [resource]
+resource_local_to_scene = false
+resource_name = ""
 script = ExtResource("1")
 wheel_type = 8
 hub_center = Vector3(0, 0, 0)
@@ -73,4 +96,3 @@ debug_mode = false
 show_vertex_markers = true
 marker_color = Color(1, 0.8, 0, 1)
 path_color = Color(0.8, 0.6, 0.4, 1)
-

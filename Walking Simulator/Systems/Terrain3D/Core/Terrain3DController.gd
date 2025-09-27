@@ -546,7 +546,7 @@ func _generate_pentagon_direct():
 			print("🎉 DIRECT PENTAGON: Pentagon wheel graph generated and placed in scene!")
 			
 			# Debug wheel structure
-			_debug_wheel_structure(pentagon_graph)
+			#_debug_wheel_structure(pentagon_graph)
 			
 			# Move existing NPCs and artifacts to Pentagon vertices
 			print("🚨 DIRECT PENTAGON: Moving NPCs and artifacts to Pentagon vertices...")
