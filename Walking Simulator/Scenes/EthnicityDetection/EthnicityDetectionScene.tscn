@@ -161,6 +161,12 @@ custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
 text = "Kembali"
 
+[node name="SkipToMapButton" type="Button" parent="MainContainer/ButtonContainer"]
+visible = false
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+text = "Lewati ke Map"
+
 [node name="LoadingOverlay" type="Control" parent="."]
 visible = false
 layout_mode = 1
@@ -207,3 +213,4 @@ horizontal_alignment = 1
 
 [connection signal="pressed" from="MainContainer/ButtonContainer/StartDetectionButton" to="." method="_on_start_detection_pressed"]
 [connection signal="pressed" from="MainContainer/ButtonContainer/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="MainContainer/ButtonContainer/SkipToMapButton" to="." method="_on_skip_to_map_pressed"]

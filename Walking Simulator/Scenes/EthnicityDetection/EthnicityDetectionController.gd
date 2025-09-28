@@ -13,6 +13,9 @@ extends Control
 @onready var camera_status_label = $MainContainer/CameraContainer/WebcamContainer/WebcamFeed/CameraStatusLabel
 @onready var loading_spinner = $LoadingOverlay/LoadingContainer/LoadingSpinner
 
+# Tombol skip ke map
+@onready var skip_to_map_button = $MainContainer/ButtonContainer/SkipToMapButton
+
 # Webcam Manager - akan di-load secara manual
 var webcam_manager: Node
 
@@ -226,6 +229,8 @@ func reset_ui():
 	status_label.text = "Mencari wajah..."
 	start_button.text = "Mulai Deteksi"
 	face_frame.border_color = Color(0, 1, 0, 0)
+	if skip_to_map_button:
+		skip_to_map_button.visible = false
 
 func _on_start_detection_pressed():
 	if not is_detecting:
@@ -276,6 +281,10 @@ func detection_complete():
 	
 	result_container.visible = true
 	start_button.visible = false
+
+	# Tampilkan tombol skip ke map
+	if skip_to_map_button:
+		skip_to_map_button.visible = true
 	
 	# Mulai countdown redirect (30 detik)
 	redirect_timer.start()
@@ -283,6 +292,15 @@ func detection_complete():
 	
 	# Animate countdown
 	create_countdown_animation()
+
+func _on_skip_to_map_pressed():
+	# Langsung redirect ke scene map sesuai hasil deteksi
+	if detected_ethnicity_result != "":
+		loading_overlay.visible = true
+		spinner_rotation = 0.0
+		var target_scene = ethnicity_data[detected_ethnicity_result]["scene"]
+		cleanup_resources()
+		get_tree().change_scene_to_file(target_scene)
 
 func create_countdown_animation():
 	var countdown_timer = Timer.new()
