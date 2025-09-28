@@ -213,7 +213,7 @@ func setup_timers():
 	
 	# Timer untuk redirect
 	redirect_timer = Timer.new()
-	redirect_timer.wait_time = 2.0  # Dikurangi dari 3 detik
+	redirect_timer.wait_time = 30.0
 	redirect_timer.timeout.connect(_on_redirect_to_scene)
 	redirect_timer.one_shot = true
 	add_child(redirect_timer)
@@ -277,9 +277,9 @@ func detection_complete():
 	result_container.visible = true
 	start_button.visible = false
 	
-	# Mulai countdown redirect (lebih cepat)
+	# Mulai countdown redirect (30 detik)
 	redirect_timer.start()
-	redirect_label.text = "Mengarahkan ke region budaya yang sesuai dalam 2 detik..."
+	redirect_label.text = "Mengarahkan ke region budaya yang sesuai dalam 30 detik..."
 	
 	# Animate countdown
 	create_countdown_animation()
@@ -289,7 +289,7 @@ func create_countdown_animation():
 	countdown_timer.wait_time = 1.0
 	add_child(countdown_timer)
 	
-	var countdown_data = [2]  # Mulai dari 2 detik
+	var countdown_data = [30]  # Mulai dari 30 detik
 	countdown_timer.timeout.connect(func():
 		countdown_data[0] -= 1
 		if countdown_data[0] > 0:

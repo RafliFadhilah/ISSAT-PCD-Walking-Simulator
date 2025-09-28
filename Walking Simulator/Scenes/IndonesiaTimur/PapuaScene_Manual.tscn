@@ -1,10 +1,11 @@
-[gd_scene load_steps=37 format=3 uid="uid://rctchlfqr71i"]
+[gd_scene load_steps=38 format=3 uid="uid://rctchlfqr71i"]
 
 [ext_resource type="Script" uid="uid://cgryvux04l2la" path="res://Scenes/RegionSceneController.gd" id="1_oekxx"]
 [ext_resource type="Terrain3DAssets" uid="uid://dal3jhw6241qg" path="res://demo/data/assets.tres" id="2_shlqg"]
 [ext_resource type="Script" uid="uid://d18olnlnha4vn" path="res://Player Controller/PlayerControllerIntegrated.gd" id="3_mgnbb"]
 [ext_resource type="Script" uid="uid://db48b5a3q2j7o" path="res://Player Controller/InteractionController.gd" id="4_ovpw7"]
 [ext_resource type="Script" uid="uid://cb82diggp6ccs" path="res://Systems/NPCs/CulturalNPC.gd" id="5_c4fgr"]
+[ext_resource type="PackedScene" uid="uid://citlcwccnfv0w" path="res://Assets/Hunyuan/45ad077276c00a5f43d50b76ab05c0cc.glb" id="6_5fold"]
 [ext_resource type="Script" uid="uid://dj2jvj2b7t8fh" path="res://Tests/Experimental_Papua_Scenes/Performance_Testing/PapuaScene_FPSDisplay.gd" id="6_thu42"]
 [ext_resource type="PackedScene" uid="uid://c8is2r5ftgc84" path="res://Systems/Audio/CulturalAudioManager.tscn" id="7_5fold"]
 [ext_resource type="PackedScene" uid="uid://c8is2r5ftgc85" path="res://Systems/Inventory/CulturalInventory.tscn" id="8_p5m1f"]
@@ -18,10 +19,18 @@
 
 [sub_resource type="Environment" id="Environment_papua"]
 background_mode = 1
-background_color = Color(0.5, 0.7, 1, 1)
+background_color = Color(0.377133, 0.735897, 0.955207, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.4, 0.6, 0.3, 1)
 ambient_light_energy = 0.4
+fog_light_energy = 3.12
+fog_sun_scatter = 0.42
+fog_density = 0.0015
+fog_sky_affect = 0.04
+fog_height = -181.24
+fog_height_density = 0.2832
+fog_depth_curve = 3.03143
+volumetric_fog_density = 0.0
 
 [sub_resource type="Gradient" id="Gradient_vr1m7"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -217,7 +226,7 @@ mesh = SubResource("BoxMesh_npc")
 surface_material_override/0 = SubResource("StandardMaterial3D_brown")
 
 [node name="TribalElder" type="CharacterBody3D" parent="NPCs"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8405, 0, -21.1256)
+transform = Transform3D(0.781041, 0, -0.62448, 0, 1, 0, 0.62448, 0, 0.781041, 3.8405, 0, -17.6113)
 script = ExtResource("5_c4fgr")
 npc_name = "Tribal Elder"
 npc_type = "elder"
@@ -226,8 +235,12 @@ npc_type = "elder"
 shape = SubResource("BoxShape3D_npc")
 
 [node name="NPCMesh" type="MeshInstance3D" parent="NPCs/TribalElder"]
+visible = false
 mesh = SubResource("BoxMesh_npc")
 surface_material_override/0 = SubResource("StandardMaterial3D_purple")
+
+[node name="convert" parent="NPCs/TribalElder" instance=ExtResource("6_5fold")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 1.68005, 0)
 
 [node name="Artisan" type="CharacterBody3D" parent="NPCs"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.1608, 0, -22.1358)
