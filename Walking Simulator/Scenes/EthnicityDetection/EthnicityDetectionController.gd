@@ -12,6 +12,9 @@ extends Control
 @onready var webcam_feed = $MainContainer/CameraContainer/WebcamContainer/WebcamFeed
 @onready var camera_status_label = $MainContainer/CameraContainer/WebcamContainer/WebcamFeed/CameraStatusLabel
 @onready var loading_spinner = $LoadingOverlay/LoadingContainer/LoadingSpinner
+# Label FPS dan Confidence
+@onready var fps_label = $MainContainer/CameraContainer/WebcamContainer/FPSLabel
+@onready var confidence_label = $MainContainer/ResultContainer/ConfidenceLabel
 
 # Tombol skip ke map
 @onready var skip_to_map_button = $MainContainer/ButtonContainer/SkipToMapButton
@@ -26,6 +29,8 @@ var is_detecting: bool = false
 var detected_ethnicity_result: String = ""
 var spinner_rotation: float = 0.0
 var webcam_frames_received: int = 0
+var last_frame_time: float = 0.0
+var current_fps: float = 0.0
 
 # Simulasi data etnis
 var ethnicity_data = {
@@ -60,6 +65,12 @@ func _ready():
 	setup_timers()
 	reset_ui()
 	setup_loading_spinner()
+
+	# Inisialisasi label FPS dan confidence
+	if fps_label:
+		fps_label.text = "FPS: 0.0"
+	if confidence_label:
+		confidence_label.text = "Confidence: 0%"
 
 func setup_webcam_manager():
 	"""Setup WebcamManagerUDP untuk real webcam"""
@@ -145,7 +156,17 @@ func _on_webcam_frame_received(texture: ImageTexture):
 	
 	webcam_feed.texture = texture
 	webcam_frames_received += 1
-	
+
+	# Hitung FPS real time dari interval antar frame webcam
+	var now = Time.get_ticks_msec() / 1000.0
+	if last_frame_time > 0.0:
+		var dt = now - last_frame_time
+		if dt > 0.0:
+			current_fps = 1.0 / dt
+	last_frame_time = now
+	if fps_label:
+		fps_label.text = "FPS: %.1f" % current_fps
+
 	# Less frequent UI updates
 	if webcam_frames_received == 1:
 		camera_status_label.text = "🎥 Webcam aktif"
@@ -206,6 +227,7 @@ func _process(delta):
 		if spinner_rotation >= 360:
 			spinner_rotation -= 360
 		loading_spinner.rotation_degrees = spinner_rotation
+	# FPS diupdate langsung di _on_webcam_frame_received agar akurat
 
 func setup_timers():
 	# Timer untuk simulasi deteksi (lebih cepat)
@@ -231,6 +253,10 @@ func reset_ui():
 	face_frame.border_color = Color(0, 1, 0, 0)
 	if skip_to_map_button:
 		skip_to_map_button.visible = false
+	if fps_label:
+		fps_label.text = "FPS: 0.0"
+	if confidence_label:
+		confidence_label.text = "Confidence: 0%"
 
 func _on_start_detection_pressed():
 	if not is_detecting:
@@ -285,6 +311,11 @@ func detection_complete():
 	# Tampilkan tombol skip ke map
 	if skip_to_map_button:
 		skip_to_map_button.visible = true
+	
+	# Simulasi confidence random antara 80-99%
+	var confidence = randi() % 20 + 80
+	if confidence_label:
+		confidence_label.text = "Confidence: %d%%" % confidence
 	
 	# Mulai countdown redirect (30 detik)
 	redirect_timer.start()
