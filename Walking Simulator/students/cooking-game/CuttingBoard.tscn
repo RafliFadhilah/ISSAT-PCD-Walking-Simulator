@@ -1,0 +1,48 @@
+[gd_scene load_steps=9 format=3 uid="uid://csamwrkd7jv51"]
+
+[ext_resource type="ArrayMesh" uid="uid://b2kvljn61iq0w" path="res://Assets/Cooking tools/Cutting Board/object/cutting_board.obj" id="1_8yoq6"]
+[ext_resource type="Script" path="res://Scripts/CookingTools/CuttingBoard.cs" id="1_hn4fo"]
+[ext_resource type="Texture2D" uid="uid://0owrmmbqsvcr" path="res://Assets/Cooking tools/Cutting Board/texture/Material.001.png" id="3_cmdgy"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3ujgs"]
+size = Vector3(0.366357, 0.0313765, 0.243195)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5lb4i"]
+albedo_texture = ExtResource("3_cmdgy")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8euxf"]
+albedo_texture = ExtResource("3_cmdgy")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ekcil"]
+albedo_texture = ExtResource("3_cmdgy")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vgwhe"]
+albedo_texture = ExtResource("3_cmdgy")
+
+[node name="CuttingBoard" type="Node3D"]
+transform = Transform3D(-1.88308, -11.9082, 38.1399, -1.79999, 38.1687, 11.8283, -39.9151, -1.15944, -2.33274, 0, 0.0170994, 0.661865)
+script = ExtResource("1_hn4fo")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 7.45058e-09, -3.72529e-09, -3.72529e-09, 1, -2.16532e-08, 0, -3.37604e-09, 1, 0, 0, 0)
+collision_layer = 16
+collision_mask = 32
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(0.997613, -0.056694, -0.0393865, 0.0381796, 0.928476, -0.36943, 0.0575138, 0.367046, 0.928426, 0.00430673, 0.0148706, 0.000739813)
+shape = SubResource("BoxShape3D_3ujgs")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(0.991216, 0.132256, 7.45058e-09, -0.132256, 0.991215, 6.89179e-08, -3.72529e-09, -6.70552e-08, 1, 0, 0, 0)
+mesh = ExtResource("1_8yoq6")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_5lb4i")
+surface_material_override/1 = SubResource("StandardMaterial3D_8euxf")
+surface_material_override/2 = SubResource("StandardMaterial3D_ekcil")
+surface_material_override/3 = SubResource("StandardMaterial3D_vgwhe")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_left = 516.0
+offset_top = 28.0
+offset_right = 577.0
+offset_bottom = 55.0

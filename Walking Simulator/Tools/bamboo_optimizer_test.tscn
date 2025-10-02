@@ -1,0 +1,238 @@
+[gd_scene load_steps=3 format=3 uid="uid://covgb5o6lq8m"]
+
+[ext_resource type="Script" uid="uid://bol53a6did0k7" path="res://Tools/bamboo_optimizer.gd" id="1_optimizer"]
+
+[sub_resource type="Environment" id="1_env"]
+background_mode = 1
+background_color = Color(0.1, 0.2, 0.1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.3, 0.4, 0.3, 1)
+ambient_light_energy = 0.5
+
+[node name="BambooOptimizerTest" type="Node3D"]
+script = ExtResource("1_optimizer")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("1_env")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, 0, -0.5, 0.25, 0.866025, 0.433012, 0.433012, -0.5, 0.75, 0, 10, 0)
+light_color = Color(1, 0.9, 0.7, 1)
+light_energy = 1.2
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPanel" type="Panel" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MainPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "🎋 Bamboo Optimizer Tool"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "This tool extracts and optimizes individual bamboo models from large GLB files"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="SourceFilesLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Source Files:"
+horizontal_alignment = 1
+
+[node name="SourceFilesList" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+text = "• as01_bambusa_golden_bamboo.glb (99MB)
+• as01_bambusa_vulgaris_golden_bamboo.glb (213MB)"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="OutputLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Output: Assets/Terrain/Shared/psx_models/vegetation/bamboo/optimized"
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonsLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Optimization Functions:"
+horizontal_alignment = 1
+
+[node name="ButtonContainer" type="GridContainer" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+columns = 2
+
+[node name="ExtractButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🎋 Extract Bamboo Models"
+
+[node name="TextureButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🖼️ Optimize Textures"
+
+[node name="ReportButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "📊 Create Report"
+
+[node name="FullButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🚀 Full Optimization"
+
+[node name="CleanupButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🧹 Cleanup Old Files"
+
+[node name="OrientationButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Fix Orientation"
+
+[node name="ComprehensiveOrientationButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Comprehensive Fix"
+
+[node name="NaturalOrientationButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🌿 Natural Vertical"
+
+[node name="Rotate45DegreesButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Rotate 45°"
+
+[node name="ResetToHorizontalButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Reset to Horizontal"
+
+[node name="Rotate90DegreesButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Rotate 90°"
+
+[node name="Rotate270DegreesButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Rotate 270°"
+
+[node name="CleanupRotationsButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🧹 Cleanup Rotations"
+
+[node name="FlipVerticalButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Flip Vertical (180° X)"
+
+[node name="OrientUprightLeavesUpButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🌿 Upright (Z−90 + X180)"
+
+[node name="RotateZ90Button" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Rotate Z +90°"
+
+[node name="RotateZ270Button" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🔄 Rotate Z +270°"
+
+[node name="DownscaleTextures256Button" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "🖼️ Downscale Textures ≤256px"
+
+[node name="HSeparator3" type="HSeparator" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Status: Ready to optimize"
+horizontal_alignment = 1
+
+[node name="ProgressLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Progress: Waiting for user input..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ResultsLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+text = "Results will appear here after optimization..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="HSeparator4" type="HSeparator" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="HelpLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "🎮 Controls: ESC to exit | 1-5 for functions | 6 for orientation fix | 7 for comprehensive fix | 8 for natural vertical | 9 for rotate 90° | 0 for rotate 45° | - for reset horizontal | = for rotate 270° | Click buttons"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/ExtractButton" to="." method="_on_extract_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/TextureButton" to="." method="_on_texture_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/ReportButton" to="." method="_on_report_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/FullButton" to="." method="_on_full_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/CleanupButton" to="." method="_on_cleanup_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/OrientationButton" to="." method="_on_fix_orientation_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/ComprehensiveOrientationButton" to="." method="_on_comprehensive_orientation_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/NaturalOrientationButton" to="." method="_on_natural_orientation_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/Rotate45DegreesButton" to="." method="_on_rotate_45_degrees_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/ResetToHorizontalButton" to="." method="_on_reset_to_horizontal_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/Rotate90DegreesButton" to="." method="_on_rotate_90_degrees_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/Rotate270DegreesButton" to="." method="_on_rotate_270_degrees_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/CleanupRotationsButton" to="." method="_on_cleanup_rotations_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/FlipVerticalButton" to="." method="_on_flip_vertical_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/OrientUprightLeavesUpButton" to="." method="_on_orient_upright_leaves_up_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/RotateZ90Button" to="." method="_on_rotate_z_90_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/RotateZ270Button" to="." method="_on_rotate_z_270_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonContainer/DownscaleTextures256Button" to="." method="_on_downscale_textures_256_button_pressed"]

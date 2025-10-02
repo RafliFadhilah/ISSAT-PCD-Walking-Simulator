@@ -1,0 +1,104 @@
+[gd_scene load_steps=6 format=3 uid="uid://bxp7icwhvulnc"]
+
+[ext_resource type="Script" path="res://Scripts/BackBtnToMenu.cs" id="1_3b1bc"]
+[ext_resource type="Texture2D" uid="uid://b7fgx83axh2dt" path="res://Assets/Main Menu/Credit.png" id="1_856rf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lljq5"]
+bg_color = Color(0.151276, 0.151276, 0.151276, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3xn2x"]
+bg_color = Color(0.151276, 0.151276, 0.151276, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ill4b"]
+bg_color = Color(0.233925, 0.233925, 0.233925, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[node name="Settings" type="Node2D"]
+
+[node name="Credit" type="Sprite2D" parent="."]
+position = Vector2(579, 325.75)
+scale = Vector2(0.603125, 0.604167)
+texture = ExtResource("1_856rf")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 85.0
+offset_top = 147.0
+offset_right = 463.0
+offset_bottom = 243.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.509804, 0.188235, 0.101961, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 70
+text = "Credit"
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 85.0
+offset_top = 261.0
+offset_right = 678.0
+offset_bottom = 432.0
+theme_override_constants/separation = 5
+
+[node name="Nama" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.509804, 0.188235, 0.101961, 1)
+theme_override_font_sizes/font_size = 28
+text = "Nama     : Alya Naila Putri Ashadilla"
+
+[node name="NIM" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.509804, 0.188235, 0.101961, 1)
+theme_override_font_sizes/font_size = 28
+text = "NIM        : 231524036"
+
+[node name="Prodi" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.509804, 0.188235, 0.101961, 1)
+theme_override_font_sizes/font_size = 28
+text = "Prodi      : D4-Teknik Informatika"
+
+[node name="Jurusan" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.509804, 0.188235, 0.101961, 1)
+theme_override_font_sizes/font_size = 28
+text = "Jurusan : Teknik Komputer  dan Informatika"
+
+[node name="BackButton" type="Button" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 126.0
+offset_bottom = 43.0
+theme_override_font_sizes/font_size = 16
+theme_override_styles/hover = SubResource("StyleBoxFlat_lljq5")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3xn2x")
+theme_override_styles/normal = SubResource("StyleBoxFlat_ill4b")
+text = "Back to Menu"
+script = ExtResource("1_3b1bc")
+
+[connection signal="pressed" from="BackButton" to="BackButton" method="OnBackPressed"]

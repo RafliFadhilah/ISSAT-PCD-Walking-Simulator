@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PSXAssetPack" load_steps=2 format=3 uid="uid://caa682e0gu7g4"]
+
+[ext_resource type="Script" uid="uid://d3mjaoksgfec2" path="res://Systems/Terrain/PSXAssetPack.gd" id="1_psx"]
+
+[resource]
+script = ExtResource("1_psx")
+region_name = "Papua"
+environment_type = "tropical_forest"
+trees = Array[String](["res://Assets/Terrain/Shared/psx_models/trees/jungle/tree_1.glb", "res://Assets/Terrain/Shared/psx_models/trees/jungle/tree_5.glb", "res://Assets/Terrain/Shared/psx_models/trees/jungle/tree_6.glb", "res://Assets/Terrain/Shared/psx_models/trees/jungle/tree_7.glb", "res://Assets/Terrain/Shared/psx_models/trees/jungle/tree_8.glb", "res://Assets/Terrain/Shared/psx_models/trees/jungle/tree_9.glb", "res://Assets/Terrain/Shared/psx_models/trees/pine/pine_tree_n_1.glb", "res://Assets/Terrain/Shared/psx_models/trees/pine/pine_tree_n_2.glb", "res://Assets/Terrain/Shared/psx_models/trees/pine/pine_tree_n_3.glb"])
+vegetation = Array[String](["res://Assets/Terrain/Shared/psx_models/vegetation/ferns/fern_1.glb", "res://Assets/Terrain/Shared/psx_models/vegetation/ferns/fern_2.glb", "res://Assets/Terrain/Shared/psx_models/vegetation/ferns/fern_3.glb", "res://Assets/Terrain/Shared/psx_models/vegetation/grass/grass_1.glb", "res://Assets/Terrain/Shared/psx_models/vegetation/grass/grass_2.glb", "res://Assets/Terrain/Shared/psx_models/vegetation/grass/grass_3.glb"])
+stones = Array[String](["res://Assets/Terrain/Shared/psx_models/stones/rocks/stone_1.glb", "res://Assets/Terrain/Shared/psx_models/stones/rocks/stone_2.glb", "res://Assets/Terrain/Shared/psx_models/stones/rocks/stone_3.glb", "res://Assets/Terrain/Shared/psx_models/stones/rocks/stone_4.glb", "res://Assets/Terrain/Shared/psx_models/stones/rocks/stone_5.glb"])
+debris = Array[String]([])
+mushrooms = Array[String](["res://Assets/Terrain/Shared/psx_models/mushrooms/variants/mushroom_n_1.glb", "res://Assets/Terrain/Shared/psx_models/mushrooms/variants/mushroom_n_2.glb", "res://Assets/Terrain/Shared/psx_models/mushrooms/variants/mushroom_n_3.glb"])

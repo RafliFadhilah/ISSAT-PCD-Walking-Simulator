@@ -1,0 +1,123 @@
+[gd_scene load_steps=7 format=3 uid="uid://ygscgk8vic5d"]
+
+[ext_resource type="Script" path="res://Scripts/Main Menu/MainMenu.cs" id="1_jwjjp"]
+[ext_resource type="Texture2D" uid="uid://dcwqgt5jyyvip" path="res://Assets/Cream Neutral Playful Food Recipe Presentation.jpg" id="2_emk7k"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g0628"]
+bg_color = Color(0.197937, 0.197937, 0.197937, 1)
+border_color = Color(0.737193, 0.737193, 0.737193, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ylkwu"]
+bg_color = Color(0.244776, 0.244776, 0.244776, 1)
+border_color = Color(0.737193, 0.737193, 0.737193, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xaba6"]
+bg_color = Color(0.197937, 0.197937, 0.197937, 1)
+border_color = Color(0.737193, 0.737193, 0.737193, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1qi25"]
+bg_color = Color(0.244776, 0.244776, 0.244776, 1)
+border_color = Color(0.737193, 0.737193, 0.737193, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[node name="MainMenu" type="Node2D"]
+script = ExtResource("1_jwjjp")
+
+[node name="CreamNeutralPlayfulFoodRecipePresentation" type="Sprite2D" parent="."]
+position = Vector2(581.5, 335.5)
+scale = Vector2(0.619271, 0.630556)
+texture = ExtResource("2_emk7k")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 213.0
+offset_top = 235.0
+offset_right = 982.0
+offset_bottom = 525.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 30
+
+[node name="StartButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/hover = SubResource("StyleBoxFlat_g0628")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_g0628")
+theme_override_styles/normal = SubResource("StyleBoxFlat_ylkwu")
+text = "Start"
+
+[node name="CreditButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/hover = SubResource("StyleBoxFlat_xaba6")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_xaba6")
+theme_override_styles/normal = SubResource("StyleBoxFlat_1qi25")
+text = "Credit"
+
+[node name="HelpButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/hover = SubResource("StyleBoxFlat_xaba6")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_xaba6")
+theme_override_styles/normal = SubResource("StyleBoxFlat_1qi25")
+text = "Help"
+
+[node name="QuitButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/hover = SubResource("StyleBoxFlat_xaba6")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_xaba6")
+theme_override_styles/normal = SubResource("StyleBoxFlat_1qi25")
+text = "Quit
+"
+
+[node name="Label" type="Label" parent="."]
+offset_left = 355.0
+offset_top = 93.0
+offset_right = 790.0
+offset_bottom = 162.0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 13
+theme_override_font_sizes/font_size = 50
+text = "Chop Til You Drop"
+
+[connection signal="pressed" from="VBoxContainer/StartButton" to="." method="OnStartPressed"]
+[connection signal="pressed" from="VBoxContainer/CreditButton" to="." method="OnSettingsPressed"]
+[connection signal="pressed" from="VBoxContainer/HelpButton" to="." method="OnGuidePressed"]
+[connection signal="pressed" from="VBoxContainer/QuitButton" to="." method="OnQuitPressed"]

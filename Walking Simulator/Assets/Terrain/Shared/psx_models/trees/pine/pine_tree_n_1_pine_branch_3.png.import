@@ -1,0 +1,38 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://ce37f7qict3ur"
+path.s3tc="res://.godot/imported/pine_tree_n_1_pine_branch_3.png-07e9fa3031940041b6964e8a4ac73cec.s3tc.ctex"
+metadata={
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
+}
+generator_parameters={
+"md5": "a7353c6a1a27622e8eaca1182cf3aade"
+}
+
+[deps]
+
+source_file="res://Assets/Terrain/Shared/psx_models/trees/pine/pine_tree_n_1_pine_branch_3.png"
+dest_files=["res://.godot/imported/pine_tree_n_1_pine_branch_3.png-07e9fa3031940041b6964e8a4ac73cec.s3tc.ctex"]
+
+[params]
+
+compress/mode=2
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=0

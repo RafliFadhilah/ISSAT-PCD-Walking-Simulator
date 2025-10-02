@@ -1,0 +1,6 @@
+[gd_resource type="Terrain3DMaterial" load_steps=1 format=3 uid="uid://sycb05lujblo"]
+
+[resource]
+world_background = 2
+auto_shader = true
+dual_scaling = true
