@@ -275,6 +275,9 @@ func start_visual_dialogue():
 	call_deferred("_setup_dialogue_input_handling")
 
 func display_dialogue_ui(dialogue: Dictionary):
+	# Close all existing dialogue UIs first to prevent conflicts
+	close_all_dialogue_uis()
+	
 	# Add to dialogue history
 	dialogue_history.append(dialogue)
 	
@@ -779,10 +782,8 @@ func end_visual_dialogue():
 		GameLogger.warning("CulturalNPC: Node invalid during end_visual_dialogue, skipping")
 		return
 	
-	# Hide dialogue UI
-	var dialogue_ui = get_node_or_null("DialogueUI")
-	if dialogue_ui:
-		dialogue_ui.visible = false
+	# Close ALL dialogue UIs from ALL NPCs to prevent conflicts
+	close_all_dialogue_uis()
 	
 	# Clean up input timer
 	var input_timer = get_node_or_null("DialogueInputTimer")
@@ -802,6 +803,26 @@ func end_visual_dialogue():
 	mark_dialogue_ended()
 	
 	GameLogger.info("=== DIALOGUE ENDED ===")
+
+func close_all_dialogue_uis():
+	# Close dialogue UI from ALL NPCs to prevent conflicts
+	var all_npcs = get_tree().get_nodes_in_group("npc")
+	for npc in all_npcs:
+		if npc.has_method("close_npc_dialogue_ui"):
+			npc.close_npc_dialogue_ui()
+		else:
+			# Fallback: directly close dialogue UI
+			var dialogue_ui = npc.get_node_or_null("DialogueUI")
+			if dialogue_ui:
+				dialogue_ui.visible = false
+				GameLogger.debug("Closed dialogue UI for NPC: " + npc.name)
+
+func close_npc_dialogue_ui():
+	# Close this NPC's dialogue UI
+	var dialogue_ui = get_node_or_null("DialogueUI")
+	if dialogue_ui:
+		dialogue_ui.visible = false
+		GameLogger.debug("Closed dialogue UI for NPC: " + npc_name)
 
 func show_interaction_feedback():
 	# Visual feedback when interaction starts

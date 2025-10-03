@@ -1,0 +1,11 @@
+[gd_resource type="CulturalItem" script_class="CulturalItem" format=3 uid="uid://koteka_item"]
+
+[resource]
+display_name = "Koteka"
+cultural_region = "Indonesia Timur"
+historical_period = "Traditional Era"
+cultural_significance = "Traditional male clothing of Papua highland tribes, representing cultural identity and connection to nature."
+description = "Traditional penis gourd worn by men in Papua highland tribes. Made from dried gourd and represents cultural identity."
+educational_value = 2
+rarity = "Common"
+max_stack_size = 1

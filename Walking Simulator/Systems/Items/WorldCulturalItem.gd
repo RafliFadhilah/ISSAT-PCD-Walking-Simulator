@@ -14,12 +14,21 @@ func _ready():
 	# Set up interaction prompt
 	interaction_prompt = "Press E to collect " + item_name
 	
+	# Debug print
+	print("WorldCulturalItem ready: ", item_name, " in region: ", cultural_region)
+	print("Interaction prompt: ", interaction_prompt)
+	print("Can interact: ", can_interact)
+	
 	# Connect to global signals
 	GlobalSignals.on_collect_artifact.connect(_on_artifact_collected)
 
 func _interact():
+	print("_interact() called on: ", item_name)
 	if not is_collected:
+		print("Item not collected yet, calling collect_item()")
 		collect_item()
+	else:
+		print("Item already collected!")
 
 func collect_item():
 	if is_collected:
