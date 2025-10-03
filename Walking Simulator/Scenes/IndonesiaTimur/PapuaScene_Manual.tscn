@@ -962,7 +962,7 @@ collision_layer = 4
 shape = SubResource("BoxShape3D_wfpka")
 
 [node name="cenderawasih_pegunungan" parent="ManualAssets/Artifacts" instance=ExtResource("16_06ni3")]
-transform = Transform3D(1.93397, 0, 0.509676, 0, 2, 0, -0.509676, 0, 1.93397, -431.505, 65.0273, -188.275)
+transform = Transform3D(1.93397, 0, 0.509676, 0, 2, 0, -0.509676, 0, 1.93397, -43.2728, 0.235831, -5.70258)
 script = ExtResource("16_wfpka")
 item_name = "cenderawasih_pegunungan"
 cultural_region = "Indonesia Timur"
@@ -975,7 +975,7 @@ collision_layer = 4
 shape = SubResource("BoxShape3D_wfpka")
 
 [node name="koteka" parent="ManualAssets/Artifacts" instance=ExtResource("17_wfpka")]
-transform = Transform3D(2, 0, 0, 0, -0.474117, -1.94299, 0, 1.94299, -0.474117, 72.761, -10.8388, -364.582)
+transform = Transform3D(2, 0, 0, 0, -0.474117, -1.94299, 0, 1.94299, -0.474117, 72.761, -9.70533, -37.7428)
 script = ExtResource("16_wfpka")
 item_name = "koteka"
 cultural_region = "Indonesia Timur"

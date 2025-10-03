@@ -16,13 +16,22 @@ func _ready():
 func set_item(new_item: CulturalItem):
 	item = new_item
 	
+	print("InventorySlot.set_item() called with: ", item)
+	
 	if item:
+		print("Item details:")
+		print("  display_name: ", item.display_name)
+		print("  icon: ", item.icon)
+		print("  icon type: ", item.icon.get_class() if item.icon else "null")
+		
 		# Set item icon
 		if item.icon:
 			item_icon.texture = item.icon
 			item_icon.visible = true
+			print("  Icon set successfully")
 		else:
 			item_icon.visible = false
+			print("  No icon available")
 		
 		# Set item label
 		item_label.text = item.display_name

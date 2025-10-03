@@ -1,7 +1,12 @@
 [gd_resource type="CulturalItem" script_class="CulturalItem" format=3 uid="uid://cenderawasih_item"]
 
+[ext_resource type="Script" path="res://Systems/Items/CulturalItem.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cbi5404moasuk" path="res://Assets/Images/cenderawasih_pegunungan.png" id="2_icon"]
+
 [resource]
+script = ExtResource("1_script")
 display_name = "Cenderawasih Pegunungan"
+icon = ExtResource("2_icon")
 cultural_region = "Indonesia Timur"
 historical_period = "Traditional Era"
 cultural_significance = "Bird of Paradise is the symbol of Papua's natural beauty and biodiversity. Often depicted in traditional art and ceremonies."
