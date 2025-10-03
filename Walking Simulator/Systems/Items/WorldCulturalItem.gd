@@ -35,13 +35,23 @@ func collect_item():
 		return
 	
 	is_collected = true
+	can_interact = false  # Disable further interaction
+	
+	print("=== COLLECTING ARTIFACT ===")
+	print("Item name: ", item_name)
+	print("Cultural region: ", cultural_region)
 	
 	# Load the cultural item resource
 	var item_path = "res://Systems/Items/ItemData/" + item_name + ".tres"
+	print("Item path: ", item_path)
+	print("Resource exists: ", ResourceLoader.exists(item_path))
+	
 	if ResourceLoader.exists(item_path):
 		var _item = load(item_path)  # Loaded but not used in current implementation
+		print("Loaded item resource: ", _item)
 		
 		# Add to player inventory
+		print("Calling Global.collect_artifact...")
 		Global.collect_artifact(cultural_region, item_name)
 		
 		# Emit collection signal
@@ -50,13 +60,24 @@ func collect_item():
 		# Play collection effects
 		play_collection_effects()
 		
-		# Hide the item
+		# Hide the item (but keep StaticBody3D for collision temporarily)
 		visible = false
+		
+		# Disable collision after a short delay to prevent collision detection
+		call_deferred("_disable_collision")
 		
 		# Optional: Show collection message
 		show_collection_message(item_name)
 	else:
 		print("Warning: Cultural item resource not found: ", item_path)
+
+func _disable_collision():
+	# Disable StaticBody3D collision
+	var static_body = get_node_or_null("StaticBody3D")
+	if static_body:
+		static_body.collision_layer = 0
+		static_body.collision_mask = 0
+		print("Disabled collision for collected artifact: ", item_name)
 
 func play_collection_effects():
 	# Play collection sound

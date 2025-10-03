@@ -949,7 +949,7 @@ shape = SubResource("CylinderShape3D_shlqg")
 [node name="Artifacts" type="Node3D" parent="ManualAssets"]
 
 [node name="kapank_dani" parent="ManualAssets/Artifacts" instance=ExtResource("15_11paw")]
-transform = Transform3D(1.60372, 0.00184268, -1.19503, -0.00206081, 2, 0.000318347, 1.19503, 0.000976127, 1.60372, 81.4521, -11.2164, -16.8005)
+transform = Transform3D(1.88411, 0.00183461, 0.670935, -0.00206081, 2, 0.000318347, -0.670935, -0.000991202, 1.88411, 81.4521, -11.2164, -16.8005)
 script = ExtResource("16_wfpka")
 item_name = "kapak_dani"
 cultural_region = "Indonesia Timur"

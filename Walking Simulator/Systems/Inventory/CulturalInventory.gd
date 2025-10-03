@@ -24,6 +24,10 @@ func _ready():
 	connect_signals()
 	update_display()
 	
+	# Register this instance with Global for artifact collection
+	Global.cultural_inventory = self
+	print("CulturalInventory registered with Global")
+	
 	# Set mouse filter to ignore when inventory is hidden
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
@@ -62,18 +66,39 @@ func toggle_window(open: bool):
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func add_cultural_artifact(artifact: CulturalItem, region: String):
+	print("CulturalInventory.add_cultural_artifact() called")
+	print("Artifact: ", artifact)
+	print("Region: ", region)
+	
+	if artifact == null:
+		print("ERROR: Artifact is null!")
+		return
+	
+	if not artifact.has_method("get_class") and not "display_name" in artifact:
+		print("ERROR: Artifact is not a valid CulturalItem!")
+		return
+	
+	print("Artifact display_name: ", artifact.display_name)
+	
 	# Add to collected artifacts
 	if not region in collected_artifacts:
 		collected_artifacts[region] = []
+		print("Created new region entry for: ", region)
 	
 	if not artifact.display_name in collected_artifacts[region]:
 		collected_artifacts[region].append(artifact.display_name)
 		collected_count += 1
+		print("Added to collected artifacts: ", artifact.display_name, " (Total count: ", collected_count, ")")
+	else:
+		print("Artifact already in collection: ", artifact.display_name)
 	
 	# Add to inventory slot
 	var slot = get_empty_slot()
 	if slot:
 		slot.set_item(artifact)
+		print("Added artifact to inventory slot")
+	else:
+		print("No empty slot available!")
 	
 	# Update display
 	update_display()
