@@ -241,7 +241,6 @@ spring_length = 6.0
 
 [node name="Camera3D" type="Camera3D" parent="Player/CameraPivot/SpringArm3D"]
 near = 0.1
-far = 100.0
 
 [node name="InteractionController" type="RayCast3D" parent="Player"]
 target_position = Vector3(0, 0, -3)
@@ -258,7 +257,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.125511, 8.4285, -0.0485153)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.90083, 0, -1.14329)
 script = ExtResource("5_c4fgr")
 npc_name = "Cultural Guide"
-npc_type = "guide"
+cultural_region = "Indonesia Timur"
 
 [node name="NPCCollision" type="CollisionShape3D" parent="NPCs/CulturalGuide"]
 shape = SubResource("BoxShape3D_npc")
@@ -271,7 +270,8 @@ surface_material_override/0 = SubResource("StandardMaterial3D_orange")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.7255, 0, -2.52646)
 script = ExtResource("5_c4fgr")
 npc_name = "Archaeologist"
-npc_type = "researcher"
+cultural_region = "Indonesia Timur"
+npc_type = "Historian"
 
 [node name="NPCCollision" type="CollisionShape3D" parent="NPCs/Archaeologist"]
 shape = SubResource("BoxShape3D_npc")
@@ -284,7 +284,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_brown")
 transform = Transform3D(0.781041, 0, -0.62448, 0, 1, 0, 0.62448, 0, 0.781041, 3.8405, 0, -17.6113)
 script = ExtResource("5_c4fgr")
 npc_name = "Tribal Elder"
-npc_type = "elder"
+cultural_region = "Indonesia Timur"
 
 [node name="NPCCollision" type="CollisionShape3D" parent="NPCs/TribalElder"]
 shape = SubResource("BoxShape3D_npc")
@@ -301,7 +301,8 @@ transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 1.68005, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.1608, 0, -22.1358)
 script = ExtResource("5_c4fgr")
 npc_name = "Artisan"
-npc_type = "craftsman"
+cultural_region = "Indonesia Timur"
+npc_type = "Vendor"
 
 [node name="NPCCollision" type="CollisionShape3D" parent="NPCs/Artisan"]
 shape = SubResource("BoxShape3D_npc")
@@ -418,8 +419,6 @@ autostart = true
 [node name="AudioManager" parent="." instance=ExtResource("7_5fold")]
 
 [node name="InventoryManager" parent="." instance=ExtResource("8_p5m1f")]
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="ManualAssets" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.125511, 7.91769, -0.0485153)

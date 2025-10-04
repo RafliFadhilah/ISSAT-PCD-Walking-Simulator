@@ -330,8 +330,6 @@ autostart = true
 [node name="AudioManager" parent="." instance=ExtResource("2_audio")]
 
 [node name="InventoryManager" parent="." instance=ExtResource("3_inventory")]
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="TerrainController" type="Node3D" parent="."]
 script = ExtResource("13_terrain_controller")

@@ -1,6 +1,9 @@
 class_name CulturalNPC
 extends CulturalInteractableObject
 
+# Static variable to track which NPC has active dialogue
+static var active_dialogue_npc: CulturalNPC = null
+
 @export var npc_name: String
 @export var cultural_region: String
 @export var npc_type: String = "Guide"  # Guide, Vendor, Historian
@@ -16,7 +19,7 @@ var player: CharacterBody3D
 # Dialogue state tracking
 var dialogue_just_ended: bool = false
 var dialogue_end_time: float = 0.0
-var dialogue_cooldown_duration: float = 3.0  # Seconds to wait before allowing new dialogue
+var dialogue_cooldown_duration: float = 1.0  # Reduced to 1 second for better UX
 var dialogue_history: Array = []  # Track dialogue history for navigation
 
 # Cultural knowledge
@@ -50,6 +53,58 @@ func _ready():
 		return
 	GameLogger.debug("NPC Ready: " + name)
 	GameLogger.info("CulturalNPC initialized: " + npc_name + " (Type: " + npc_type + ")")
+
+func _input(event):
+	# Only process input if this NPC is the active dialogue NPC
+	if active_dialogue_npc != self:
+		return
+		
+	# Handle dialogue input directly for better responsiveness
+	if not has_active_dialogue():
+		# If we don't have active dialogue but we're the active NPC, clear the static reference
+		if active_dialogue_npc == self:
+			active_dialogue_npc = null
+		return
+		
+	if event is InputEventKey and event.pressed:
+		# DEBUG: Log ALL key presses during dialogue
+		GameLogger.info("CulturalNPC (" + npc_name + "): Key pressed during dialogue: " + str(event.physical_keycode) + " (" + str(char(event.physical_keycode)) + ")")
+		
+		# Get current dialogue
+		var current_dialogue = dialogue_history.back() if dialogue_history.size() > 0 else get_initial_dialogue()
+		var options = current_dialogue.get("options", [])
+		
+		GameLogger.debug("CulturalNPC (" + npc_name + "): Current dialogue has " + str(options.size()) + " options")
+		
+		# Handle number keys 1-4 for dialogue choices
+		if event.physical_keycode >= KEY_1 and event.physical_keycode <= KEY_4:
+			var choice_index = event.physical_keycode - KEY_1
+			GameLogger.info("CulturalNPC (" + npc_name + "): Number key " + str(choice_index + 1) + " pressed, options available: " + str(options.size()))
+			
+			if choice_index < options.size():
+				GameLogger.info("CulturalNPC (" + npc_name + "): EXECUTING dialogue choice " + str(choice_index + 1) + "!")
+				_handle_dialogue_choice(choice_index)
+				get_viewport().set_input_as_handled()
+				return
+			else:
+				GameLogger.warning("CulturalNPC (" + npc_name + "): Choice index " + str(choice_index + 1) + " is out of range for " + str(options.size()) + " options")
+		
+		# Handle other dialogue controls
+		elif event.physical_keycode == KEY_X:
+			GameLogger.info("CulturalNPC (" + npc_name + "): X key pressed - ending dialogue")
+			end_visual_dialogue()
+			get_viewport().set_input_as_handled()
+			return
+		elif event.physical_keycode == KEY_LEFT:
+			GameLogger.info("CulturalNPC (" + npc_name + "): Left arrow pressed - going back")
+			_on_back_button_pressed()
+			get_viewport().set_input_as_handled()
+			return
+		elif event.physical_keycode == KEY_RIGHT or event.physical_keycode == KEY_C:
+			GameLogger.info("CulturalNPC (" + npc_name + "): Right arrow/C pressed - closing")
+			_on_close_button_pressed()
+			get_viewport().set_input_as_handled()
+			return
 
 func find_player():
 	# Find the player in the scene tree
@@ -230,6 +285,11 @@ func _interact():
 		GameLogger.debug("Interaction blocked - can_interact is false for " + npc_name)
 		return
 	
+	# Check if there's already an active dialogue with another NPC
+	if active_dialogue_npc != null and active_dialogue_npc != self:
+		GameLogger.debug("Interaction blocked - another NPC (" + active_dialogue_npc.npc_name + ") has active dialogue")
+		return
+	
 	# Check if dialogue just ended and we're still in cooldown
 	if dialogue_just_ended:
 		var current_time = Time.get_unix_time_from_system()
@@ -262,17 +322,22 @@ func _interact():
 	GameLogger.debug("Interaction disabled during dialogue for " + npc_name)
 
 func start_visual_dialogue():
+	# Set this NPC as the active dialogue NPC
+	active_dialogue_npc = self
+	GameLogger.info("CulturalNPC (" + npc_name + "): Starting visual dialogue - set as active dialogue NPC")
+	
 	# Get initial dialogue
 	var initial_dialogue = get_initial_dialogue()
 	if initial_dialogue.is_empty():
 		GameLogger.warning("No dialogue data found for " + npc_name)
+		active_dialogue_npc = null  # Clear if no dialogue
 		return
 	
 	# Display dialogue UI
 	display_dialogue_ui(initial_dialogue)
 	
-	# Set up input handling for dialogue choices
-	call_deferred("_setup_dialogue_input_handling")
+	# NOTE: We now use _input() method for input handling instead of timer polling
+	# Timer system is disabled to prevent conflicts
 
 func display_dialogue_ui(dialogue: Dictionary):
 	# Close all existing dialogue UIs first to prevent conflicts
@@ -464,13 +529,14 @@ func display_dialogue_ui(dialogue: Dictionary):
 	else:
 		GameLogger.warning("MessageText node not found in dialog UI")
 	
+	# Get options first for logging
+	var options = dialogue.get("options", [])
+	
 	# Clear and add options with vintage styling
 	if options_container_node:
 		# Clear existing options
 		for child in options_container_node.get_children():
 			child.queue_free()
-		
-		var options = dialogue.get("options", [])
 		
 		# Add numbered options with vintage styling
 		for i in range(options.size()):
@@ -491,6 +557,10 @@ func display_dialogue_ui(dialogue: Dictionary):
 	dialogue_ui.visible = true
 	GameLogger.info("=== DIALOGUE STARTED ===")
 	GameLogger.info("NPC: " + dialogue.get("message", "Hello!"))
+	GameLogger.info("Options available: " + str(options.size()))
+	
+	# DEBUG: Verify UI state after creation
+	call_deferred("_verify_dialogue_ui_state")
 
 func _setup_dialogue_input_handling():
 	# CRITICAL: Check if we're still valid before creating timer
@@ -648,7 +718,9 @@ func _handle_consequence_only(consequence: String):
 	"""Handle dialogue consequence without navigation"""
 	if consequence == "share_knowledge":
 		share_cultural_knowledge()
-	elif consequence == "end_dialogue":
+	elif consequence == "end_dialogue" or consequence == "end_conversation":
+		# Handle both "end_dialogue" and "end_conversation" for compatibility
+		GameLogger.info("CulturalNPC (" + npc_name + "): Ending dialogue due to consequence: " + consequence)
 		end_visual_dialogue()
 	# Add other consequence handling as needed
 
@@ -782,8 +854,13 @@ func end_visual_dialogue():
 		GameLogger.warning("CulturalNPC: Node invalid during end_visual_dialogue, skipping")
 		return
 	
-	# Close ALL dialogue UIs from ALL NPCs to prevent conflicts
-	close_all_dialogue_uis()
+	# Clear active dialogue NPC if this NPC is the active one
+	if active_dialogue_npc == self:
+		active_dialogue_npc = null
+		GameLogger.info("CulturalNPC (" + npc_name + "): Cleared active dialogue NPC")
+	
+	# Close only THIS NPC's dialogue UI, not all UIs to allow other NPCs to interact
+	close_npc_dialogue_ui()
 	
 	# Clean up input timer
 	var input_timer = get_node_or_null("DialogueInputTimer")
@@ -799,10 +876,10 @@ func end_visual_dialogue():
 		typewriter_timer.queue_free()
 		GameLogger.debug("CulturalNPC: Typewriter timer cleaned up")
 	
-	# Mark dialogue as ended
+	# Mark dialogue as ended ONLY for this specific NPC
 	mark_dialogue_ended()
 	
-	GameLogger.info("=== DIALOGUE ENDED ===")
+	GameLogger.info("=== DIALOGUE ENDED for " + npc_name + " ===")
 
 func close_all_dialogue_uis():
 	# Close dialogue UI from ALL NPCs to prevent conflicts
@@ -1032,12 +1109,229 @@ func setup_guide_dialogue():
 			]
 
 func setup_historian_dialogue():
-	# Historian-specific dialogue
-	setup_guide_dialogue()  # For now, use guide dialogue
+	# Historian-specific dialogue with deeper historical content
+	match cultural_region:
+		"Indonesia Timur":
+			dialogue_data = [
+				{
+					"id": "greeting",
+					"message": "Greetings, I am an archaeologist studying the rich history of Papua. This region holds fascinating archaeological discoveries that span thousands of years.",
+					"options": [
+						{
+							"text": "Tell me about Papua's archaeological sites",
+							"next_dialogue": "archaeological_sites",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What ancient civilizations lived here?",
+							"next_dialogue": "ancient_civilizations",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Goodbye",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "archaeological_sites",
+					"message": "Papua contains numerous megalithic sites and cave paintings dating back over 40,000 years. These sites reveal evidence of early human migration and sophisticated cultural practices.",
+					"options": [
+						{
+							"text": "What about ancient civilizations?",
+							"next_dialogue": "ancient_civilizations",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me more about the cave paintings",
+							"next_dialogue": "cave_paintings",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Thank you for the information",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "ancient_civilizations",
+					"message": "The ancestors of Papua's indigenous peoples developed complex societies with unique technologies, including sophisticated agricultural terracing and metallurgy techniques.",
+					"options": [
+						{
+							"text": "Tell me about archaeological sites",
+							"next_dialogue": "archaeological_sites",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What about cave paintings?",
+							"next_dialogue": "cave_paintings",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Fascinating, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "cave_paintings",
+					"message": "The cave paintings in Papua are among the world's oldest rock art, depicting animals, human figures, and spiritual symbols that provide insights into ancient beliefs and daily life.",
+					"options": [
+						{
+							"text": "Tell me about archaeological sites",
+							"next_dialogue": "archaeological_sites",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What about ancient civilizations?",
+							"next_dialogue": "ancient_civilizations",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Amazing discoveries, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				}
+			]
+		_:
+			# Fallback for other regions
+			setup_guide_dialogue()
 
 func setup_vendor_dialogue():
-	# Vendor-specific dialogue
-	setup_guide_dialogue()  # For now, use guide dialogue
+	# Vendor-specific dialogue focused on traditional crafts and trade
+	match cultural_region:
+		"Indonesia Timur":
+			dialogue_data = [
+				{
+					"id": "greeting",
+					"message": "Welcome to my workshop! I am a traditional artisan specializing in Papua's ancient crafts. Each piece I create carries the wisdom of our ancestors.",
+					"options": [
+						{
+							"text": "What traditional crafts do you make?",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me about the materials you use",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Can you teach me about crafting techniques?",
+							"next_dialogue": "techniques",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Goodbye",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "traditional_crafts",
+					"message": "I specialize in creating Noken bags, traditional masks, koteka, and ceremonial weapons like the Kapak Dani. Each piece has cultural significance and tells a story.",
+					"options": [
+						{
+							"text": "What materials do you use?",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "How are these techniques passed down?",
+							"next_dialogue": "techniques",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me about Noken bags",
+							"next_dialogue": "noken_details",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Thank you for sharing",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "materials",
+					"message": "We use natural materials from the forest: pandan leaves for Noken, bird feathers for decoration, wood from sacred trees, and stones for tools. Everything is sustainably harvested.",
+					"options": [
+						{
+							"text": "What crafts do you make with these?",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "How do you learn these techniques?",
+							"next_dialogue": "techniques",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me about Noken bags",
+							"next_dialogue": "noken_details",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Interesting, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "techniques",
+					"message": "These techniques are passed down through generations in our families. Young artisans learn by watching and practicing under the guidance of master craftsmen, preserving our cultural heritage.",
+					"options": [
+						{
+							"text": "What traditional crafts do you make?",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What materials do you use?",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me about Noken bags",
+							"next_dialogue": "noken_details",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Thank you for preserving these traditions",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "noken_details",
+					"message": "Noken is a traditional multifunctional bag made from pandan or orchid fibers. It's not just a bag - it's a symbol of Papua's identity, used for carrying babies, food, and tools.",
+					"options": [
+						{
+							"text": "What other crafts do you make?",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What materials do you use?",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "How do you learn these techniques?",
+							"next_dialogue": "techniques",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Amazing cultural heritage, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				}
+			]
+		_:
+			# Fallback for other regions
+			setup_guide_dialogue()
 
 func setup_generic_dialogue():
 	dialogue_data = [
@@ -1126,18 +1420,19 @@ func share_cultural_knowledge():
 func mark_dialogue_ended():
 	dialogue_just_ended = true
 	dialogue_end_time = Time.get_unix_time_from_system()
-	# Keep can_interact false until cooldown expires or player explicitly presses E again
+	# Only disable interaction for THIS specific NPC during cooldown
 	can_interact = false
-	GameLogger.debug("Dialogue ended for " + npc_name + " - cooldown started, interaction disabled")
+	GameLogger.debug("Dialogue ended for " + npc_name + " - cooldown started, interaction disabled for this NPC only")
 	
-	# Start a timer to re-enable interaction after cooldown
+	# Start a timer to re-enable interaction after cooldown for THIS NPC
 	var cooldown_timer = get_tree().create_timer(dialogue_cooldown_duration)
 	cooldown_timer.timeout.connect(_on_dialogue_cooldown_expired)
 
 func _on_dialogue_cooldown_expired():
+	# Only re-enable interaction for THIS specific NPC
 	dialogue_just_ended = false
 	can_interact = true
-	GameLogger.debug("Dialogue cooldown expired for " + npc_name + " - interaction re-enabled")
+	GameLogger.debug("Dialogue cooldown expired for " + npc_name + " - interaction re-enabled for this NPC")
 
 func get_knowledge_for_topic(topic: String) -> String:
 	# This would be loaded from a knowledge database
@@ -1346,3 +1641,41 @@ func _exit_tree():
 		EventBus.unsubscribe(self)
 	
 	GameLogger.debug("CulturalNPC: Cleanup complete for " + npc_name)
+
+func has_active_dialogue() -> bool:
+	"""Check if this NPC currently has an active dialogue"""
+	var dialogue_ui = get_node_or_null("DialogueUI")
+	var is_active = dialogue_ui and dialogue_ui.visible
+	
+	# DEBUG: Log active dialogue state
+	if is_active:
+		GameLogger.debug("CulturalNPC (" + npc_name + "): Has active dialogue - UI visible: " + str(dialogue_ui.visible))
+	
+	return is_active
+
+func is_dialogue_input_active() -> bool:
+	"""Check if dialogue input handling is currently active"""
+	var input_timer = get_node_or_null("DialogueInputTimer")
+	return input_timer and not input_timer.is_stopped()
+
+func _verify_dialogue_ui_state():
+	"""Debug function to verify dialogue UI state"""
+	var dialogue_ui = get_node_or_null("DialogueUI")
+	if dialogue_ui:
+		GameLogger.info("CulturalNPC (" + npc_name + "): DialogueUI state verification:")
+		GameLogger.info("  - UI exists: true")
+		GameLogger.info("  - UI visible: " + str(dialogue_ui.visible))
+		GameLogger.info("  - Dialogue history size: " + str(dialogue_history.size()))
+		GameLogger.info("  - has_active_dialogue(): " + str(has_active_dialogue()))
+		
+		# Check current dialogue
+		if dialogue_history.size() > 0:
+			var current_dialogue = dialogue_history.back()
+			var options = current_dialogue.get("options", [])
+			GameLogger.info("  - Current dialogue options: " + str(options.size()))
+			for i in range(options.size()):
+				GameLogger.info("    Option " + str(i + 1) + ": " + options[i].get("text", ""))
+		else:
+			GameLogger.warning("  - No dialogue in history!")
+	else:
+		GameLogger.error("CulturalNPC (" + npc_name + "): DialogueUI not found!")

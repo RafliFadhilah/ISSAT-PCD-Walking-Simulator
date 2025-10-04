@@ -313,8 +313,6 @@ light_energy = 1.5
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="CulturalInventory" parent="UI" instance=ExtResource("3_inventory")]
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="CulturalInfoPanel" parent="UI" instance=ExtResource("8_info_panel")]
 grow_horizontal = 2

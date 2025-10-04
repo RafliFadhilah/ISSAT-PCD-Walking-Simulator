@@ -58,6 +58,12 @@ text = "Pilih Base"
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="BaseNoneButton" type="Button" parent="MainContainer/CustomizationContainer/BaseContainer/BaseOptionsContainer"]
+custom_minimum_size = Vector2(100, 80)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "None"
+
 [node name="Base1Button" type="Button" parent="MainContainer/CustomizationContainer/BaseContainer/BaseOptionsContainer"]
 custom_minimum_size = Vector2(100, 80)
 layout_mode = 2
@@ -88,6 +94,12 @@ text = "Pilih Mata"
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="MataNoneButton" type="Button" parent="MainContainer/CustomizationContainer/MataContainer/MataOptionsContainer"]
+custom_minimum_size = Vector2(100, 80)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "None"
+
 [node name="Mata1Button" type="Button" parent="MainContainer/CustomizationContainer/MataContainer/MataOptionsContainer"]
 custom_minimum_size = Vector2(100, 80)
 layout_mode = 2
@@ -117,6 +129,12 @@ text = "Pilih Mulut"
 [node name="MulutOptionsContainer" type="HBoxContainer" parent="MainContainer/CustomizationContainer/MulutContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="MulutNoneButton" type="Button" parent="MainContainer/CustomizationContainer/MulutContainer/MulutOptionsContainer"]
+custom_minimum_size = Vector2(100, 80)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "None"
 
 [node name="Mulut1Button" type="Button" parent="MainContainer/CustomizationContainer/MulutContainer/MulutOptionsContainer"]
 custom_minimum_size = Vector2(100, 80)
@@ -192,12 +210,15 @@ Akan ditampilkan di sini"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[connection signal="pressed" from="MainContainer/CustomizationContainer/BaseContainer/BaseOptionsContainer/BaseNoneButton" to="." method="_on_base_button_pressed" binds= [0]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/BaseContainer/BaseOptionsContainer/Base1Button" to="." method="_on_base_button_pressed" binds= [1]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/BaseContainer/BaseOptionsContainer/Base2Button" to="." method="_on_base_button_pressed" binds= [2]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/BaseContainer/BaseOptionsContainer/Base3Button" to="." method="_on_base_button_pressed" binds= [3]]
+[connection signal="pressed" from="MainContainer/CustomizationContainer/MataContainer/MataOptionsContainer/MataNoneButton" to="." method="_on_mata_button_pressed" binds= [0]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/MataContainer/MataOptionsContainer/Mata1Button" to="." method="_on_mata_button_pressed" binds= [1]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/MataContainer/MataOptionsContainer/Mata2Button" to="." method="_on_mata_button_pressed" binds= [2]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/MataContainer/MataOptionsContainer/Mata3Button" to="." method="_on_mata_button_pressed" binds= [3]]
+[connection signal="pressed" from="MainContainer/CustomizationContainer/MulutContainer/MulutOptionsContainer/MulutNoneButton" to="." method="_on_mulut_button_pressed" binds= [0]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/MulutContainer/MulutOptionsContainer/Mulut1Button" to="." method="_on_mulut_button_pressed" binds= [1]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/MulutContainer/MulutOptionsContainer/Mulut2Button" to="." method="_on_mulut_button_pressed" binds= [2]]
 [connection signal="pressed" from="MainContainer/CustomizationContainer/MulutContainer/MulutOptionsContainer/Mulut3Button" to="." method="_on_mulut_button_pressed" binds= [3]]

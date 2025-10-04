@@ -303,24 +303,22 @@ light_energy = 1.5
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="CulturalInventory" parent="UI" instance=ExtResource("3_inventory")]
-grow_horizontal = 2
-grow_vertical = 2
 visible = false
 
 [node name="CulturalInfoPanel" parent="UI" instance=ExtResource("8_info_panel")]
+visible = false
 grow_horizontal = 2
 grow_vertical = 2
-visible = false
 
 [node name="NPCDialogueUI" parent="UI" instance=ExtResource("9_dialogue_ui")]
+visible = false
 grow_horizontal = 2
 grow_vertical = 2
-visible = false
 
 [node name="RadarSystem" parent="UI" instance=ExtResource("10_radar")]
+visible = false
 grow_horizontal = 2
 grow_vertical = 2
-visible = false
 
 [node name="AudioManager" parent="." instance=ExtResource("2_audio")]
 
