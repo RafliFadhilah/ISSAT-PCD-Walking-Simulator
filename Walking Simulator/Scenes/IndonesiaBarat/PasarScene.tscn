@@ -210,6 +210,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("7_npc")
 npc_name = "MarketGuide"
 cultural_region = "Indonesia Barat"
+npc_type = null
+dialogue_data = null
+interaction_range = null
+interaction_prompt = null
+can_interact = null
 
 [node name="NPCModel" type="CSGCylinder3D" parent="NPCs/MarketGuide"]
 material = SubResource("StandardMaterial3D_2")
@@ -230,6 +235,10 @@ script = ExtResource("7_npc")
 npc_name = "FoodVendor"
 cultural_region = "Indonesia Barat"
 npc_type = "Vendor"
+dialogue_data = null
+interaction_range = null
+interaction_prompt = null
+can_interact = null
 
 [node name="NPCModel" type="CSGCylinder3D" parent="NPCs/FoodVendor"]
 material = SubResource("StandardMaterial3D_2")
@@ -250,6 +259,10 @@ script = ExtResource("7_npc")
 npc_name = "CraftVendor"
 cultural_region = "Indonesia Barat"
 npc_type = "Vendor"
+dialogue_data = null
+interaction_range = null
+interaction_prompt = null
+can_interact = null
 
 [node name="NPCModel" type="CSGCylinder3D" parent="NPCs/CraftVendor"]
 material = SubResource("StandardMaterial3D_2")
@@ -270,6 +283,10 @@ script = ExtResource("7_npc")
 npc_name = "Historian"
 cultural_region = "Indonesia Barat"
 npc_type = "Historian"
+dialogue_data = null
+interaction_range = null
+interaction_prompt = null
+can_interact = null
 
 [node name="NPCModel" type="CSGCylinder3D" parent="NPCs/Historian"]
 material = SubResource("StandardMaterial3D_2")

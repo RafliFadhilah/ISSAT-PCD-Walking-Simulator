@@ -258,6 +258,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.90083, 0, -1.14329)
 script = ExtResource("5_c4fgr")
 npc_name = "Cultural Guide"
 cultural_region = "Indonesia Timur"
+quest_artifact_required = "noken"
+quest_title = "Sacred Noken Collection"
+quest_description = "I need to collect the Sacred Noken for our cultural preservation project. Can you help me find it?"
 
 [node name="NPCCollision" type="CollisionShape3D" parent="NPCs/CulturalGuide"]
 shape = SubResource("BoxShape3D_npc")
@@ -272,6 +275,9 @@ script = ExtResource("5_c4fgr")
 npc_name = "Archaeologist"
 cultural_region = "Indonesia Timur"
 npc_type = "Historian"
+quest_artifact_required = "kapak_dani"
+quest_title = "Ancient Tool Research"
+quest_description = "I'm conducting research on ancient Dani tools. The Kapak Dani would be perfect for my study. Have you seen one?"
 
 [node name="NPCCollision" type="CollisionShape3D" parent="NPCs/Archaeologist"]
 shape = SubResource("BoxShape3D_npc")
@@ -285,6 +291,9 @@ transform = Transform3D(0.781041, 0, -0.62448, 0, 1, 0, 0.62448, 0, 0.781041, 3.
 script = ExtResource("5_c4fgr")
 npc_name = "Tribal Elder"
 cultural_region = "Indonesia Timur"
+quest_artifact_required = "koteka"
+quest_title = "Traditional Attire Preservation"
+quest_description = "Our village needs the sacred Koteka for the upcoming ceremony. Can you help us find this important traditional item?"
 
 [node name="NPCCollision" type="CollisionShape3D" parent="NPCs/TribalElder"]
 shape = SubResource("BoxShape3D_npc")
@@ -303,6 +312,9 @@ script = ExtResource("5_c4fgr")
 npc_name = "Artisan"
 cultural_region = "Indonesia Timur"
 npc_type = "Vendor"
+quest_artifact_required = "cenderawasih_pegunungan"
+quest_title = "Bird of Paradise Art"
+quest_description = "I'm creating a masterpiece inspired by Papua's nature. The Cenderawasih Pegunungan would be the perfect model for my art. Could you find one for me?"
 
 [node name="NPCCollision" type="CollisionShape3D" parent="NPCs/Artisan"]
 shape = SubResource("BoxShape3D_npc")

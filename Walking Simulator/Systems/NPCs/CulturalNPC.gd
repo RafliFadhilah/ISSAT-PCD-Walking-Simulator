@@ -26,6 +26,12 @@ var dialogue_history: Array = []  # Track dialogue history for navigation
 var cultural_topics: Array[String] = []
 var current_topic: String = ""
 
+# Quest system variables
+@export var quest_artifact_required: String = ""  # artifact yang diminta NPC ini
+@export var quest_completed: bool = false  # apakah quest sudah selesai
+@export var quest_title: String = ""  # judul quest
+@export var quest_description: String = ""  # deskripsi quest
+
 
 
 # Safe input handling for NPC
@@ -45,6 +51,9 @@ func _ready():
 	# Initialize state machine
 	state_machine = NPCStateMachine.new(self)
 	
+	# Setup quest artifact based on NPC type and name
+	setup_quest_artifact()
+	
 	# Initialize dialogue data if empty
 	if dialogue_data.is_empty():
 		setup_default_dialogue()
@@ -52,7 +61,7 @@ func _ready():
 	if has_node("/root/DebugConfig") and not get_node("/root/DebugConfig").enable_npc_debug:
 		return
 	GameLogger.debug("NPC Ready: " + name)
-	GameLogger.info("CulturalNPC initialized: " + npc_name + " (Type: " + npc_type + ")")
+	GameLogger.info("CulturalNPC initialized: " + npc_name + " (Type: " + npc_type + ") - Quest: " + quest_artifact_required)
 
 func _input(event):
 	# Only process input if this NPC is the active dialogue NPC
@@ -722,7 +731,44 @@ func _handle_consequence_only(consequence: String):
 		# Handle both "end_dialogue" and "end_conversation" for compatibility
 		GameLogger.info("CulturalNPC (" + npc_name + "): Ending dialogue due to consequence: " + consequence)
 		end_visual_dialogue()
+	elif consequence == "check_artifact":
+		# Check if player has the required artifact
+		_handle_check_artifact()
+	elif consequence == "complete_quest":
+		# Complete the quest by taking the artifact
+		_handle_complete_quest()
+	elif consequence == "quest_accept":
+		# Player accepts the quest
+		GameLogger.info("Player accepted quest: " + quest_title)
 	# Add other consequence handling as needed
+
+func _handle_check_artifact():
+	"""Check if player has required artifact and handle accordingly"""
+	if has_required_artifact():
+		GameLogger.info("Player has required artifact: " + quest_artifact_required)
+		# Player has the artifact, proceed with giving it
+		var give_dialogue = get_dialogue_by_id("give_artifact")
+		if not give_dialogue.is_empty():
+			dialogue_history.append(give_dialogue)
+			display_dialogue_ui(give_dialogue)
+	else:
+		GameLogger.info("Player doesn't have required artifact: " + quest_artifact_required)
+		# Player doesn't have the artifact
+		var no_artifact_message = "I don't see the " + quest_artifact_required + " in your belongings. Please explore the area to find it first."
+		update_dialogue_text(no_artifact_message)
+
+func _handle_complete_quest():
+	"""Complete the quest by taking the artifact from player"""
+	if give_artifact_to_npc():
+		GameLogger.info("Quest completed successfully for " + npc_name)
+		# Navigate to quest completed dialogue
+		var completed_dialogue = get_dialogue_by_id("quest_completed")
+		if not completed_dialogue.is_empty():
+			dialogue_history.append(completed_dialogue)
+			display_dialogue_ui(completed_dialogue)
+	else:
+		GameLogger.warning("Failed to complete quest for " + npc_name)
+		update_dialogue_text("There seems to be a problem. Please try again.")
 
 func _handle_dialogue_choice(choice_index: int):
 	# Check if we're still in the tree before processing choice
@@ -947,6 +993,10 @@ func setup_default_dialogue():
 			setup_vendor_dialogue()
 		_:
 			setup_generic_dialogue()
+	
+	# Add quest dialogues for Papua NPCs if not already present
+	if cultural_region == "Indonesia Timur" and quest_artifact_required != "":
+		add_quest_dialogues()
 
 func setup_guide_dialogue():
 	match cultural_region:
@@ -1076,6 +1126,11 @@ func setup_guide_dialogue():
 							"consequence": "share_knowledge"
 						},
 						{
+							"text": "I need help with something special (Quest)",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Goodbye",
 							"consequence": "end_conversation"
 						}
@@ -1091,6 +1146,11 @@ func setup_guide_dialogue():
 							"consequence": "share_knowledge"
 						},
 						{
+							"text": "About the quest you mentioned",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Thank you",
 							"consequence": "end_conversation"
 						}
@@ -1101,7 +1161,103 @@ func setup_guide_dialogue():
 					"message": "Papua's traditional customs include elaborate ceremonies, unique art forms, and distinctive social structures. Each ethnic group has its own unique cultural practices.",
 					"options": [
 						{
+							"text": "Tell me about ancient artifacts",
+							"next_dialogue": "ancient_artifacts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "About the quest you mentioned",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Thank you for sharing",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "quest_check",
+					"message": "I am collecting traditional artifacts to preserve our cultural heritage. I specifically need a sacred Noken bag - it's a symbol of Papua's identity and UNESCO-recognized heritage.",
+					"options": [
+						{
+							"text": "I have the Noken you need! (Give Artifact)",
+							"next_dialogue": "give_artifact",
+							"consequence": "check_artifact"
+						},
+						{
+							"text": "Tell me more about Noken",
+							"next_dialogue": "quest_info",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Maybe later",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_info",
+					"message": "Noken is a traditional multifunctional bag made from pandan or orchid fibers. It's used for carrying babies, food, and tools. It represents the wisdom and skill of Papua's women artisans.",
+					"options": [
+						{
+							"text": "I have one to give you",
+							"next_dialogue": "give_artifact",
+							"consequence": "check_artifact"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Go back to main topic",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_accept",
+					"message": "Thank you for offering to help! Please explore the area and look for a traditional Noken bag. I'll be here waiting when you find it.",
+					"options": [
+						{
+							"text": "I understand, I'll find it",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "give_artifact",
+					"message": "You have the sacred Noken! This is exactly what I needed for our cultural heritage collection. Thank you so much for preserving our traditions!",
+					"options": [
+						{
+							"text": "You're welcome, happy to help",
+							"next_dialogue": "quest_completed",
+							"consequence": "complete_quest"
+						}
+					]
+				},
+				{
+					"id": "quest_completed",
+					"message": "Thanks to you, this beautiful Noken will be preserved and displayed for future generations to learn about Papua's cultural heritage. You have my eternal gratitude!",
+					"options": [
+						{
+							"text": "Tell me about other artifacts",
+							"next_dialogue": "ancient_artifacts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What about traditional customs?",
+							"next_dialogue": "traditional_customs",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'm glad I could help",
 							"consequence": "end_conversation"
 						}
 					]
@@ -1128,6 +1284,11 @@ func setup_historian_dialogue():
 							"consequence": "share_knowledge"
 						},
 						{
+							"text": "I heard you need help with research (Quest)",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Goodbye",
 							"consequence": "end_conversation"
 						}
@@ -1146,6 +1307,11 @@ func setup_historian_dialogue():
 							"text": "Tell me more about the cave paintings",
 							"next_dialogue": "cave_paintings",
 							"consequence": "share_knowledge"
+						},
+						{
+							"text": "About your research project",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
 						},
 						{
 							"text": "Thank you for the information",
@@ -1168,6 +1334,11 @@ func setup_historian_dialogue():
 							"consequence": "share_knowledge"
 						},
 						{
+							"text": "About your research project",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Fascinating, thank you",
 							"consequence": "end_conversation"
 						}
@@ -1188,7 +1359,98 @@ func setup_historian_dialogue():
 							"consequence": "share_knowledge"
 						},
 						{
+							"text": "About your research project",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Amazing discoveries, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "quest_check",
+					"message": "For my archaeological research, I desperately need a Kapak Dani - a traditional axe that represents Papua's ancient craftsmanship. It would complete my study on indigenous tool-making techniques.",
+					"options": [
+						{
+							"text": "I have a Kapak Dani for you! (Give Artifact)",
+							"next_dialogue": "give_artifact",
+							"consequence": "check_artifact"
+						},
+						{
+							"text": "Tell me about Kapak Dani",
+							"next_dialogue": "quest_info",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'll help you find one",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Maybe later",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_info",
+					"message": "Kapak Dani is a traditional axe crafted by the Dani tribe. It represents centuries of metallurgy knowledge and is both a tool and a symbol of strength. Each one tells a story of Papua's craftsmanship heritage.",
+					"options": [
+						{
+							"text": "I have one to give you",
+							"next_dialogue": "give_artifact",
+							"consequence": "check_artifact"
+						},
+						{
+							"text": "I'll help you find one",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Go back to main topic",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_accept",
+					"message": "Excellent! Please explore the area carefully. Traditional tools like the Kapak Dani are often found near ancient settlements or ceremonial sites. I'll be here waiting for your discovery.",
+					"options": [
+						{
+							"text": "I'll find it for your research",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "give_artifact",
+					"message": "Incredible! This Kapak Dani is exactly what I needed for my research! The craftsmanship is extraordinary - you can see the ancient metallurgy techniques in every detail. Thank you so much!",
+					"options": [
+						{
+							"text": "Happy to help your research",
+							"next_dialogue": "quest_completed",
+							"consequence": "complete_quest"
+						}
+					]
+				},
+				{
+					"id": "quest_completed",
+					"message": "This Kapak Dani will be invaluable for my archaeological documentation. Future researchers will learn so much about Papua's ancient craftsmanship techniques thanks to your contribution!",
+					"options": [
+						{
+							"text": "Tell me about archaeological sites",
+							"next_dialogue": "archaeological_sites",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What about ancient civilizations?",
+							"next_dialogue": "ancient_civilizations",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Glad I could contribute to research",
 							"consequence": "end_conversation"
 						}
 					]
@@ -1218,9 +1480,9 @@ func setup_vendor_dialogue():
 							"consequence": "share_knowledge"
 						},
 						{
-							"text": "Can you teach me about crafting techniques?",
-							"next_dialogue": "techniques",
-							"consequence": "share_knowledge"
+							"text": "I heard you need inspiration (Quest)",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
 						},
 						{
 							"text": "Goodbye",
@@ -1327,6 +1589,92 @@ func setup_vendor_dialogue():
 							"consequence": "end_conversation"
 						}
 					]
+				},
+				{
+					"id": "quest_check",
+					"message": "As an artisan, I need inspiration for my next masterpiece. I'm looking for a Cenderawasih Pegunungan sculpture - it represents Papua's natural beauty and would inspire my future works.",
+					"options": [
+						{
+							"text": "I have the sculpture you need! (Give Artifact)",
+							"next_dialogue": "give_artifact",
+							"consequence": "check_artifact"
+						},
+						{
+							"text": "Tell me about Cenderawasih Pegunungan",
+							"next_dialogue": "quest_info",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Maybe later",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_info",
+					"message": "Cenderawasih Pegunungan is the Bird of Paradise, a symbol of Papua's incredible biodiversity. The sculpture captures the essence of our natural heritage and inspires artistic creation.",
+					"options": [
+						{
+							"text": "I have one for you",
+							"next_dialogue": "give_artifact",
+							"consequence": "check_artifact"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Go back to main topic",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_accept",
+					"message": "Wonderful! Look for the Cenderawasih Pegunungan sculpture around the area. It represents the spirit of Papua's nature and will be perfect for inspiring my artistic vision.",
+					"options": [
+						{
+							"text": "I'll find it for your art",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "give_artifact",
+					"message": "Magnificent! This Cenderawasih Pegunungan sculpture is absolutely perfect! The artistry is breathtaking - I can already envision the masterpieces this will inspire. Thank you so much!",
+					"options": [
+						{
+							"text": "Happy to inspire your art",
+							"next_dialogue": "quest_completed",
+							"consequence": "complete_quest"
+						}
+					]
+				},
+				{
+					"id": "quest_completed",
+					"message": "With this beautiful sculpture as inspiration, I will create works that honor both Papua's natural beauty and our artistic traditions. Your contribution will inspire generations of art!",
+					"options": [
+						{
+							"text": "Tell me about your crafts",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What materials do you use?",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Glad I could inspire your art",
+							"consequence": "end_conversation"
+						}
+					]
 				}
 			]
 		_:
@@ -1362,8 +1710,36 @@ func get_dialogue_by_id(dialogue_id: String) -> Dictionary:
 
 func get_initial_dialogue() -> Dictionary:
 	if dialogue_data.size() > 0:
-		return dialogue_data[0]
+		var initial = dialogue_data[0]
+		# Update quest dialogue based on completion status
+		update_quest_dialogue_options()
+		return initial
 	return {}
+
+func update_quest_dialogue_options():
+	"""Update dialogue options based on quest completion status"""
+	if cultural_region != "Indonesia Timur" or quest_artifact_required == "":
+		return
+	
+	# Find quest_check dialogue and update it based on quest status
+	for dialogue in dialogue_data:
+		if dialogue.get("id") == "quest_check":
+			if quest_completed:
+				# Quest completed - change to show completed status
+				dialogue["message"] = "Thanks to your help, I now have the " + quest_artifact_required + " I needed! It's perfectly preserved in our cultural heritage collection."
+				dialogue["options"] = [
+					{
+						"text": "Tell me about the " + quest_artifact_required,
+						"next_dialogue": "quest_completed",
+						"consequence": "share_knowledge"
+					},
+					{
+						"text": "I'm glad I could help",
+						"next_dialogue": "greeting"
+					}
+				]
+			# If quest not completed, keep original options
+			break
 
 # Legacy methods for backward compatibility
 func start_interaction():
@@ -1403,6 +1779,180 @@ func setup_cultural_topics():
 				"Ancient Artifacts",
 				"Traditional Customs"
 			]
+
+func setup_quest_artifact():
+	# Setup quest artifacts based on NPC type and name in Papua region
+	if cultural_region == "Indonesia Timur":
+		match npc_name:
+			"Cultural Guide":
+				quest_artifact_required = "noken"
+				quest_title = "Sacred Noken Collection"
+				quest_description = "I need the traditional Noken bag to complete my cultural heritage display. Can you help me find it?"
+			"Archaeologist":
+				quest_artifact_required = "kapak_dani"
+				quest_title = "Ancient Tool Research"
+				quest_description = "For my archaeological research, I need the Kapak Dani - a traditional axe that represents Papua's craftsmanship heritage."
+			"Tribal Elder":
+				quest_artifact_required = "koteka"
+				quest_title = "Traditional Attire Preservation"
+				quest_description = "The Koteka is an important piece of our cultural identity. I need it to teach younger generations about our traditions."
+			"Artisan":
+				quest_artifact_required = "cenderawasih_pegunungan"
+				quest_title = "Bird of Paradise Art"
+				quest_description = "As an artisan, I need the Cenderawasih Pegunungan sculpture to inspire my future works and show visitors Papua's natural beauty."
+	
+	GameLogger.info("Quest assigned to " + npc_name + ": " + quest_artifact_required)
+
+func add_quest_dialogues():
+	"""Add quest dialogues to NPCs that don't have them yet (like Tribal Elder)"""
+	# Check if quest dialogues already exist
+	var has_quest_dialogue = false
+	for dialogue in dialogue_data:
+		if dialogue.get("id") == "quest_check":
+			has_quest_dialogue = true
+			break
+	
+	if has_quest_dialogue:
+		return  # Quest dialogues already exist
+	
+	# Add quest option to greeting if it doesn't exist
+	var greeting_dialogue = null
+	for dialogue in dialogue_data:
+		if dialogue.get("id") == "greeting":
+			greeting_dialogue = dialogue
+			break
+	
+	if greeting_dialogue:
+		# Add quest option to greeting
+		var quest_option = {
+			"text": "I heard you need something special (Quest)",
+			"next_dialogue": "quest_check",
+			"consequence": "quest"
+		}
+		greeting_dialogue.get("options", []).insert(-1, quest_option)  # Insert before "Goodbye"
+		
+		# Add quest dialogues based on artifact type
+		var quest_dialogues = get_quest_dialogues_for_artifact(quest_artifact_required)
+		dialogue_data.append_array(quest_dialogues)
+		
+		GameLogger.info("Added quest dialogues for " + npc_name + " (" + quest_artifact_required + ")")
+
+func get_quest_dialogues_for_artifact(artifact_name: String) -> Array:
+	"""Generate quest dialogues based on artifact type"""
+	match artifact_name:
+		"koteka":
+			return [
+				{
+					"id": "quest_check",
+					"message": "I am preserving our traditional attire for future generations. I need a Koteka - it's an important symbol of Papua's cultural identity and traditional clothing.",
+					"options": [
+						{
+							"text": "I have a Koteka for you! (Give Artifact)",
+							"next_dialogue": "give_artifact",
+							"consequence": "check_artifact"
+						},
+						{
+							"text": "Tell me about Koteka",
+							"next_dialogue": "quest_info",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Maybe later",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_info",
+					"message": "Koteka is traditional clothing of Papua highlands, representing our cultural identity. It's important for teaching younger generations about our heritage and traditions.",
+					"options": [
+						{
+							"text": "I have one for you",
+							"next_dialogue": "give_artifact",
+							"consequence": "check_artifact"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Go back to main topic",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_accept",
+					"message": "Thank you for helping preserve our traditions! Please look for a Koteka in the area. It's essential for our cultural education programs.",
+					"options": [
+						{
+							"text": "I'll find it for cultural preservation",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "give_artifact",
+					"message": "Excellent! This Koteka is exactly what we needed for our cultural preservation program. Now I can properly teach the younger generation about our traditional attire. Thank you!",
+					"options": [
+						{
+							"text": "Happy to preserve traditions",
+							"next_dialogue": "quest_completed",
+							"consequence": "complete_quest"
+						}
+					]
+				},
+				{
+					"id": "quest_completed",
+					"message": "Thanks to your help, this Koteka will be preserved and used to educate future generations about Papua's traditional clothing and cultural identity. You've made a lasting contribution!",
+					"options": [
+						{
+							"text": "Tell me more about traditions",
+							"next_dialogue": "traditional_customs",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Glad I could help preserve culture",
+							"consequence": "end_conversation"
+						}
+					]
+				}
+			]
+		_:
+			return []  # Default empty if no specific quest dialogue
+
+func has_required_artifact() -> bool:
+	# Check if player has the required artifact in inventory
+	var inventory = get_node("/root/Player/CulturalInventory")
+	if not inventory:
+		inventory = get_tree().get_first_node_in_group("inventory")
+	
+	if inventory and inventory.has_method("has_item"):
+		return inventory.has_item(quest_artifact_required)
+	
+	GameLogger.warning("Could not find inventory to check for artifact: " + quest_artifact_required)
+	return false
+
+func give_artifact_to_npc() -> bool:
+	# Remove artifact from player inventory and mark quest complete
+	var inventory = get_node("/root/Player/CulturalInventory")
+	if not inventory:
+		inventory = get_tree().get_first_node_in_group("inventory")
+	
+	if inventory and inventory.has_method("remove_item"):
+		if inventory.remove_item(quest_artifact_required):
+			quest_completed = true
+			GameLogger.info("Quest completed! " + npc_name + " received " + quest_artifact_required)
+			return true
+	
+	GameLogger.warning("Failed to remove artifact from inventory: " + quest_artifact_required)
+	return false
 
 func share_cultural_knowledge():
 	if cultural_topics.size() > 0:
