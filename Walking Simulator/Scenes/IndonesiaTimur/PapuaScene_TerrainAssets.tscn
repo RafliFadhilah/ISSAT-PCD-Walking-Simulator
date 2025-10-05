@@ -358,8 +358,6 @@ horizontal_alignment = 1
 [node name="AudioManager" parent="." instance=ExtResource("2_audio")]
 
 [node name="InventorySystem" parent="." instance=ExtResource("3_inventory")]
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="DebugUI" type="CanvasLayer" parent="."]
 
