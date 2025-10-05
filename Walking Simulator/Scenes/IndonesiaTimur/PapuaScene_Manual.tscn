@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://cgryvux04l2la" path="res://Scenes/RegionSceneController.gd" id="1_oekxx"]
 [ext_resource type="Shader" uid="uid://bgaoo42pnqx0w" path="res://Systems/Shaders/stylized-sky.gdshader" id="2_l2anm"]
-[ext_resource type="Terrain3DAssets" uid="uid://dal3jhw6241qg" path="res://demo/data/assets.tres" id="2_shlqg"]
 [ext_resource type="Texture2D" uid="uid://bv7edataa5o7x" path="res://Assets/Textures/Sun.png" id="3_l5o4j"]
 [ext_resource type="Script" uid="uid://d18olnlnha4vn" path="res://Player Controller/PlayerControllerIntegrated.gd" id="3_mgnbb"]
+[ext_resource type="Terrain3DAssets" uid="uid://dal3jhw6241qg" path="res://demo/data_papua/assets_papua.tres" id="4_l5o4j"]
 [ext_resource type="Script" uid="uid://db48b5a3q2j7o" path="res://Player Controller/InteractionController.gd" id="4_ovpw7"]
 [ext_resource type="Script" uid="uid://cb82diggp6ccs" path="res://Systems/NPCs/CulturalNPC.gd" id="5_c4fgr"]
 [ext_resource type="PackedScene" uid="uid://cxhjdnqhho0fc" path="res://Assets/Sketchfab/banana_tree/scene.gltf" id="5_l5o4j"]
@@ -383,9 +383,9 @@ shadow_enabled = true
 [node name="Terrain3DManager" type="Node3D" parent="."]
 
 [node name="Terrain3D" type="Terrain3D" parent="Terrain3DManager"]
-data_directory = "res://demo/data"
+data_directory = "res://demo/data_papua"
 material = SubResource("Terrain3DMaterial_jrc01")
-assets = ExtResource("2_shlqg")
+assets = ExtResource("4_l5o4j")
 collision_mask = 3
 top_level = true
 metadata/_edit_lock_ = true
