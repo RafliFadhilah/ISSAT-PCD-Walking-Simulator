@@ -41,47 +41,43 @@ func test_graph_generation():
 func create_test_graph(graph_type: GraphFactory.GraphType, position: Vector3, graph_name: String):
 	print("Creating graph: ", graph_name, " at position: ", position)
 	
-	try:
-		# Create the graph using GraphFactory
-		var graph = GraphFactory.create_graph(graph_type)
-		if not graph:
-			print("  ✗ Failed to create graph instance")
-			return
-		
-		# Create a container node for the graph
-		var graph_container = Node3D.new()
-		graph_container.name = "Graph_" + graph_name
-		graph_container.position = position
-		add_child(graph_container)
-		
-		# Initialize the graph (this should set up internal state)
-		var success = await graph.initialize()
-		if not success:
-			print("  ✗ Failed to initialize graph")
-			graph_container.queue_free()
-			return
-		
-		# Generate the graph (this should create vertices and edges)
-		success = await graph.generate_graph()
-		if not success:
-			print("  ✗ Failed to generate graph")
-			graph_container.queue_free()
-			return
-		
-		print("  ✓ Graph generated successfully")
-		print("    - Vertices: ", graph.vertices.size())
-		print("    - Edges: ", graph.edges.size())
-		
-		# Try to create visual representation
-		if graph.has_method("_create_visual_graph"):
-			graph._create_visual_graph()
-			print("  ✓ Visual representation created")
-		
-		# Add the graph node to our container
-		graph_container.add_child(graph)
-		
-	except:
-		print("  ✗ Exception occurred during graph creation for: ", graph_name)
+	# Create the graph using GraphFactory
+	var graph = GraphFactory.create_graph(graph_type)
+	if not graph:
+		print("  ✗ Failed to create graph instance")
+		return
+	
+	# Create a container node for the graph
+	var graph_container = Node3D.new()
+	graph_container.name = "Graph_" + graph_name
+	graph_container.position = position
+	add_child(graph_container)
+	
+	# Initialize the graph (this should set up internal state)
+	var success = await graph.initialize()
+	if not success:
+		print("  ✗ Failed to initialize graph")
+		graph_container.queue_free()
+		return
+	
+	# Generate the graph (this should create vertices and edges)
+	success = await graph.generate_graph()
+	if not success:
+		print("  ✗ Failed to generate graph")
+		graph_container.queue_free()
+		return
+	
+	print("  ✓ Graph generated successfully")
+	print("    - Vertices: ", graph.vertices.size())
+	print("    - Edges: ", graph.edges.size())
+	
+	# Try to create visual representation
+	if graph.has_method("_create_visual_graph"):
+		graph._create_visual_graph()
+		print("  ✓ Visual representation created")
+	
+	# Add the graph node to our container
+	graph_container.add_child(graph)
 
 func _on_ready_complete():
 	print("=== Graph Generation Test Complete ===")
