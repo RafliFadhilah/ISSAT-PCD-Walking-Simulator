@@ -3,7 +3,7 @@
 examples/
 logs/
 # demo/
-bin/
+# bin/
 # Assets/*
 # Assets/Sketchfab/*
 # Tools/*
