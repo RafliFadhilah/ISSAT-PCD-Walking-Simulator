@@ -218,6 +218,8 @@ func _handle_movement(delta):
 		position.y = 1.0
 		player_velocity.y = 0
 
+	move_and_slide()
+
 func _handle_camera(_delta):
 	if camera_input != Vector2.ZERO:
 		# Apply camera rotation

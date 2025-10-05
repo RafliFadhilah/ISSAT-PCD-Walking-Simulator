@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bqx8v2k3n4m5p"]
 
-[ext_resource type="Script" uid="uid://c63pl4y2axxtt" path="res://Scenes/IndonesiaTimur/PapuaScene_Terrain3DEditor.gd" id="1_0x8v2k"]
+[ext_resource type="Script" uid="uid://c63pl4y2axxtt" path="res://Systems/Terrain3D/Tools/Terrain3DEditor.gd" id="1_0x8v2k"]
 [ext_resource type="Script" uid="uid://dnki5iny7m1n7" path="res://Systems/Terrain/TerrainDataManager.gd" id="2_1x9w3l"]
 
 [node name="PapuaScene_Terrain3DEditor" type="Control"]

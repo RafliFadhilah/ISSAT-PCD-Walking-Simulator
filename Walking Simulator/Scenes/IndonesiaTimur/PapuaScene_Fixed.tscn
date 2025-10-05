@@ -375,8 +375,6 @@ script = null
 
 [node name="CulturalInventory" parent="UI" instance=ExtResource("3_inventory")]
 visible = false
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="CulturalInfoPanel" parent="UI" instance=ExtResource("8_info_panel")]
 visible = false
