@@ -1,10 +1,13 @@
-[gd_scene load_steps=55 format=3 uid="uid://rctchlfqr71i"]
+[gd_scene load_steps=66 format=3 uid="uid://rctchlfqr71i"]
 
 [ext_resource type="Script" uid="uid://cgryvux04l2la" path="res://Scenes/RegionSceneController.gd" id="1_oekxx"]
+[ext_resource type="Shader" uid="uid://bgaoo42pnqx0w" path="res://Systems/Shaders/stylized-sky.gdshader" id="2_l2anm"]
 [ext_resource type="Terrain3DAssets" uid="uid://dal3jhw6241qg" path="res://demo/data/assets.tres" id="2_shlqg"]
+[ext_resource type="Texture2D" uid="uid://bv7edataa5o7x" path="res://Assets/Textures/Sun.png" id="3_l5o4j"]
 [ext_resource type="Script" uid="uid://d18olnlnha4vn" path="res://Player Controller/PlayerControllerIntegrated.gd" id="3_mgnbb"]
 [ext_resource type="Script" uid="uid://db48b5a3q2j7o" path="res://Player Controller/InteractionController.gd" id="4_ovpw7"]
 [ext_resource type="Script" uid="uid://cb82diggp6ccs" path="res://Systems/NPCs/CulturalNPC.gd" id="5_c4fgr"]
+[ext_resource type="PackedScene" uid="uid://cxhjdnqhho0fc" path="res://Assets/Sketchfab/banana_tree/scene.gltf" id="5_l5o4j"]
 [ext_resource type="PackedScene" uid="uid://citlcwccnfv0w" path="res://Assets/Hunyuan/45ad077276c00a5f43d50b76ab05c0cc.glb" id="6_5fold"]
 [ext_resource type="Script" uid="uid://dj2jvj2b7t8fh" path="res://Tests/Experimental_Papua_Scenes/Performance_Testing/PapuaScene_FPSDisplay.gd" id="6_thu42"]
 [ext_resource type="PackedScene" uid="uid://c8is2r5ftgc84" path="res://Systems/Audio/CulturalAudioManager.tscn" id="7_5fold"]
@@ -18,18 +21,68 @@
 [ext_resource type="PackedScene" uid="uid://bc4v1k37r617j" path="res://Assets/PSX/PSX Nature/Models/GLB/tree_stump_1.glb" id="12_mgnbb"]
 [ext_resource type="PackedScene" uid="uid://b21hycggjf1fb" path="res://Assets/Hunyuan/kapak_dani.glb" id="15_11paw"]
 [ext_resource type="PackedScene" uid="uid://borcu5nbpuefi" path="res://Assets/Hunyuan/cenderawasih_pegunungan.glb" id="16_06ni3"]
+[ext_resource type="PackedScene" uid="uid://b6neqqihr2bh2" path="res://Assets/PSX/PSX Forest/Oak_Tree_3.fbx" id="16_l2anm"]
 [ext_resource type="Script" uid="uid://dqlmkipeygx7s" path="res://Systems/Items/WorldCulturalItem.gd" id="16_wfpka"]
-[ext_resource type="PackedScene" uid="uid://cbacicnxfsgo3" path="res://Assets/Sketchfab/wicker_fence/scene.gltf" id="17_g612j"]
 [ext_resource type="PackedScene" uid="uid://ycvkdqcb2x0" path="res://Assets/Hunyuan/koteka.glb" id="17_wfpka"]
 [ext_resource type="PackedScene" uid="uid://caejdrllvnjfg" path="res://Assets/Hunyuan/noken.glb" id="18_06ni3"]
-[ext_resource type="PackedScene" uid="uid://c1v2g6gl31k52" path="res://Assets/Sketchfab/shed_ao/scene.gltf" id="18_sdqiw"]
-[ext_resource type="PackedScene" uid="uid://c12fdqfefuyc5" path="res://Assets/Sketchfab/hay_stack/scene.gltf" id="19_gssva"]
-[ext_resource type="PackedScene" uid="uid://pggn5wxnqngt" path="res://Assets/Sketchfab/campfire_wood_survival_warm_and_light/scene.gltf" id="20_a5i4c"]
 [ext_resource type="PackedScene" uid="uid://dunseep33s5pf" path="res://Resources/Scenes/bridge.tscn" id="21_gssva"]
+[ext_resource type="PackedScene" uid="uid://cl16wokyny52a" path="res://Assets/Sketchfab/field_streaks/scene.gltf" id="26_wfpka"]
+[ext_resource type="PackedScene" uid="uid://7puqlxxybj8g" path="res://Assets/Sketchfab/sweet_potato_2/scene.gltf" id="27_l2anm"]
+
+[sub_resource type="Curve" id="Curve_l2anm"]
+_data = [Vector2(0, 0.00345302), 0.0, 0.0, 0, 0, Vector2(0.142373, 1), 0.0, 0.0, 0, 0, Vector2(0.979661, 0.820442), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_l5o4j"]
+curve = SubResource("Curve_l2anm")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_t7wal"]
+noise_type = 2
+seed = 4
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_5jhv4"]
+seamless = true
+noise = SubResource("FastNoiseLite_t7wal")
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6x87r"]
+seamless = true
+noise = SubResource("FastNoiseLite_t7wal")
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_11fsm"]
+seamless = true
+noise = SubResource("FastNoiseLite_t7wal")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l5o4j"]
+shader = ExtResource("2_l2anm")
+shader_parameter/cloud_shape_sampler = SubResource("NoiseTexture2D_6x87r")
+shader_parameter/cloud_noise_sampler = SubResource("NoiseTexture2D_5jhv4")
+shader_parameter/cloud_curves = SubResource("CurveTexture_l5o4j")
+shader_parameter/clouds_samples = 32
+shader_parameter/shadow_sample = 4
+shader_parameter/clouds_density = 0.4
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_smoothness = 0.03
+shader_parameter/clouds_light_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_shadow_intensity = 1.0
+shader_parameter/high_clouds_sampler = SubResource("NoiseTexture2D_11fsm")
+shader_parameter/high_clouds_density = 0.2
+shader_parameter/top_color = Color(0.34902, 0.588235, 1, 1)
+shader_parameter/bottom_color = Color(0, 0.329412, 0.968627, 1)
+shader_parameter/sun_scatter = Color(0.298039, 0.298039, 0.298039, 1)
+shader_parameter/astro_tint = Color(0.905882, 0.792157, 0.564706, 1)
+shader_parameter/astro_sampler = ExtResource("3_l5o4j")
+shader_parameter/astro_scale = 0.7
+shader_parameter/astro_intensity = 3.0
+shader_parameter/stars_intensity = 0.0
+shader_parameter/shooting_stars_intensity = 0.0
+shader_parameter/shooting_star_tint = Color(0, 0, 0, 1)
+
+[sub_resource type="Sky" id="Sky_t7wal"]
+sky_material = SubResource("ShaderMaterial_l5o4j")
 
 [sub_resource type="Environment" id="Environment_papua"]
-background_mode = 1
-background_color = Color(0.377133, 0.735897, 0.955207, 1)
+background_mode = 2
+sky = SubResource("Sky_t7wal")
 ambient_light_source = 2
 ambient_light_color = Color(0.4, 0.6, 0.3, 1)
 ambient_light_energy = 0.4
@@ -50,6 +103,8 @@ volumetric_fog_anisotropy = -0.9
 volumetric_fog_detail_spread = 0.5
 volumetric_fog_ambient_inject = 16.0
 volumetric_fog_sky_affect = 0.0
+adjustment_enabled = true
+adjustment_saturation = 1.5
 
 [sub_resource type="Compositor" id="Compositor_e0v3d"]
 
@@ -168,6 +223,112 @@ radius = 0.295898
 height = 2.56531
 radius = 0.640625
 
+[sub_resource type="Shader" id="Shader_wfpka"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.4.stable's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix, depth_draw_always, cull_back, diffuse_burley, specular_schlick_ggx;
+
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color, filter_linear_mipmap, repeat_enable;
+uniform ivec2 albedo_texture_size;
+uniform float point_size : hint_range(0.1, 128.0, 0.1);
+
+uniform float roughness : hint_range(0.0, 1.0);
+uniform sampler2D texture_metallic : hint_default_white, filter_linear_mipmap, repeat_enable;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_roughness_r, filter_linear_mipmap, repeat_enable;
+
+uniform float specular : hint_range(0.0, 1.0, 0.01);
+uniform float metallic : hint_range(0.0, 1.0, 0.01);
+
+uniform sampler2D texture_refraction : filter_linear_mipmap, repeat_enable;
+uniform float refraction : hint_range(-1.0, 1.0, 0.001);
+uniform vec4 refraction_texture_channel;
+uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_linear_mipmap;
+uniform sampler2D depth_texture : hint_depth_texture, repeat_disable, filter_nearest;
+
+uniform sampler2D texture_normal : hint_roughness_normal, filter_linear_mipmap, repeat_enable;
+uniform float normal_scale : hint_range(-16.0, 16.0);
+varying vec3 uv1_triplanar_pos;
+
+uniform float uv1_blend_sharpness : hint_range(0.0, 150.0, 0.001);
+varying vec3 uv1_power_normal;
+
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+void vertex() {
+	vec3 normal = MODEL_NORMAL_MATRIX * NORMAL;
+
+	TANGENT = vec3(0.0, 0.0, -1.0) * abs(normal.x);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(normal.y);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(normal.z);
+	TANGENT = inverse(MODEL_NORMAL_MATRIX) * normalize(TANGENT);
+
+	BINORMAL = vec3(0.0, 1.0, 0.0) * abs(normal.x);
+	BINORMAL += vec3(0.0, 0.0, -1.0) * abs(normal.y);
+	BINORMAL += vec3(0.0, 1.0, 0.0) * abs(normal.z);
+	BINORMAL = inverse(MODEL_NORMAL_MATRIX) * normalize(BINORMAL);
+
+	// UV1 Triplanar: Enabled (with World Triplanar)
+	uv1_power_normal = pow(abs(normal), vec3(uv1_blend_sharpness));
+	uv1_triplanar_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz * uv1_scale + uv1_offset + TIME * 0.02;
+	uv1_power_normal /= dot(uv1_power_normal, vec3(1.0));
+	uv1_triplanar_pos *= vec3(1.0, -1.0, 1.0);
+}
+
+vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {
+	vec4 samp = vec4(0.0);
+	samp += texture(p_sampler, p_triplanar_pos.xy) * p_weights.z;
+	samp += texture(p_sampler, p_triplanar_pos.xz) * p_weights.y;
+	samp += texture(p_sampler, p_triplanar_pos.zy * vec2(-1.0, 1.0)) * p_weights.x;
+	return samp;
+}
+
+void fragment() {
+	vec4 albedo_tex = triplanar_texture(texture_albedo, uv1_power_normal, uv1_triplanar_pos);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+
+	float metallic_tex = dot(triplanar_texture(texture_metallic, uv1_power_normal, uv1_triplanar_pos), metallic_texture_channel);
+	METALLIC = metallic_tex * metallic;
+	SPECULAR = specular;
+
+	vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
+	float roughness_tex = dot(triplanar_texture(texture_roughness, uv1_power_normal, uv1_triplanar_pos), roughness_texture_channel);
+	ROUGHNESS = roughness_tex * roughness;
+
+	// Normal Map: Enabled
+	NORMAL_MAP = triplanar_texture(texture_normal, uv1_power_normal, uv1_triplanar_pos).rgb;
+	NORMAL_MAP_DEPTH = normal_scale;
+
+	// Refraction: Enabled (with normal map texture)
+	vec3 unpacked_normal = NORMAL_MAP;
+	unpacked_normal.xy = unpacked_normal.xy * 2.0 - 1.0;
+	unpacked_normal.z = sqrt(max(0.0, 1.0 - dot(unpacked_normal.xy, unpacked_normal.xy)));
+	vec3 ref_normal = normalize(mix(
+			NORMAL,
+			TANGENT * unpacked_normal.x + BINORMAL * unpacked_normal.y + NORMAL * unpacked_normal.z,
+			NORMAL_MAP_DEPTH));
+	vec2 ref_ofs = SCREEN_UV - ref_normal.xy * dot(triplanar_texture(texture_refraction, uv1_power_normal, uv1_triplanar_pos), refraction_texture_channel) * refraction;
+
+	float ref_amount = 1.0 - albedo.a * albedo_tex.a;
+
+	float refraction_depth_tex = textureLod(depth_texture, ref_ofs, 0.0).r;
+	vec4 refraction_view_pos = INV_PROJECTION_MATRIX * vec4(SCREEN_UV * 2.0 - 1.0, refraction_depth_tex, 1.0);
+	refraction_view_pos.xyz /= refraction_view_pos.w;
+
+	// If the depth buffer is lower then the model's Z position, use the refracted UV, otherwise use the normal screen UV.
+	// At low depth differences, decrease refraction intensity to avoid sudden discontinuities.
+	EMISSION += textureLod(screen_texture, mix(SCREEN_UV, ref_ofs, smoothstep(0.0, 1.0, VERTEX.z - refraction_view_pos.z)), ROUGHNESS * 8.0).rgb * ref_amount * EXPOSURE;
+	ALBEDO *= 1.0 - ref_amount;
+	// Force transparency on the material (required for refraction).
+	ALPHA = 1.0;
+}
+"
+
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_06ni3"]
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wfpka"]
@@ -180,25 +341,33 @@ seamless = true
 as_normal_map = true
 noise = SubResource("FastNoiseLite_06ni3")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l5o4j"]
-transparency = 1
-depth_draw_mode = 1
-albedo_color = Color(0.129412, 0.764706, 1, 0.733333)
-roughness = 0.0
-normal_enabled = true
-normal_texture = SubResource("NoiseTexture2D_wfpka")
-refraction_enabled = true
-refraction_texture = SubResource("NoiseTexture2D_l2anm")
-uv1_scale = Vector3(0.04, 0.04, 0.04)
-uv1_triplanar = true
-uv1_world_triplanar = true
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l2anm"]
+render_priority = 0
+shader = SubResource("Shader_wfpka")
+shader_parameter/albedo = Color(0.129412, 0.67451, 1, 0.901961)
+shader_parameter/albedo_texture_size = Vector2i(0, 0)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 0.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_refraction = SubResource("NoiseTexture2D_l2anm")
+shader_parameter/refraction = 0.05
+shader_parameter/refraction_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_normal = SubResource("NoiseTexture2D_wfpka")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_blend_sharpness = 1.0
+shader_parameter/uv1_scale = Vector3(0.04, 0.04, 0.04)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
 
 [sub_resource type="BoxMesh" id="BoxMesh_t7wal"]
-material = SubResource("StandardMaterial3D_l5o4j")
+material = SubResource("ShaderMaterial_l2anm")
 size = Vector3(50, 1, 30)
 
 [node name="PapuaScene_Terrain3D" type="Node3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 68.2131, -0.00663638, 76.0635)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 68.0427, 0.0706255, 75.6407)
 script = ExtResource("1_oekxx")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -206,7 +375,7 @@ environment = SubResource("Environment_papua")
 compositor = SubResource("Compositor_e0v3d")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866026, -2.18598e-07, -0.5, 0.453212, 0.422364, 0.784988, 0.211182, -0.906426, 0.365779, 0, 15, 0)
+transform = Transform3D(0.944108, -0.0134039, -0.329364, 0.282787, 0.546368, 0.788361, 0.169387, -0.837438, 0.519621, 0, 15, 0)
 light_color = Color(1, 0.9, 0.7, 1)
 light_energy = 1.984
 shadow_enabled = true
@@ -220,6 +389,9 @@ assets = ExtResource("2_shlqg")
 collision_mask = 3
 top_level = true
 metadata/_edit_lock_ = true
+
+[node name="Sketchfab_Scene" parent="Terrain3DManager" instance=ExtResource("5_l5o4j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.0427, -0.0706255, -75.6407)
 
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.125511, 10.4285, -0.0485153)
@@ -514,7 +686,7 @@ transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
 shape = SubResource("CylinderShape3D_thu42")
 
 [node name="pine_tree_n_26" parent="ManualAssets/Trees/TreesMain2" instance=ExtResource("9_thu42")]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 266.775, 0, 14.2146)
+transform = Transform3D(4, 0, 2.98023e-08, 0, 4, 0, -2.98023e-08, 0, 4, 266.775, -0.920357, 14.2146)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreesMain2/pine_tree_n_26"]
 transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
@@ -523,7 +695,7 @@ transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
 shape = SubResource("CylinderShape3D_thu42")
 
 [node name="pine_tree_n_27" parent="ManualAssets/Trees/TreesMain2" instance=ExtResource("9_thu42")]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 274.416, 0, 3.85644)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 274.416, -1.80358, 3.85644)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreesMain2/pine_tree_n_27"]
 transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
@@ -532,7 +704,7 @@ transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
 shape = SubResource("CylinderShape3D_thu42")
 
 [node name="pine_tree_n_2_33" parent="ManualAssets/Trees/TreesMain2" instance=ExtResource("11_p5m1f")]
-transform = Transform3D(2.5899, 0, -1.51408, 0, 3, 0, 1.51408, 0, 2.5899, 275.551, 0, -2.01846)
+transform = Transform3D(2.5899, 0, -1.51408, 0, 3, 0, 1.51408, 0, 2.5899, 275.551, -2.53801, -2.01846)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreesMain2/pine_tree_n_2_33"]
 
@@ -550,7 +722,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.493164, 0)
 shape = SubResource("CylinderShape3D_g612j")
 
 [node name="tree_54" parent="ManualAssets/Trees/TreesMain2" instance=ExtResource("12_g612j")]
-transform = Transform3D(3.17837, 0, -1.46559, 0, 3.5, 0, 1.46559, 0, 3.17837, 201.466, 0, 8.05656)
+transform = Transform3D(3.17837, 0, -1.46559, 0, 3.5, 0, 1.46559, 0, 3.17837, 201.466, -1.05663, 8.05656)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreesMain2/tree_54"]
 
@@ -570,7 +742,7 @@ transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
 shape = SubResource("CylinderShape3D_thu42")
 
 [node name="pine_tree_n_2_12" parent="ManualAssets/Trees/TreeMain1" instance=ExtResource("10_5fold")]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 224.629, 0, 17.6488)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 224.629, -0.621037, 17.6488)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreeMain1/pine_tree_n_2_12"]
 
@@ -588,7 +760,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.483643, 0)
 shape = SubResource("CylinderShape3D_p5m1f")
 
 [node name="tree_52" parent="ManualAssets/Trees/TreeMain1" instance=ExtResource("12_g612j")]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 216.654, 0, 10.884)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 216.654, -0.218596, 10.884)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreeMain1/tree_52"]
 
@@ -660,7 +832,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.483643, 0)
 shape = SubResource("CylinderShape3D_p5m1f")
 
 [node name="tree_53" parent="ManualAssets/Trees/TreeMain1" instance=ExtResource("12_g612j")]
-transform = Transform3D(2.83019, 0, -0.995002, 0, 3, 0, 0.995002, 0, 2.83019, 210.751, 0, 3.43398)
+transform = Transform3D(2.83019, 0, -0.995002, 0, 3, 0, 0.995002, 0, 2.83019, 210.751, -1.31567, 3.43398)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreeMain1/tree_53"]
 
@@ -669,7 +841,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.493164, 0)
 shape = SubResource("CylinderShape3D_g612j")
 
 [node name="tree_54" parent="ManualAssets/Trees/TreeMain1" instance=ExtResource("12_g612j")]
-transform = Transform3D(3.17837, 0, -1.46559, 0, 3.5, 0, 1.46559, 0, 3.17837, 201.466, 0, 8.05656)
+transform = Transform3D(3.17837, 0, -1.46559, 0, 3.5, 0, 1.46559, 0, 3.17837, 201.466, -2.05351, 6.57623)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreeMain1/tree_54"]
 
@@ -726,7 +898,7 @@ transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
 shape = SubResource("CylinderShape3D_thu42")
 
 [node name="pine_tree_n_24" parent="ManualAssets/Trees/TreesMain3" instance=ExtResource("9_thu42")]
-transform = Transform3D(2.36321, 0, -2.1576, 0, 3.2, 0, 2.1576, 0, 2.36321, 228.427, 0, 24.4776)
+transform = Transform3D(2.36321, 0, -2.1576, 0, 3.2, 0, 2.1576, 0, 2.36321, 228.427, -1.20337, 24.4776)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreesMain3/pine_tree_n_24"]
 transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
@@ -801,7 +973,7 @@ shape = SubResource("CylinderShape3D_g612j")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.04469, 0, 6.07184)
 
 [node name="pine_tree_n_22" parent="ManualAssets/Trees/TreeMain2" instance=ExtResource("9_thu42")]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 252.104, 0, 24.4776)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 252.104, -2.89908, 24.4776)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreeMain2/pine_tree_n_22"]
 transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
@@ -828,7 +1000,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.483643, 0)
 shape = SubResource("CylinderShape3D_p5m1f")
 
 [node name="tree_52" parent="ManualAssets/Trees/TreeMain2" instance=ExtResource("12_g612j")]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 216.654, 0, 10.884)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 216.654, -0.331351, 10.884)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreeMain2/tree_52"]
 
@@ -837,7 +1009,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.493164, 0)
 shape = SubResource("CylinderShape3D_g612j")
 
 [node name="pine_tree_n_23" parent="ManualAssets/Trees/TreeMain2" instance=ExtResource("9_thu42")]
-transform = Transform3D(2.71032, 0, -1.28614, 0, 3, 0, 1.28614, 0, 2.71032, 240.555, 0, 24.4776)
+transform = Transform3D(2.71032, 0, -1.28614, 0, 3, 0, 1.28614, 0, 2.71032, 240.555, -0.397154, 24.4776)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreeMain2/pine_tree_n_23"]
 transform = Transform3D(0.551948, 0, 0, 0, 1.40369, 0, 0, 0, 0.527906, 0, 0, 0)
@@ -909,13 +1081,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.493164, 0)
 shape = SubResource("CylinderShape3D_g612j")
 
 [node name="tree_54" parent="ManualAssets/Trees/TreeMain2" instance=ExtResource("12_g612j")]
-transform = Transform3D(3.17837, 0, -1.46559, 0, 3.5, 0, 1.46559, 0, 3.17837, 201.466, 0, 8.05656)
+transform = Transform3D(3.17837, 0, -1.46559, 0, 3.5, 0, 1.46559, 0, 3.17837, 201.466, -0.896948, 8.05656)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Trees/TreeMain2/tree_54"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ManualAssets/Trees/TreeMain2/tree_54/StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.493164, 0)
 shape = SubResource("CylinderShape3D_g612j")
+
+[node name="Oak_Tree_3" parent="ManualAssets/Trees" instance=ExtResource("16_l2anm")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 249.808, 0, -5.50814)
 
 [node name="Rocks" type="Node3D" parent="ManualAssets"]
 
@@ -1016,7 +1191,7 @@ shape = SubResource("BoxShape3D_wfpka")
 [node name="Misc" type="Node3D" parent="ManualAssets"]
 
 [node name="tree_stump_12" parent="ManualAssets/Misc" instance=ExtResource("12_mgnbb")]
-transform = Transform3D(1.99672, 0, 0, 0, 1.99672, 0, 0, 0, 1.99672, -11.5994, 0.0614271, -8.8718)
+transform = Transform3D(1.99672, 0, 0, 0, 1.99672, 0, 0, 0, 1.99672, -5.89674, 0.0614271, -8.8718)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Misc/tree_stump_12"]
 transform = Transform3D(0.59098, 0, 0, 0, 0.494439, 0, 0, 0, 0.576105, 0, 0, 0)
@@ -1025,26 +1200,13 @@ transform = Transform3D(0.59098, 0, 0, 0, 0.494439, 0, 0, 0, 0.576105, 0, 0, 0)
 shape = SubResource("CylinderShape3D_mgnbb")
 
 [node name="tree_log_12" parent="ManualAssets/Misc" instance=ExtResource("11_shlqg")]
-transform = Transform3D(2.00549, 0, 0, 0, 2.00549, 0, 0, 0, 2.00549, -14.0868, -0.0220966, -3.16135)
+transform = Transform3D(2.00549, 0, 0, 0, 2.00549, 0, 0, 0, 2.00549, -0.420815, -0.0220966, -6.52854)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="ManualAssets/Misc/tree_log_12"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ManualAssets/Misc/tree_log_12/StaticBody3D"]
 transform = Transform3D(-0.0324971, -1.19316, -0.169702, 0.563372, -0.0826532, -9.18753e-17, -0.014566, -0.534802, 0.37861, -0.0447922, -0.00310308, 0.054081)
 shape = SubResource("CylinderShape3D_ovpw7")
-
-[node name="Sketchfab_Scene" parent="ManualAssets/Misc" instance=ExtResource("17_g612j")]
-
-[node name="Sketchfab_Scene2" parent="ManualAssets/Misc" instance=ExtResource("18_sdqiw")]
-
-[node name="Sketchfab_Scene3" parent="ManualAssets/Misc" instance=ExtResource("17_g612j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.88115)
-
-[node name="Sketchfab_Scene4" parent="ManualAssets/Misc" instance=ExtResource("19_gssva")]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -3.27838, -0.42227, 0)
-
-[node name="Sketchfab_Scene5" parent="ManualAssets/Misc" instance=ExtResource("20_a5i4c")]
-transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, -6.05531, 0.0926442, 0)
 
 [node name="Sketchfab_Scene6" parent="ManualAssets/Misc" instance=ExtResource("21_gssva")]
 transform = Transform3D(2.47874, 0, 1.68993, 0, 3, 0, -1.68993, 0, 2.47874, -192.076, -7.26602, 85.1524)
@@ -1054,3 +1216,39 @@ transform = Transform3D(2.47874, 0, 1.68993, 0, 3, 0, -1.68993, 0, 2.47874, -192
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ManualAssets/Water"]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 98.0399, -16.8605, -262.481)
 mesh = SubResource("BoxMesh_t7wal")
+
+[node name="Farm" type="Node3D" parent="ManualAssets"]
+
+[node name="Field" type="Node3D" parent="ManualAssets/Farm"]
+
+[node name="Sketchfab_Scene" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 79.8228, -12.7446, 4.05228)
+
+[node name="Sketchfab_Scene2" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 79.8228, -12.7446, 13.971)
+
+[node name="Sketchfab_Scene3" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 70.2355, -12.7446, 4.05228)
+
+[node name="Sketchfab_Scene4" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 70.2611, -12.7446, 14.0219)
+
+[node name="Sketchfab_Scene5" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 89.4762, -12.7446, 14.0219)
+
+[node name="Sketchfab_Scene7" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 89.4762, -12.7446, 4.06204)
+
+[node name="Sketchfab_Scene8" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 89.4762, -12.7446, 23.8364)
+
+[node name="Sketchfab_Scene9" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 79.7565, -12.7446, 23.8364)
+
+[node name="Sketchfab_Scene10" parent="ManualAssets/Farm/Field" instance=ExtResource("26_wfpka")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 70.09, -12.7446, 23.8364)
+
+[node name="Vegetation" type="Node3D" parent="ManualAssets/Farm"]
+
+[node name="Sketchfab_Scene" parent="ManualAssets/Farm/Vegetation" instance=ExtResource("27_l2anm")]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 76.3157, -12.2836, 0)
