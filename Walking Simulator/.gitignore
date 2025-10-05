@@ -2,7 +2,7 @@
 .godot/
 examples/
 logs/
-demo/
+# demo/
 bin/
 # Assets/*
 # Assets/Sketchfab/*
