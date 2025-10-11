@@ -13,14 +13,17 @@ extends Node3D
 @export var recipes_asset_path: String = "res://Assets/Hunyuan/Indonesia Barat/Recipes/"
 
 const jsonTools = preload("res://Tools/JsonTools.gd")
-var json_tools_instance = jsonTools.new()
 
-var recipe_data_ingredient = []
+var json_tools_instance = jsonTools.new()
+var recipe_ingredient = {}
+var win_condition_met: bool = false
+
 
 func _ready() -> void:
 	# Hubungkan sinyal
 	hand.connect("dropped_to_pot", Callable(self, "_on_hand_dropped_to_pot"))
 	pot_manager.connect("inventory_updated", Callable(pot_ui, "_on_pot_manager_inventory_updated"))
+	pot_manager.connect("inventory_updated", Callable(self, "_on_pot_manager_inventory_updated"))
 	pot_ui.connect("cook_pressed", Callable(self, "_on_cook_pressed"))
 	
 	# Cari pot node, jika tidak ada gunakan GameManager sebagai reference
@@ -29,7 +32,10 @@ func _ready() -> void:
 		pot_node = self  # Gunakan GameManager sebagai fallback
 	# Set reference pot ke UI untuk floating display
 	pot_ui.set_pot_reference(pot_node)
+
+	# Muat data resep dan asset
 	load_food_data("Soto")
+	load_food_assets()
 	# setup process manager
 
 func _on_hand_dropped_to_pot(food: Node3D) -> void:
@@ -37,7 +43,8 @@ func _on_hand_dropped_to_pot(food: Node3D) -> void:
 	pot_manager.add(food)
 
 func _on_cook_pressed() -> void:
-	pot_manager.cook()
+	pot_manager.cook(recipe_ingredient)
+	
 
 func load_food_data(recipe_name: String) -> void:
 	# Muat data resep data dan asset dari file JSON
@@ -47,11 +54,9 @@ func load_food_data(recipe_name: String) -> void:
 		print("Gagal memuat data resep dari:", recipes_file_path)
 		return
 
-	print("Data resep berhasil dimuat:", recipe_data)
 	if recipe_name in recipe_data.keys():
-		recipe_data_ingredient = recipe_data[recipe_name].get('ingredients', [])
-		print("Memuat resep: ", recipe_name, " dengan bahan:", recipe_data_ingredient)
-		load_food_assets()
+		recipe_ingredient = recipe_data[recipe_name].get('ingredients', {})
+		print("Data resep berhasil dimuat:", recipe_ingredient)
 	else:
 		print("resep tidak ada")
 
@@ -63,11 +68,9 @@ func load_food_assets() -> void:
 
 	# Ambil semua path scene yang sesuai bahan di resep
 	var packed_scenes: Array = []
-	for ingredient in recipe_data_ingredient:
-		if ingredient_scenes.has(ingredient):
-			packed_scenes.append(ingredient_scenes[ingredient])
-		else:
-			printerr("Asset tidak ditemukan untuk:", ingredient)
+	for ingredient in ingredient_scenes.keys():
+		packed_scenes.append(ingredient_scenes[ingredient])
+
 
 	# Isi tiap foodbox dengan bahan yang sesuai
 	var i = 0
