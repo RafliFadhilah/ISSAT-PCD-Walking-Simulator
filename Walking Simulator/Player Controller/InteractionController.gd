@@ -214,9 +214,7 @@ func _process(_delta):
 			if distance_to_npc <= interaction_range:
 				new_interactable = nearest_npc
 				found_interactable = true
-				print("Using nearest NPC: ", nearest_npc.name, " (distance: ", distance_to_npc, ")")
 			else:
-				print("NPC ", nearest_npc.name, " too far: ", distance_to_npc, " > ", interaction_range)
 				# NPC is too far, remove from list
 				if npcs_in_range.has(nearest_npc):
 					npcs_in_range.erase(nearest_npc)

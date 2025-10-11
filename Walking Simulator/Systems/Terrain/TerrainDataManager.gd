@@ -47,54 +47,53 @@ func save_environment_data(save_name: String, terrain_controller: Node) -> bool:
 	"""Save complete environment data"""
 	GameLogger.info("💾 Saving environment data: %s" % save_name)
 	
-	try:
-		# Collect terrain data
-		var terrain_data = collect_terrain_data(terrain_controller)
-		
-		# Collect asset data
-		var asset_data = collect_asset_data(terrain_controller)
-		
-		# Collect hexagon path data
-		var hexagon_data = collect_hexagon_data(terrain_controller)
-		
-		# Collect NPC data
-		var npc_data = collect_npc_data()
-		
-		# Create save data structure
-		var save_data = {
-			"version": "1.0",
-			"timestamp": Time.get_datetime_string_from_system(),
-			"terrain": terrain_data,
-			"assets": asset_data,
-			"hexagon_paths": hexagon_data,
-			"npcs": npc_data,
-			"metadata": {
-				"save_name": save_name,
-				"scene_name": get_tree().current_scene.scene_file_path,
-				"total_assets": asset_data.get("total_count", 0),
-				"hexagon_vertices": hexagon_data.get("vertices", []).size()
-			}
+	# Collect terrain data
+	var terrain_data = collect_terrain_data(terrain_controller)
+	if terrain_data.is_empty():
+		var error_msg = "Failed to collect terrain data"
+		GameLogger.error("❌ " + error_msg)
+		save_failed.emit(error_msg)
+		return false
+	
+	# Collect asset data
+	var asset_data = collect_asset_data(terrain_controller)
+	
+	# Collect hexagon path data
+	var hexagon_data = collect_hexagon_data(terrain_controller)
+	
+	# Collect NPC data
+	var npc_data = collect_npc_data()
+	
+	# Create save data structure
+	var save_data = {
+		"version": "1.0",
+		"timestamp": Time.get_datetime_string_from_system(),
+		"terrain": terrain_data,
+		"assets": asset_data,
+		"hexagon_paths": hexagon_data,
+		"npcs": npc_data,
+		"metadata": {
+			"save_name": save_name,
+			"scene_name": get_tree().current_scene.scene_file_path,
+			"total_assets": asset_data.get("total_count", 0),
+			"hexagon_vertices": hexagon_data.get("vertices", []).size()
 		}
+	}
+	
+	# Save to file
+	var file_path = SAVE_DIRECTORY + save_name + SAVE_EXTENSION
+	var file = FileAccess.open(file_path, FileAccess.WRITE)
+	
+	if file:
+		var json_string = JSON.stringify(save_data, "\t")
+		file.store_string(json_string)
+		file.close()
 		
-		# Save to file
-		var file_path = SAVE_DIRECTORY + save_name + SAVE_EXTENSION
-		var file = FileAccess.open(file_path, FileAccess.WRITE)
-		
-		if file:
-			var json_string = JSON.stringify(save_data, "\t")
-			file.store_string(json_string)
-			file.close()
-			
-			GameLogger.info("✅ Environment data saved: %s" % file_path)
-			data_saved.emit(save_name)
-			return true
-		else:
-			GameLogger.error("❌ Failed to create save file: %s" % file_path)
-			save_failed.emit("Failed to create save file")
-			return false
-			
-	except:
-		var error_msg = "Failed to save environment data: %s" % str(get_error())
+		GameLogger.info("✅ Environment data saved: %s" % file_path)
+		data_saved.emit(save_name)
+		return true
+	else:
+		var error_msg = "Failed to create save file: %s" % file_path
 		GameLogger.error("❌ " + error_msg)
 		save_failed.emit(error_msg)
 		return false
@@ -103,60 +102,53 @@ func load_environment_data(save_name: String, terrain_controller: Node) -> bool:
 	"""Load complete environment data"""
 	GameLogger.info("📂 Loading environment data: %s" % save_name)
 	
-	try:
-		var file_path = SAVE_DIRECTORY + save_name + SAVE_EXTENSION
-		var file = FileAccess.open(file_path, FileAccess.READ)
-		
-		if not file:
-			var error_msg = "Save file not found: %s" % file_path
-			GameLogger.error("❌ " + error_msg)
-			load_failed.emit(error_msg)
-			return false
-		
-		var json_string = file.get_as_text()
-		file.close()
-		
-		var json = JSON.new()
-		var parse_result = json.parse(json_string)
-		
-		if parse_result != OK:
-			var error_msg = "Failed to parse save file: %s" % json.get_error_message()
-			GameLogger.error("❌ " + error_msg)
-			load_failed.emit(error_msg)
-			return false
-		
-		var save_data = json.get_data()
-		current_save_data = save_data
-		
-		# Clear existing environment
-		clear_existing_environment(terrain_controller)
-		
-		# Restore terrain data
-		restore_terrain_data(save_data.get("terrain", {}), terrain_controller)
-		
-		# Restore asset data
-		restore_asset_data(save_data.get("assets", {}), terrain_controller)
-		
-		# Restore hexagon path data
-		restore_hexagon_data(save_data.get("hexagon_paths", {}), terrain_controller)
-		
-		# Restore NPC data
-		restore_npc_data(save_data.get("npcs", {}))
-		
-		GameLogger.info("✅ Environment data loaded: %s" % save_name)
-		GameLogger.info("📊 Loaded: %d assets, %d hexagon vertices" % [
-			save_data.get("metadata", {}).get("total_assets", 0),
-			save_data.get("metadata", {}).get("hexagon_vertices", 0)
-		])
-		
-		data_loaded.emit(save_name)
-		return true
-		
-	except:
-		var error_msg = "Failed to load environment data: %s" % str(get_error())
+	var file_path = SAVE_DIRECTORY + save_name + SAVE_EXTENSION
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	
+	if not file:
+		var error_msg = "Save file not found: %s" % file_path
 		GameLogger.error("❌ " + error_msg)
 		load_failed.emit(error_msg)
 		return false
+	
+	var json_string = file.get_as_text()
+	file.close()
+	
+	var json = JSON.new()
+	var parse_result = json.parse(json_string)
+	
+	if parse_result != OK:
+		var error_msg = "Failed to parse save file: %s" % json.get_error_message()
+		GameLogger.error("❌ " + error_msg)
+		load_failed.emit(error_msg)
+		return false
+	
+	var save_data = json.get_data()
+	current_save_data = save_data
+	
+	# Clear existing environment
+	clear_existing_environment(terrain_controller)
+	
+	# Restore terrain data
+	restore_terrain_data(save_data.get("terrain", {}), terrain_controller)
+	
+	# Restore asset data
+	restore_asset_data(save_data.get("assets", {}), terrain_controller)
+	
+	# Restore hexagon path data
+	restore_hexagon_data(save_data.get("hexagon_paths", {}), terrain_controller)
+	
+	# Restore NPC data
+	restore_npc_data(save_data.get("npcs", {}))
+	
+	GameLogger.info("✅ Environment data loaded: %s" % save_name)
+	GameLogger.info("📊 Loaded: %d assets, %d hexagon vertices" % [
+		save_data.get("metadata", {}).get("total_assets", 0),
+		save_data.get("metadata", {}).get("hexagon_vertices", 0)
+	])
+	
+	data_loaded.emit(save_name)
+	return true
 
 func collect_terrain_data(terrain_controller: Node) -> Dictionary:
 	"""Collect terrain3D heightmap and material data"""
