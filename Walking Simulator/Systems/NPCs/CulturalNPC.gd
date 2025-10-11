@@ -32,6 +32,9 @@ var current_topic: String = ""
 @export var quest_title: String = ""  # judul quest
 @export var quest_description: String = ""  # deskripsi quest
 
+# Dialogue system instance
+var dialogue_system: NPCDialogueSystem
+
 
 
 # Safe input handling for NPC
@@ -57,6 +60,9 @@ func _ready():
 	# Initialize dialogue data if empty
 	if dialogue_data.is_empty():
 		setup_default_dialogue()
+	
+	# Initialize dialogue system
+	dialogue_system = NPCDialogueSystem.new(self)
 	
 	if has_node("/root/DebugConfig") and not get_node("/root/DebugConfig").enable_npc_debug:
 		return
@@ -541,6 +547,10 @@ func display_dialogue_ui(dialogue: Dictionary):
 	# Get options first for logging
 	var options = dialogue.get("options", [])
 	
+	# Filter options based on quest status using dialogue system
+	if dialogue_system:
+		options = dialogue_system.filter_options_by_quest_status(options)
+	
 	# Clear and add options with vintage styling
 	if options_container_node:
 		# Clear existing options
@@ -731,9 +741,23 @@ func _handle_consequence_only(consequence: String):
 		# Handle both "end_dialogue" and "end_conversation" for compatibility
 		GameLogger.info("CulturalNPC (" + npc_name + "): Ending dialogue due to consequence: " + consequence)
 		end_visual_dialogue()
-	elif consequence == "check_artifact":
-		# Check if player has the required artifact
-		_handle_check_artifact()
+	elif consequence == "give_artifact_to_npc":
+		# Handle artifact giving through dialogue system
+		if dialogue_system:
+			GameLogger.info("=== CALLING DIALOGUE SYSTEM ===")
+			dialogue_system.handle_give_artifact_to_npc({})
+			# Update the current UI with the result from dialogue system
+			var updated_dialogue = {
+				"message": dialogue_system.current_message,
+				"options": dialogue_system.current_options
+			}
+			# Replace current dialogue in history with updated one
+			if dialogue_history.size() > 0:
+				dialogue_history[-1] = updated_dialogue
+			GameLogger.info("Updating UI with message: " + dialogue_system.current_message)
+			display_dialogue_ui(updated_dialogue)
+		else:
+			GameLogger.error("Dialogue system not initialized for artifact handling")
 	elif consequence == "complete_quest":
 		# Complete the quest by taking the artifact
 		_handle_complete_quest()
@@ -741,21 +765,6 @@ func _handle_consequence_only(consequence: String):
 		# Player accepts the quest
 		GameLogger.info("Player accepted quest: " + quest_title)
 	# Add other consequence handling as needed
-
-func _handle_check_artifact():
-	"""Check if player has required artifact and handle accordingly"""
-	if has_required_artifact():
-		GameLogger.info("Player has required artifact: " + quest_artifact_required)
-		# Player has the artifact, proceed with giving it
-		var give_dialogue = get_dialogue_by_id("give_artifact")
-		if not give_dialogue.is_empty():
-			dialogue_history.append(give_dialogue)
-			display_dialogue_ui(give_dialogue)
-	else:
-		GameLogger.info("Player doesn't have required artifact: " + quest_artifact_required)
-		# Player doesn't have the artifact
-		var no_artifact_message = "I don't see the " + quest_artifact_required + " in your belongings. Please explore the area to find it first."
-		update_dialogue_text(no_artifact_message)
 
 func _handle_complete_quest():
 	"""Complete the quest by taking the artifact from player"""
@@ -1182,8 +1191,7 @@ func setup_guide_dialogue():
 					"options": [
 						{
 							"text": "I have the Noken you need! (Give Artifact)",
-							"next_dialogue": "give_artifact",
-							"consequence": "check_artifact"
+							"consequence": "give_artifact_to_npc"
 						},
 						{
 							"text": "Tell me more about Noken",
@@ -1207,8 +1215,7 @@ func setup_guide_dialogue():
 					"options": [
 						{
 							"text": "I have one to give you",
-							"next_dialogue": "give_artifact",
-							"consequence": "check_artifact"
+							"consequence": "give_artifact_to_npc"
 						},
 						{
 							"text": "I'll help you find it",
@@ -1375,8 +1382,7 @@ func setup_historian_dialogue():
 					"options": [
 						{
 							"text": "I have a Kapak Dani for you! (Give Artifact)",
-							"next_dialogue": "give_artifact",
-							"consequence": "check_artifact"
+							"consequence": "give_artifact_to_npc"
 						},
 						{
 							"text": "Tell me about Kapak Dani",
@@ -1400,8 +1406,7 @@ func setup_historian_dialogue():
 					"options": [
 						{
 							"text": "I have one to give you",
-							"next_dialogue": "give_artifact",
-							"consequence": "check_artifact"
+							"consequence": "give_artifact_to_npc"
 						},
 						{
 							"text": "I'll help you find one",
@@ -1596,8 +1601,7 @@ func setup_vendor_dialogue():
 					"options": [
 						{
 							"text": "I have the sculpture you need! (Give Artifact)",
-							"next_dialogue": "give_artifact",
-							"consequence": "check_artifact"
+							"consequence": "give_artifact_to_npc"
 						},
 						{
 							"text": "Tell me about Cenderawasih Pegunungan",
@@ -1621,8 +1625,7 @@ func setup_vendor_dialogue():
 					"options": [
 						{
 							"text": "I have one for you",
-							"next_dialogue": "give_artifact",
-							"consequence": "check_artifact"
+							"consequence": "give_artifact_to_npc"
 						},
 						{
 							"text": "I'll help you find it",
@@ -1848,8 +1851,7 @@ func get_quest_dialogues_for_artifact(artifact_name: String) -> Array:
 					"options": [
 						{
 							"text": "I have a Koteka for you! (Give Artifact)",
-							"next_dialogue": "give_artifact",
-							"consequence": "check_artifact"
+							"consequence": "give_artifact_to_npc"
 						},
 						{
 							"text": "Tell me about Koteka",
@@ -1873,8 +1875,7 @@ func get_quest_dialogues_for_artifact(artifact_name: String) -> Array:
 					"options": [
 						{
 							"text": "I have one for you",
-							"next_dialogue": "give_artifact",
-							"consequence": "check_artifact"
+							"consequence": "give_artifact_to_npc"
 						},
 						{
 							"text": "I'll help you find it",
@@ -1929,27 +1930,39 @@ func get_quest_dialogues_for_artifact(artifact_name: String) -> Array:
 
 func has_required_artifact() -> bool:
 	# Check if player has the required artifact in inventory
-	var inventory = get_node("/root/Player/CulturalInventory")
+	var inventory = Global.cultural_inventory
 	if not inventory:
 		inventory = get_tree().get_first_node_in_group("inventory")
+	if not inventory:
+		# Try alternative paths
+		inventory = get_node_or_null("/root/Player/CulturalInventory")
 	
 	if inventory and inventory.has_method("has_item"):
-		return inventory.has_item(quest_artifact_required)
+		var has_artifact = inventory.has_item(quest_artifact_required)
+		GameLogger.info("Checking for artifact '" + quest_artifact_required + "': " + str(has_artifact))
+		return has_artifact
 	
 	GameLogger.warning("Could not find inventory to check for artifact: " + quest_artifact_required)
 	return false
 
 func give_artifact_to_npc() -> bool:
 	# Remove artifact from player inventory and mark quest complete
-	var inventory = get_node("/root/Player/CulturalInventory")
+	var inventory = Global.cultural_inventory
 	if not inventory:
 		inventory = get_tree().get_first_node_in_group("inventory")
+	if not inventory:
+		# Try alternative paths
+		inventory = get_node_or_null("/root/Player/CulturalInventory")
 	
 	if inventory and inventory.has_method("remove_item"):
 		if inventory.remove_item(quest_artifact_required):
 			quest_completed = true
 			GameLogger.info("Quest completed! " + npc_name + " received " + quest_artifact_required)
 			return true
+		else:
+			GameLogger.warning("Failed to remove artifact: " + quest_artifact_required)
+	else:
+		GameLogger.error("Inventory not found or doesn't have remove_item method")
 	
 	GameLogger.warning("Failed to remove artifact from inventory: " + quest_artifact_required)
 	return false
