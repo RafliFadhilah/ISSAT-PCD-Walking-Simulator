@@ -1,11 +1,11 @@
 [gd_scene load_steps=9 format=3 uid="uid://byr14ooqsm6yq"]
 
 [ext_resource type="PackedScene" uid="uid://chq1chjevbeft" path="res://Assets/PSX/PSX Mega/Models/coffee_table_1.fbx" id="1_4xv2c"]
-[ext_resource type="Texture2D" uid="uid://ck5h0dx5hhva7" path="res://Assets/Texture/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_diff_1k.jpg" id="2_rhi3s"]
-[ext_resource type="Texture2D" uid="uid://0k6ot8n520qs" path="res://Assets/Texture/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_ao_1k.jpg" id="3_128kb"]
-[ext_resource type="Texture2D" uid="uid://bg32xik78jbwi" path="res://Assets/Texture/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_disp_1k.jpg" id="4_wsr3k"]
-[ext_resource type="Texture2D" uid="uid://b4ahfkdw3u3io" path="res://Assets/Texture/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_nor_gl_1k.jpg" id="5_brer3"]
-[ext_resource type="Texture2D" uid="uid://dysu6y0ts8nin" path="res://Assets/Texture/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_rough_1k.jpg" id="6_48bk7"]
+[ext_resource type="Texture2D" uid="uid://ck5h0dx5hhva7" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_diff_1k.jpg" id="2_rhi3s"]
+[ext_resource type="Texture2D" uid="uid://0k6ot8n520qs" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_ao_1k.jpg" id="3_128kb"]
+[ext_resource type="Texture2D" uid="uid://bg32xik78jbwi" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_disp_1k.jpg" id="4_wsr3k"]
+[ext_resource type="Texture2D" uid="uid://b4ahfkdw3u3io" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_nor_gl_1k.jpg" id="5_brer3"]
+[ext_resource type="Texture2D" uid="uid://dysu6y0ts8nin" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_rough_1k.jpg" id="6_48bk7"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ronnd"]
 albedo_texture = ExtResource("2_rhi3s")
