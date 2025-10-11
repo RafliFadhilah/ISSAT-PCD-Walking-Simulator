@@ -3,6 +3,37 @@ extends CulturalInteractableObject
 
 # Static variable to track which NPC has active dialogue
 static var active_dialogue_npc: CulturalNPC = null
+static var scene_initialized: bool = false
+
+# Static function to force clear all dialogue states across all NPCs
+static func emergency_clear_all_dialogues():
+	"""Emergency function to clear all dialogue states across all NPCs"""
+	GameLogger.warning("=== EMERGENCY CLEAR ALL DIALOGUES ===")
+	
+	# Clear the static active dialogue NPC
+	if active_dialogue_npc != null:
+		if is_instance_valid(active_dialogue_npc):
+			GameLogger.info("Force closing dialogue from: " + active_dialogue_npc.npc_name)
+			# Force close without checks
+			var ui = active_dialogue_npc.get_node_or_null("DialogueUI")
+			if ui:
+				ui.queue_free()
+		else:
+			GameLogger.info("Active dialogue NPC was invalid, clearing reference")
+		active_dialogue_npc = null
+	else:
+		GameLogger.debug("No active dialogue NPC to clear")
+	
+	scene_initialized = false
+	GameLogger.info("All dialogue states cleared - ready for fresh start")
+
+# Static function to debug current dialogue state
+static func debug_dialogue_state():
+	"""Debug function to print current dialogue state"""
+	GameLogger.info("=== DIALOGUE STATE DEBUG ===")
+	GameLogger.info("Active dialogue NPC: " + (active_dialogue_npc.npc_name if active_dialogue_npc != null and is_instance_valid(active_dialogue_npc) else "None"))
+	GameLogger.info("Scene initialized: " + str(scene_initialized))
+	GameLogger.info("=========================")
 
 @export var npc_name: String
 @export var cultural_region: String
@@ -46,7 +77,49 @@ func safe_set_input_as_handled():
 		return true
 	return false
 
+# Emergency cleanup function to clear any lingering dialogue states
+func cleanup_dialogue_states():
+	# On first NPC initialization in the scene, do a complete reset
+	if not CulturalNPC.scene_initialized:
+		GameLogger.info("=== FIRST NPC INIT (" + npc_name + ") - RESETTING ALL STATIC STATES ===")
+		CulturalNPC.active_dialogue_npc = null
+		CulturalNPC.scene_initialized = true
+	
+	# Clean up any leftover dialogue UI from this NPC
+	var dialogue_ui = get_node_or_null("DialogueUI")
+	if dialogue_ui:
+		dialogue_ui.queue_free()
+		GameLogger.debug("CulturalNPC (" + npc_name + "): Cleaned up leftover dialogue UI")
+	
+	# Clean up any leftover timers
+	var input_timer = get_node_or_null("DialogueInputTimer")
+	if input_timer:
+		input_timer.stop()
+		input_timer.queue_free()
+		GameLogger.info("CulturalNPC (" + npc_name + "): Cleaned up leftover input timer")
+	
+	var typewriter_timer = get_node_or_null("TypewriterTimer")
+	if typewriter_timer:
+		typewriter_timer.stop()
+		typewriter_timer.queue_free()
+		GameLogger.info("CulturalNPC (" + npc_name + "): Cleaned up leftover typewriter timer")
+	
+	# Clear dialogue history
+	dialogue_history.clear()
+	
+	# Reset dialogue state variables
+	dialogue_just_ended = false
+	can_interact = true
+	
+	# Clean up static variable if this NPC was the active one
+	if active_dialogue_npc == self:
+		active_dialogue_npc = null
+		GameLogger.info("CulturalNPC (" + npc_name + "): Cleared active dialogue NPC in cleanup")
+
 func _ready():
+	# Emergency cleanup of any lingering dialogue states
+	cleanup_dialogue_states()
+	
 	setup_npc()
 	connect_signals()
 	find_player()
@@ -74,11 +147,19 @@ func _input(event):
 	if active_dialogue_npc != self:
 		return
 		
-	# Handle dialogue input directly for better responsiveness
+	# Double check that we actually have active dialogue
 	if not has_active_dialogue():
 		# If we don't have active dialogue but we're the active NPC, clear the static reference
 		if active_dialogue_npc == self:
+			GameLogger.warning("CulturalNPC (" + npc_name + "): Was active dialogue NPC but has no active dialogue, clearing")
 			active_dialogue_npc = null
+		return
+	
+	# Verify that our dialogue UI is actually visible and valid
+	var dialogue_ui = get_node_or_null("DialogueUI")
+	if not dialogue_ui or not dialogue_ui.visible:
+		GameLogger.warning("CulturalNPC (" + npc_name + "): Active dialogue NPC but UI not visible, clearing state")
+		active_dialogue_npc = null
 		return
 		
 	if event is InputEventKey and event.pressed:
@@ -120,6 +201,23 @@ func _input(event):
 			_on_close_button_pressed()
 			get_viewport().set_input_as_handled()
 			return
+		elif event.physical_keycode == KEY_ESCAPE:
+			GameLogger.info("CulturalNPC (" + npc_name + "): Escape pressed - emergency dialogue close")
+			# Emergency close - force clear all dialogue states
+			CulturalNPC.emergency_clear_all_dialogues()
+			end_visual_dialogue()
+			get_viewport().set_input_as_handled()
+			return
+
+func _unhandled_key_input(event):
+	# Debug hotkey: Press F9 to debug dialogue state
+	if event is InputEventKey and event.pressed and event.physical_keycode == KEY_F9:
+		CulturalNPC.debug_dialogue_state()
+		GameLogger.info("NPC (" + npc_name + ") State:")
+		GameLogger.info("  - can_interact: " + str(can_interact))
+		GameLogger.info("  - dialogue_just_ended: " + str(dialogue_just_ended))
+		GameLogger.info("  - has_active_dialogue: " + str(has_active_dialogue()))
+		get_viewport().set_input_as_handled()
 
 func find_player():
 	# Find the player in the scene tree
@@ -302,8 +400,13 @@ func _interact():
 	
 	# Check if there's already an active dialogue with another NPC
 	if active_dialogue_npc != null and active_dialogue_npc != self:
-		GameLogger.debug("Interaction blocked - another NPC (" + active_dialogue_npc.npc_name + ") has active dialogue")
-		return
+		# First verify the active dialogue NPC is still valid and actually has active dialogue
+		if not is_instance_valid(active_dialogue_npc) or not active_dialogue_npc.has_active_dialogue():
+			GameLogger.warning("Active dialogue NPC is invalid or has no active dialogue, clearing it")
+			active_dialogue_npc = null
+		else:
+			GameLogger.debug("Interaction blocked - another NPC (" + active_dialogue_npc.npc_name + ") has active dialogue")
+			return
 	
 	# Check if dialogue just ended and we're still in cooldown
 	if dialogue_just_ended:
@@ -337,6 +440,15 @@ func _interact():
 	GameLogger.debug("Interaction disabled during dialogue for " + npc_name)
 
 func start_visual_dialogue():
+	# Safety check: if there's already an active dialogue NPC, force cleanup first
+	if active_dialogue_npc != null and active_dialogue_npc != self:
+		if is_instance_valid(active_dialogue_npc):
+			GameLogger.warning("CulturalNPC (" + npc_name + "): Forcing cleanup of previous active dialogue NPC: " + active_dialogue_npc.npc_name)
+			active_dialogue_npc.end_visual_dialogue()
+		else:
+			GameLogger.warning("CulturalNPC (" + npc_name + "): Previous active dialogue NPC was invalid, clearing reference")
+		active_dialogue_npc = null
+	
 	# Set this NPC as the active dialogue NPC
 	active_dialogue_npc = self
 	GameLogger.info("CulturalNPC (" + npc_name + "): Starting visual dialogue - set as active dialogue NPC")
@@ -712,6 +824,11 @@ func handle_dialogue_option(option: Dictionary):
 
 func _process_dialogue_consequence(consequence: String, next_dialogue_id: String, _option: Dictionary):
 	"""Process dialogue consequence and navigation (extracted from _handle_dialogue_choice)"""
+	# Safety check before processing
+	if not is_inside_tree() or not is_instance_valid(self):
+		GameLogger.error("CulturalNPC (" + npc_name + "): Cannot process dialogue consequence - node invalid")
+		return
+	
 	if next_dialogue_id != "":
 		# If there's a next dialogue, navigate to it
 		var next_dialogue = get_dialogue_by_id(next_dialogue_id)
@@ -785,21 +902,42 @@ func _handle_dialogue_choice(choice_index: int):
 		GameLogger.warning("CulturalNPC: Node not in tree or invalid during dialogue choice, ignoring")
 		return
 	
-	# Get current dialogue from history (most recent)
+	# Wrap in try-catch equivalent (Godot doesn't have try-catch, but we can use error checking)
 	var current_dialogue = dialogue_history.back() if dialogue_history.size() > 0 else get_initial_dialogue()
+	if current_dialogue.is_empty():
+		GameLogger.error("CulturalNPC (" + npc_name + "): No current dialogue found, ending dialogue")
+		end_visual_dialogue()
+		return
+	
 	var options = current_dialogue.get("options", [])
 	
 	if choice_index >= options.size():
+		GameLogger.warning("CulturalNPC (" + npc_name + "): Invalid choice index " + str(choice_index) + " for " + str(options.size()) + " options")
 		return
 	
 	var selected_option = options[choice_index]
+	if selected_option.is_empty():
+		GameLogger.error("CulturalNPC (" + npc_name + "): Selected option is empty, ending dialogue")
+		end_visual_dialogue()
+		return
+	
 	var consequence = selected_option.get("consequence", "")
 	var next_dialogue_id = selected_option.get("next_dialogue", "")
 	
 	GameLogger.info("Player chose: " + selected_option.get("text", "Option " + str(choice_index + 1)))
 	
-	# Use the extracted dialogue processing function
-	_process_dialogue_consequence(consequence, next_dialogue_id, selected_option)
+	# Use the extracted dialogue processing function with error handling
+	_process_dialogue_consequence_safe(consequence, next_dialogue_id, selected_option)
+
+func _process_dialogue_consequence_safe(consequence: String, next_dialogue_id: String, option: Dictionary):
+	"""Safe wrapper for dialogue consequence processing"""
+	# If anything goes wrong in dialogue processing, ensure we don't break the entire system
+	if not is_inside_tree() or not is_instance_valid(self):
+		GameLogger.error("CulturalNPC (" + npc_name + "): Node invalid during consequence processing")
+		return
+	
+	# Process with error recovery
+	_process_dialogue_consequence(consequence, next_dialogue_id, option)
 
 func update_dialogue_text(new_text: String):
 	var dialogue_ui = get_node_or_null("DialogueUI")
@@ -909,13 +1047,19 @@ func end_visual_dialogue():
 		GameLogger.warning("CulturalNPC: Node invalid during end_visual_dialogue, skipping")
 		return
 	
+	# Store whether this NPC was the active one BEFORE clearing
+	var was_active = (active_dialogue_npc == self)
+	
 	# Clear active dialogue NPC if this NPC is the active one
 	if active_dialogue_npc == self:
 		active_dialogue_npc = null
 		GameLogger.info("CulturalNPC (" + npc_name + "): Cleared active dialogue NPC")
 	
-	# Close only THIS NPC's dialogue UI, not all UIs to allow other NPCs to interact
+	# Close only THIS NPC's dialogue UI
 	close_npc_dialogue_ui()
+	
+	# Clear dialogue history for this NPC
+	dialogue_history.clear()
 	
 	# Clean up input timer
 	var input_timer = get_node_or_null("DialogueInputTimer")
@@ -934,7 +1078,16 @@ func end_visual_dialogue():
 	# Mark dialogue as ended ONLY for this specific NPC
 	mark_dialogue_ended()
 	
+	# CRITICAL: Re-enable player input after dialogue ends
+	# Release mouse and keyboard capture
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
 	GameLogger.info("=== DIALOGUE ENDED for " + npc_name + " ===")
+	
+	# Extra safety: verify active_dialogue_npc is properly cleared
+	if active_dialogue_npc == self:
+		GameLogger.warning("CulturalNPC (" + npc_name + "): Active dialogue NPC not cleared, forcing cleanup")
+		active_dialogue_npc = null
 
 func close_all_dialogue_uis():
 	# Close dialogue UI from ALL NPCs to prevent conflicts
@@ -1000,6 +1153,8 @@ func setup_default_dialogue():
 			setup_historian_dialogue()
 		"Vendor":
 			setup_vendor_dialogue()
+		"Tribal Elder":
+			setup_tribal_elder_dialogue()
 		_:
 			setup_generic_dialogue()
 	
@@ -1270,6 +1425,155 @@ func setup_guide_dialogue():
 					]
 				}
 			]
+
+func setup_tribal_elder_dialogue():
+	# Tribal Elder-specific dialogue about Koteka and Papua traditions
+	dialogue_data = [
+		{
+			"id": "greeting",
+			"message": "Welcome to Papua! I am preserving our traditional attire for future generations. We have ancient artifacts and traditional customs that have been preserved for centuries.",
+			"options": [
+				{
+					"text": "Tell me about the ancient artifacts",
+					"next_dialogue": "ancient_artifacts",
+					"consequence": "share_knowledge"
+				},
+				{
+					"text": "What are the traditional customs?",
+					"next_dialogue": "traditional_customs",
+					"consequence": "share_knowledge"
+				},
+				{
+					"text": "I heard you need something special (Quest)",
+					"next_dialogue": "quest_check",
+					"consequence": "quest"
+				},
+				{
+					"text": "Goodbye",
+					"consequence": "end_conversation"
+				}
+			]
+		},
+		{
+			"id": "ancient_artifacts",
+			"message": "The megalithic sites in Papua contain ancient artifacts that provide insights into early human settlement. These include stone tools, ceremonial objects, and traditional ornaments like the Koteka.",
+			"options": [
+				{
+					"text": "Tell me about traditional customs",
+					"next_dialogue": "traditional_customs",
+					"consequence": "share_knowledge"
+				},
+				{
+					"text": "About the quest you mentioned",
+					"next_dialogue": "quest_check",
+					"consequence": "quest"
+				},
+				{
+					"text": "Thank you",
+					"consequence": "end_conversation"
+				}
+			]
+		},
+		{
+			"id": "traditional_customs",
+			"message": "Papua's traditional customs include elaborate ceremonies, unique art forms, and distinctive social structures. The Koteka is an important symbol of our cultural identity and traditional clothing.",
+			"options": [
+				{
+					"text": "Tell me about ancient artifacts",
+					"next_dialogue": "ancient_artifacts",
+					"consequence": "share_knowledge"
+				},
+				{
+					"text": "About the quest you mentioned",
+					"next_dialogue": "quest_check",
+					"consequence": "quest"
+				},
+				{
+					"text": "Thank you for sharing",
+					"consequence": "end_conversation"
+				}
+			]
+		},
+		{
+			"id": "quest_check",
+			"message": "I am preserving our traditional attire for future generations. I specifically need a Koteka - it's an important symbol of Papua's cultural identity and traditional clothing.",
+			"options": [
+				{
+					"text": "I have the Koteka you need! (Give Artifact)",
+					"consequence": "give_artifact_to_npc"
+				},
+				{
+					"text": "Tell me more about Koteka",
+					"next_dialogue": "quest_info",
+					"consequence": "share_knowledge"
+				},
+				{
+					"text": "I'll help you find it",
+					"next_dialogue": "quest_accept",
+					"consequence": "quest_accept"
+				},
+				{
+					"text": "Maybe later",
+					"next_dialogue": "greeting"
+				}
+			]
+		},
+		{
+			"id": "quest_info",
+			"message": "Koteka is traditional clothing of Papua highlands, representing our cultural identity. It's important for teaching younger generations about our heritage and traditions. It's a unique part of Papua's cultural expression.",
+			"options": [
+				{
+					"text": "I have one for you",
+					"consequence": "give_artifact_to_npc"
+				},
+				{
+					"text": "I'll help you find it",
+					"next_dialogue": "quest_accept",
+					"consequence": "quest_accept"
+				},
+				{
+					"text": "Go back to main topic",
+					"next_dialogue": "greeting"
+				}
+			]
+		},
+		{
+			"id": "quest_accept",
+			"message": "Thank you for helping preserve our traditions! Please look for a Koteka in the area. It's essential for our cultural education programs.",
+			"options": [
+				{
+					"text": "I'll find it for cultural preservation",
+					"next_dialogue": "greeting"
+				}
+			]
+		},
+		{
+			"id": "give_artifact",
+			"message": "Excellent! This Koteka is exactly what we needed for our cultural preservation program. Now I can properly teach the younger generation about our traditional attire. Thank you!",
+			"options": [
+				{
+					"text": "Happy to preserve traditions",
+					"next_dialogue": "quest_completed",
+					"consequence": "complete_quest"
+				}
+			]
+		},
+		{
+			"id": "quest_completed",
+			"message": "Thanks to your help, this Koteka will be preserved and used to educate future generations about Papua's traditional clothing and cultural identity. You've made a lasting contribution!",
+			"options": [
+				{
+					"text": "Tell me more about traditions",
+					"next_dialogue": "traditional_customs",
+					"consequence": "share_knowledge"
+				},
+				{
+					"text": "Glad I could help preserve culture",
+					"consequence": "end_conversation"
+				}
+			]
+		}
+	]
 
 func setup_historian_dialogue():
 	# Historian-specific dialogue with deeper historical content
@@ -1983,19 +2287,20 @@ func share_cultural_knowledge():
 func mark_dialogue_ended():
 	dialogue_just_ended = true
 	dialogue_end_time = Time.get_unix_time_from_system()
-	# Only disable interaction for THIS specific NPC during cooldown
-	can_interact = false
-	GameLogger.debug("Dialogue ended for " + npc_name + " - cooldown started, interaction disabled for this NPC only")
+	# DON'T disable interaction - allow immediate re-interaction
+	# can_interact will be re-enabled when dialogue UI is fully closed
+	GameLogger.debug("Dialogue ended for " + npc_name + " - preparing for cleanup")
 	
-	# Start a timer to re-enable interaction after cooldown for THIS NPC
-	var cooldown_timer = get_tree().create_timer(dialogue_cooldown_duration)
+	# Use a very short timer to re-enable interaction (0.1 second)
+	# This prevents double-click but allows quick re-interaction
+	var cooldown_timer = get_tree().create_timer(0.1)
 	cooldown_timer.timeout.connect(_on_dialogue_cooldown_expired)
 
 func _on_dialogue_cooldown_expired():
-	# Only re-enable interaction for THIS specific NPC
+	# Re-enable interaction for THIS specific NPC
 	dialogue_just_ended = false
 	can_interact = true
-	GameLogger.debug("Dialogue cooldown expired for " + npc_name + " - interaction re-enabled for this NPC")
+	GameLogger.debug("Dialogue cooldown expired for " + npc_name + " - interaction re-enabled")
 
 func get_knowledge_for_topic(topic: String) -> String:
 	# This would be loaded from a knowledge database
@@ -2154,7 +2459,10 @@ func _notification(what: int):
 func _exit_tree():
 	GameLogger.debug("CulturalNPC: _exit_tree() called for " + npc_name)
 	
-
+	# CRITICAL: Clear static reference if this NPC is the active one
+	if active_dialogue_npc == self:
+		GameLogger.warning("CulturalNPC (" + npc_name + "): Was active dialogue NPC, clearing on exit")
+		active_dialogue_npc = null
 	
 	# Enhanced debug logging for cleanup process
 	if has_node("/root/DebugConfig") and get_node("/root/DebugConfig").enable_timer_debug:
@@ -2213,6 +2521,14 @@ func has_active_dialogue() -> bool:
 	# DEBUG: Log active dialogue state
 	if is_active:
 		GameLogger.debug("CulturalNPC (" + npc_name + "): Has active dialogue - UI visible: " + str(dialogue_ui.visible))
+	
+	# Additional safety check: if we think we're active but UI is not visible, cleanup
+	if active_dialogue_npc == self and not is_active:
+		GameLogger.warning("CulturalNPC (" + npc_name + "): Marked as active but no visible UI, cleaning up")
+		active_dialogue_npc = null
+		can_interact = true
+		dialogue_just_ended = false
+		return false
 	
 	return is_active
 
