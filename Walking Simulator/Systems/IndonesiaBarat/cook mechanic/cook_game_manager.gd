@@ -9,10 +9,16 @@ extends Node3D
 	"foodbox2" : foodBoxesParent.get_node("Foodbox2"),
 	"foodbox3" : foodBoxesParent.get_node("Foodbox3"), 
 	"foodbox4" : foodBoxesParent.get_node("Foodbox4")}
-@onready var recipes = null
+@export var recipes_file_path: String = "res://Data/recipes.json"
+@export var recipes_asset_path: String = "res://Assets/Hunyuan/Indonesia Barat/Recipes/"
 
+const jsonTools = preload("res://Tools/JsonTools.gd")
+var json_tools_instance = jsonTools.new()
+
+var recipe_data_ingredient = []
 
 func _ready() -> void:
+	# Hubungkan sinyal
 	hand.connect("dropped_to_pot", Callable(self, "_on_hand_dropped_to_pot"))
 	pot_manager.connect("inventory_updated", Callable(pot_ui, "_on_pot_manager_inventory_updated"))
 	pot_ui.connect("cook_pressed", Callable(self, "_on_cook_pressed"))
@@ -21,9 +27,10 @@ func _ready() -> void:
 	var pot_node = root.get_node_or_null("Cooker/Pot")
 	if not pot_node:
 		pot_node = self  # Gunakan GameManager sebagai fallback
-	
 	# Set reference pot ke UI untuk floating display
 	pot_ui.set_pot_reference(pot_node)
+	load_food_data("Soto")
+	# setup process manager
 
 func _on_hand_dropped_to_pot(food: Node3D) -> void:
 	print("Menerima sinyal dropped_to_pot dari tangan:", food.name)
@@ -32,41 +39,52 @@ func _on_hand_dropped_to_pot(food: Node3D) -> void:
 func _on_cook_pressed() -> void:
 	pot_manager.cook()
 
-func load_food(Recipe : String) -> void:
-	var dir = DirAccess.open(recipes)
+func load_food_data(recipe_name: String) -> void:
+	# Muat data resep data dan asset dari file JSON
+	var recipe_data = json_tools_instance.load_json(recipes_file_path)
 	
-	if not dir:
-		print("❌ Folder resep tidak ditemukan:", recipes)
+	if recipe_data == null:
+		print("Gagal memuat data resep dari:", recipes_file_path)
 		return
-	
-	# List semua file di dalam folder resep
-	dir.list_dir_begin()
-	var file_name = dir.get_next()
-	var food_count = 0
-	
-	while file_name != "":
-		if file_name.ends_with(".tscn"):
-			var scene_path = recipes + file_name
-			var food_scene = load(scene_path)
-			if food_scene:
-				var food_instance = food_scene.instantiate()
-				
-				# Tempatkan di FoodBox kosong berikutnya
-				var placed = false
-				for key in foodBoxes.keys():
-					var box = foodBoxes[key]
-					if box.get_child_count() == 0:
-						box.add_child(food_instance)
-						print("✅", file_name, "ditambahkan ke", key)
-						placed = true
-						food_count += 1
-						break
-				if not placed:
-					print("⚠️ Tidak ada FoodBox kosong untuk:", file_name)
-			else:
-				print("❌ Gagal memuat scene:", scene_path)
-		
-		file_name = dir.get_next()
-	
-	dir.list_dir_end()
-	print("🍲 Total bahan dimuat:", food_count)
+
+	print("Data resep berhasil dimuat:", recipe_data)
+	if recipe_name in recipe_data.keys():
+		recipe_data_ingredient = recipe_data[recipe_name].get('ingredients', [])
+		print("Memuat resep: ", recipe_name, " dengan bahan:", recipe_data_ingredient)
+		load_food_assets()
+	else:
+		print("resep tidak ada")
+
+func load_food_assets() -> void:
+	var ingredient_scenes = json_tools_instance.load_json("res://Data/ingredients_asset.json")
+	if ingredient_scenes == null:
+		printerr("Gagal memuat data asset dari: res://Data/ingredients_asset.json")
+		return
+
+	# Ambil semua path scene yang sesuai bahan di resep
+	var packed_scenes: Array = []
+	for ingredient in recipe_data_ingredient:
+		if ingredient_scenes.has(ingredient):
+			packed_scenes.append(ingredient_scenes[ingredient])
+		else:
+			printerr("Asset tidak ditemukan untuk:", ingredient)
+
+	# Isi tiap foodbox dengan bahan yang sesuai
+	var i = 0
+	for foodbox in foodBoxes.values():
+		if i >= packed_scenes.size():
+			break
+
+		var anchor = foodbox.get_node_or_null("Anchor")
+		if anchor:
+			# Bersihkan anchor
+			for child in anchor.get_children():
+				child.queue_free()
+			print("loading scene : ", packed_scenes[i], " into ", foodbox.name)
+			var scene = load(packed_scenes[i])
+			if scene:
+				var instance = scene.instantiate()
+				instance.add_to_group("BahanMakanan")
+				anchor.add_child(instance)
+				print("Menambahkan bahan ke foodbox:", instance.name)
+		i += 1

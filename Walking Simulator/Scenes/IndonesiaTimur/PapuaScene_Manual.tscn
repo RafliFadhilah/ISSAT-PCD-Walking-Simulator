@@ -41,15 +41,48 @@ noise_type = 2
 seed = 4
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_5jhv4"]
+resource_local_to_scene = false
+resource_name = ""
+width = 512
+height = 512
+invert = false
+in_3d_space = false
+generate_mipmaps = true
 seamless = true
+seamless_blend_skirt = 0.1
+as_normal_map = false
+bump_strength = 8.0
+normalize = true
 noise = SubResource("FastNoiseLite_t7wal")
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6x87r"]
+resource_local_to_scene = false
+resource_name = ""
+width = 512
+height = 512
+invert = false
+in_3d_space = false
+generate_mipmaps = true
 seamless = true
+seamless_blend_skirt = 0.1
+as_normal_map = false
+bump_strength = 8.0
+normalize = true
 noise = SubResource("FastNoiseLite_t7wal")
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_11fsm"]
+resource_local_to_scene = false
+resource_name = ""
+width = 512
+height = 512
+invert = false
+in_3d_space = false
+generate_mipmaps = true
 seamless = true
+seamless_blend_skirt = 0.1
+as_normal_map = false
+bump_strength = 8.0
+normalize = true
 noise = SubResource("FastNoiseLite_t7wal")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_l5o4j"]
@@ -125,7 +158,18 @@ domain_warp_fractal_lacunarity = 1.5
 domain_warp_fractal_gain = 1.0
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_bov7h"]
+resource_local_to_scene = false
+resource_name = ""
+width = 512
+height = 512
+invert = false
+in_3d_space = false
+generate_mipmaps = true
 seamless = true
+seamless_blend_skirt = 0.1
+as_normal_map = false
+bump_strength = 8.0
+normalize = true
 color_ramp = SubResource("Gradient_vr1m7")
 noise = SubResource("FastNoiseLite_d8lcj")
 
@@ -332,13 +376,33 @@ void fragment() {
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_06ni3"]
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wfpka"]
+resource_local_to_scene = false
+resource_name = ""
+width = 512
+height = 512
+invert = false
+in_3d_space = false
+generate_mipmaps = true
 seamless = true
+seamless_blend_skirt = 0.1
 as_normal_map = true
+bump_strength = 8.0
+normalize = true
 noise = SubResource("FastNoiseLite_06ni3")
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_l2anm"]
+resource_local_to_scene = false
+resource_name = ""
+width = 512
+height = 512
+invert = false
+in_3d_space = false
+generate_mipmaps = true
 seamless = true
+seamless_blend_skirt = 0.1
 as_normal_map = true
+bump_strength = 8.0
+normalize = true
 noise = SubResource("FastNoiseLite_06ni3")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_l2anm"]
