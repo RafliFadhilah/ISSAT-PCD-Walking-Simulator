@@ -19,6 +19,7 @@ func add(food: Node3D) -> void:
     print("Bahan ditambahkan ke pot:", food.name, "Jumlah sekarang:", pot_inventory[food.name])
     
     # Emit signal untuk update UI
+    print("pot inventory:", pot_inventory)
     emit_signal("inventory_updated", pot_inventory)
 
 

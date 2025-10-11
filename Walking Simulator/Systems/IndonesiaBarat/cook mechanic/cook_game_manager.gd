@@ -68,8 +68,10 @@ func load_food_assets() -> void:
 
 	# Ambil semua path scene yang sesuai bahan di resep
 	var packed_scenes: Array = []
+	var temp = {}
 	for ingredient in ingredient_scenes.keys():
-		packed_scenes.append(ingredient_scenes[ingredient])
+		temp[ingredient] = ingredient_scenes[ingredient]
+		packed_scenes.append(temp)
 
 
 	# Isi tiap foodbox dengan bahan yang sesuai
@@ -84,10 +86,12 @@ func load_food_assets() -> void:
 			for child in anchor.get_children():
 				child.queue_free()
 			print("loading scene : ", packed_scenes[i], " into ", foodbox.name)
-			var scene = load(packed_scenes[i])
+			var scene = load(packed_scenes[i].values()[0])
 			if scene:
 				var instance = scene.instantiate()
+				instance.name = packed_scenes[i].keys()[0]
 				instance.add_to_group("BahanMakanan")
 				anchor.add_child(instance)
+				
 				print("Menambahkan bahan ke foodbox:", instance.name)
 		i += 1
