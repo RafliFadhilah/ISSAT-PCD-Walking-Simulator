@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cvurslt62v0xv"]
+
+[ext_resource type="PackedScene" uid="uid://ddfdfoo6v50hl" path="res://Assets/Models/Indonesia Barat/Recipes/Raw/raw_chicken.glb" id="1_lkk4t"]
+
+[node name="raw_chicken" instance=ExtResource("1_lkk4t")]
+
+[node name="dinde_Low_ZBrush_defualt_group_lambert1_0" parent="Sketchfab_model/0de0ce41f49a469382b7404a85d7c5cb_fbx/RootNode/dinde_Low_ZBrush_defualt_group" index="0"]
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, 0, 0, 0)
