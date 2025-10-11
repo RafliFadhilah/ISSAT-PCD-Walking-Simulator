@@ -1,4 +1,4 @@
-[gd_resource type="Terrain3DAssets" load_steps=72 format=3 uid="uid://dal3jhw6241qg"]
+[gd_resource type="Terrain3DAssets" load_steps=72 format=3 uid="uid://bhq8x3n2wk4lp"]
 
 [ext_resource type="PackedScene" uid="uid://bn5nf4esciwex" path="res://demo/assets/models/LODExample.tscn" id="1_4jrdu"]
 [ext_resource type="PackedScene" uid="uid://ghmmrkmkvmh1" path="res://Assets/PSX/PSX Forest/Oak_Tree_2.fbx" id="2_adagb"]
