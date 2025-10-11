@@ -51,6 +51,9 @@ func show_current_dialogue():
 	current_message = dialogue.get("message", "")
 	current_options = dialogue.get("options", [])
 	
+	# Filter options based on quest status
+	current_options = filter_options_by_quest_status(current_options)
+	
 	# Emit dialogue update signal
 	EventBus.emit_event(EventBus.EventType.UI_UPDATE, {
 		"update_type": "dialogue_update",
@@ -135,8 +138,117 @@ func handle_choice_consequence(option: Dictionary):
 			var item_name = option.get("item_name", "")
 			if item_name != "":
 				give_item_to_player(item_name)
-		"end_conversation":
+		"give_artifact_to_npc":
+			# Handle player giving artifact to NPC
+			handle_give_artifact_to_npc(option)
+		"end_conversation", "end_dialogue":
 			end_dialogue()
+
+func handle_give_artifact_to_npc(_option: Dictionary):
+	var required_artifact = npc.quest_artifact_required
+	
+	GameLogger.info("=== ARTIFACT GIVING PROCESS ===")
+	GameLogger.info("NPC: " + npc.npc_name + ", Required artifact: " + required_artifact)
+	GameLogger.info("Quest completed status: " + str(npc.quest_completed))
+	
+	if required_artifact == "":
+		GameLogger.warning("NPC " + npc.npc_name + " has no quest artifact requirement")
+		return
+	
+	# Check if player has the required artifact
+	var inventory = get_inventory()
+	if not inventory:
+		GameLogger.error("Could not find player inventory")
+		current_message = "There seems to be a problem with the inventory system. Please try again."
+		current_options = []
+		return
+	
+	GameLogger.info("Inventory found: " + str(inventory))
+	GameLogger.info("Checking if player has artifact: " + required_artifact)
+	
+	if inventory.has_item(required_artifact):
+		GameLogger.info("Player HAS the required artifact: " + required_artifact)
+		# Player has the artifact - proceed with quest completion
+		if inventory.remove_item(required_artifact):
+			npc.quest_completed = true
+			GameLogger.info("SUCCESS: Artifact removed from inventory and quest completed!")
+			
+			# Show quest completion message
+			current_message = "Thank you so much! This " + required_artifact + " will be very valuable for " + npc.quest_description
+			current_options = [
+				{
+					"text": "You're Welcome!",
+					"consequence": "end_conversation"
+				}
+			]
+			
+			# Emit quest completion event
+			EventBus.emit_event(EventBus.EventType.NPC_INTERACTION, {
+				"npc_name": npc.npc_name,
+				"quest_title": npc.quest_title,
+				"artifact_given": required_artifact,
+				"action": "quest_completed"
+			}, 2, "dialogue_system")
+			
+			GameLogger.info("Quest completed: " + npc.quest_title + " for NPC " + npc.npc_name)
+		else:
+			GameLogger.error("FAILED to remove artifact from inventory: " + required_artifact)
+			current_message = "There was a problem removing the item from your inventory. Please try again."
+			current_options = []
+	else:
+		GameLogger.info("Player does NOT have the required artifact: " + required_artifact)
+		# Player doesn't have the artifact - show quest reminder
+		current_message = "I still need a " + required_artifact + " for my quest: " + npc.quest_description + ". Please bring it to me when you find one!"
+		current_options = [
+			{
+				"text": "Ok!",
+				"consequence": "end_conversation"
+			}
+		]
+		
+		GameLogger.info("Player attempted to give artifact but doesn't have: " + required_artifact)
+
+func get_inventory():
+	# Since this is a RefCounted class, we need to access through the NPC
+	# Try global reference first
+	var inventory = Global.cultural_inventory
+	if inventory:
+		return inventory
+	
+	if npc and npc.has_method("get_tree"):
+		var tree = npc.get_tree()
+		if tree:
+			# Try to find the inventory
+			inventory = tree.get_first_node_in_group("inventory")
+			if not inventory:
+				# Try alternative path
+				inventory = tree.get_root().get_node_or_null("Player/CulturalInventory")
+			
+			if inventory:
+				return inventory
+	
+	return null
+
+func filter_options_by_quest_status(options: Array) -> Array:
+	GameLogger.info("=== FILTERING OPTIONS ===")
+	GameLogger.info("NPC: " + npc.npc_name + ", Quest completed: " + str(npc.quest_completed))
+	GameLogger.info("Original options count: " + str(options.size()))
+	
+	if npc.quest_completed:
+		# Remove quest-related options if quest is completed
+		var filtered_options = []
+		for option in options:
+			var consequence = option.get("consequence", "")
+			if consequence != "give_artifact_to_npc":
+				filtered_options.append(option)
+			else:
+				GameLogger.info("REMOVED quest option: " + option.get("text", ""))
+		
+		GameLogger.info("Filtered options count: " + str(filtered_options.size()))
+		return filtered_options
+	
+	GameLogger.info("Quest not completed, returning all options")
+	return options
 
 func give_item_to_player(item_name: String):
 	# Create item using factory
