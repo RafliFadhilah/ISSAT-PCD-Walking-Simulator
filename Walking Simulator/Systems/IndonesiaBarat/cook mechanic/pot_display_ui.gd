@@ -1,0 +1,43 @@
+extends Control
+
+@onready var title_label: Label = $VBoxContainer/TitleLabel
+@onready var ingredients_list: VBoxContainer = $VBoxContainer/ScrollContainer/IngredientsContainer
+
+func _ready() -> void:
+	# Setup UI awal
+	title_label.text = "Isi Pot"
+	update_display({})
+
+func update_display(inventory: Dictionary) -> void:
+	# Clear semua children dari ingredients list
+	for child in ingredients_list.get_children():
+		child.queue_free()
+	
+	if inventory.is_empty():
+		# Tampilkan pesan pot kosong
+		var empty_label = Label.new()
+		empty_label.text = "Pot kosong"
+		empty_label.add_theme_color_override("font_color", Color.GRAY)
+		ingredients_list.add_child(empty_label)
+	else:
+		# Tampilkan setiap bahan dan jumlahnya
+		for food_name in inventory.keys():
+			var ingredient_container = HBoxContainer.new()
+			
+			# Label nama bahan
+			var name_label = Label.new()
+			name_label.text = food_name
+			name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			
+			# Label jumlah
+			var count_label = Label.new()
+			count_label.text = "x" + str(inventory[food_name])
+			count_label.add_theme_color_override("font_color", Color.YELLOW)
+			count_label.size_flags_horizontal = Control.SIZE_SHRINK_END
+			
+			ingredient_container.add_child(name_label)
+			ingredient_container.add_child(count_label)
+			ingredients_list.add_child(ingredient_container)
+
+func _on_pot_manager_inventory_updated(inventory: Dictionary) -> void:
+	update_display(inventory)
