@@ -1,6 +1,8 @@
 extends Node3D
 
 @onready var pot_inventory = {}
+
+
 signal inventory_updated(inventory)
 
 
@@ -20,14 +22,17 @@ func add(food: Node3D) -> void:
     emit_signal("inventory_updated", pot_inventory)
 
 
-func cook() -> void:
+func cook(inventory: Dictionary) -> void:
     if not pot_inventory:
         print("Pot kosong, tidak ada bahan untuk dimasak.")
         return
-    
+
     # Proses memasak bahan-bahan di pot
     print("Memasak bahan-bahan:", pot_inventory)
-    
+    if inventory == pot_inventory:
+        print("Resep cocok! Masakan berhasil dibuat.")
+    else :
+        print("Bahan tidak sesuai resep. Masakan gagal.")
     # Reset inventory setelah memasak
     pot_inventory.clear()
     
@@ -44,3 +49,4 @@ func display_inventory() -> void:
         print("Isi pot saat ini:")
         for food_name in pot_inventory.keys():
             print("- %s: %d" % [food_name, pot_inventory[food_name]])
+

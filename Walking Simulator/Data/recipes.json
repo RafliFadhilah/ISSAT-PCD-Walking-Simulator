@@ -1,6 +1,11 @@
 {
     "Soto": {
         "id" : 1,
-        "ingredients" :["Ayam", "Bumbu Kacang", "Rice", "Salt" ]
+        "ingredients" :{
+            "Ayam": 1, 
+            "Bumbu Kacang": 1, 
+            "Rice": 1, 
+            "Salt": 1
+        }
     }
 }
