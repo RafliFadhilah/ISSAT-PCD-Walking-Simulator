@@ -1,10 +1,34 @@
 # Godot 4+ specific ignores
 .godot/
-examples/
+.import/
+exports/
+export_presets.cfg
+
+# Logs and development
 logs/
-demo/
-bin/
-Assets/*
-Assets/Sketchfab/*
-Tools/*
-students/*
+*.log
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python ML components  
+__pycache__/
+*.pyc
+
+# Terrain3D binaries (KEEP for compatibility)
+# bin/
+
+# Large media (consider Git LFS)
+# Assets/Videos/*
+# Assets/Audio/Music/*
+
+# Development examples (optional)
+examples/
+
+# Keep essential directories uncommented:
+# demo/           ← Essential terrain data
+# Assets/*        ← Essential game assets  
+# Tools/*         ← Development tools
+# students/*      ← Educational content

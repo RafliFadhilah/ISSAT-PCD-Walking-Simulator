@@ -49,35 +49,34 @@ func generate_wheel_graph(config: WheelGraphPathConfig, parent_node: Node3D) -> 
 	var path_count = 0
 	var vertex_count = config.get_vertex_count()
 	
-	try:
-		# Generate outer vertices and their objects
-		var outer_positions = config.get_outer_vertex_positions()
-		_place_vertex_objects(outer_positions, config.outer_vertex_config, wheel_container, "Outer")
-		
-		# Generate inner vertices if configured
-		if config.inner_radius > 0:
-			var inner_positions = config.get_inner_vertex_positions()
-			_place_vertex_objects(inner_positions, config.inner_vertex_config, wheel_container, "Inner")
-		
-		# Generate hub vertex
-		_place_hub_vertex(config.hub_center, config.hub_vertex_config, wheel_container)
-		
-		# Generate path segments
-		if config.create_spokes:
-			path_count += _generate_spoke_paths(config, wheel_container, outer_positions)
-		
-		if config.create_outer_ring:
-			path_count += _generate_ring_paths(config, wheel_container, outer_positions)
-		
-		GameLogger.info("✅ Generated wheel graph: %d vertices, %d paths" % [vertex_count, path_count])
-		path_generation_completed.emit(vertex_count, path_count)
-		return true
-		
-	except:
-		var error = "Exception during wheel graph generation"
+	# Generate outer vertices and their objects
+	var outer_positions = config.get_outer_vertex_positions()
+	if outer_positions.is_empty():
+		var error = "Failed to generate outer vertex positions"
 		GameLogger.error("❌ WheelGraphPathGenerator: %s" % error)
 		path_generation_failed.emit(error)
 		return false
+	
+	_place_vertex_objects(outer_positions, config.outer_vertex_config, wheel_container, "Outer")
+	
+	# Generate inner vertices if configured
+	if config.inner_radius > 0:
+		var inner_positions = config.get_inner_vertex_positions()
+		_place_vertex_objects(inner_positions, config.inner_vertex_config, wheel_container, "Inner")
+	
+	# Generate hub vertex
+	_place_hub_vertex(config.hub_center, config.hub_vertex_config, wheel_container)
+	
+	# Generate path segments
+	if config.create_spokes:
+		path_count += _generate_spoke_paths(config, wheel_container, outer_positions)
+	
+	if config.create_outer_ring:
+		path_count += _generate_ring_paths(config, wheel_container, outer_positions)
+	
+	GameLogger.info("✅ Generated wheel graph: %d vertices, %d paths" % [vertex_count, path_count])
+	path_generation_completed.emit(vertex_count, path_count)
+	return true
 
 func _place_vertex_objects(positions: Array[Vector3], vertex_config: VertexConfig, parent: Node3D, prefix: String):
 	"""Place objects at vertex positions"""

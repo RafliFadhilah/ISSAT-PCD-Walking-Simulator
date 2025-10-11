@@ -1,0 +1,167 @@
+[gd_scene load_steps=7 format=3 uid="uid://d4jlc3n0bdonj"]
+
+[ext_resource type="Script" uid="uid://d1gy6nxnkgknj" path="res://Player Controller/PlayerControllerTest.gd" id="1_test_script"]
+[ext_resource type="Script" uid="uid://damt1ovap8pf3" path="res://Player Controller/PlayerControllerRefactored.gd" id="2_dq01p"]
+[ext_resource type="Script" uid="uid://cecogymssscdq" path="res://Player Controller/JitterTestHelper.gd" id="3_jitter_helper"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tinun"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_b7oti"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_cdqer"]
+
+[node name="PlayerControllerTest" type="Node3D"]
+script = ExtResource("1_test_script")
+
+[node name="JitterTestHelper" type="Node3D" parent="."]
+script = ExtResource("3_jitter_helper")
+
+[node name="Ground" type="CSGBox3D" parent="."]
+size = Vector3(50, 1, 50)
+
+[node name="GroundCollision" type="StaticBody3D" parent="."]
+
+[node name="GroundCollisionShape" type="CollisionShape3D" parent="GroundCollision"]
+shape = SubResource("BoxShape3D_tinun")
+
+[node name="InvisibleWalls" type="Node3D" parent="."]
+
+[node name="WallNorth" type="StaticBody3D" parent="InvisibleWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -25)
+
+[node name="WallNorthCollision" type="CollisionShape3D" parent="InvisibleWalls/WallNorth"]
+shape = SubResource("BoxShape3D_tinun")
+
+[node name="WallSouth" type="StaticBody3D" parent="InvisibleWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 25)
+
+[node name="WallSouthCollision" type="CollisionShape3D" parent="InvisibleWalls/WallSouth"]
+shape = SubResource("BoxShape3D_tinun")
+
+[node name="WallEast" type="StaticBody3D" parent="InvisibleWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, 0)
+
+[node name="WallEastCollision" type="CollisionShape3D" parent="InvisibleWalls/WallEast"]
+shape = SubResource("BoxShape3D_tinun")
+
+[node name="WallWest" type="StaticBody3D" parent="InvisibleWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2, 0)
+
+[node name="WallWestCollision" type="CollisionShape3D" parent="InvisibleWalls/WallWest"]
+shape = SubResource("BoxShape3D_tinun")
+
+[node name="Player" type="CharacterBody3D" parent="." groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+collision_layer = 2
+script = ExtResource("2_dq01p")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_b7oti")
+
+[node name="PlayerBody" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("CapsuleMesh_cdqer")
+
+[node name="CameraPivot" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="CameraArm" type="SpringArm3D" parent="Player/CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+spring_length = 6.0
+margin = 0.1
+
+[node name="Camera3D" type="Camera3D" parent="Player/CameraPivot/CameraArm"]
+current = true
+near = 0.1
+far = 1000.0
+
+[node name="GroundCheck" type="RayCast3D" parent="Player"]
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TestPanel" type="Panel" parent="UI"]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 300.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/TestPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = -15.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "PlayerControllerRefactored Test"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="InfoLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "Controls:"
+horizontal_alignment = 1
+
+[node name="ControlsLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "WASD - Move
+Shift - Run
+Space - Jump
+Mouse - Look
+V - Toggle Camera
+F - Fullscreen
+T - Debug Info
+M - Mouse Mode
+J - Start Jitter Test
+K - Stop Jitter Test
+L - Print Results
+ESC - Exit Scene"
+autowrap_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "Status: Ready"
+horizontal_alignment = 1
+
+[node name="HSeparator3" type="HSeparator" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="JitterTestLabel" type="Label" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+text = "Jitter Testing:"
+horizontal_alignment = 1
+
+[node name="JitterButtonContainer" type="HBoxContainer" parent="UI/TestPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StartJitterButton" type="Button" parent="UI/TestPanel/VBoxContainer/JitterButtonContainer"]
+layout_mode = 2
+text = "Start Test (J)"
+
+[node name="StopJitterButton" type="Button" parent="UI/TestPanel/VBoxContainer/JitterButtonContainer"]
+layout_mode = 2
+text = "Stop Test (K)"
+
+[node name="ResultsJitterButton" type="Button" parent="UI/TestPanel/VBoxContainer/JitterButtonContainer"]
+layout_mode = 2
+text = "Results (L)"

@@ -1,0 +1,38 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://dvkx2fhfpqvha"
+path.s3tc="res://.godot/imported/makanan_timbel_0.png-7e726606d4d7825e07ed96ca4d365d04.s3tc.ctex"
+metadata={
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
+}
+generator_parameters={
+"md5": "74fc7b4bc635f04fccef80072a6ac727"
+}
+
+[deps]
+
+source_file="res://Assets/Trellis/makanan_timbel_0.png"
+dest_files=["res://.godot/imported/makanan_timbel_0.png-7e726606d4d7825e07ed96ca4d365d04.s3tc.ctex"]
+
+[params]
+
+compress/mode=2
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=0

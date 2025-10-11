@@ -1,0 +1,16 @@
+[gd_resource type="CulturalItem" script_class="CulturalItem" format=3 uid="uid://kapak_dani_item"]
+
+[ext_resource type="Script" path="res://Systems/Items/CulturalItem.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bdsmd6ilsa3tx" path="res://Assets/Images/kapak_dani.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Kapak Dani"
+icon = ExtResource("2_icon")
+cultural_region = "Indonesia Timur"
+historical_period = "Traditional Era"
+cultural_significance = "The Dani axe is a symbol of strength and craftsmanship in Papua Highland culture. Used for both practical work and ceremonial purposes."
+description = "A traditional stone axe used by the Dani people of Papua. The axe features a carefully shaped stone head bound to a wooden handle with natural fibers."
+educational_value = 3
+rarity = "Uncommon"
+max_stack_size = 1

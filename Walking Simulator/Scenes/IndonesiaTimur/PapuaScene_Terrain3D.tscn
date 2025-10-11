@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://cfg0tlxaebwn6"]
+[gd_scene load_steps=25 format=3 uid="uid://cfg0tlxaebwn6"]
 
 [ext_resource type="PackedScene" uid="uid://c8is2r5ftgc84" path="res://Systems/Audio/CulturalAudioManager.tscn" id="2_audio"]
 [ext_resource type="PackedScene" uid="uid://c8is2r5ftgc85" path="res://Systems/Inventory/CulturalInventory.tscn" id="3_inventory"]
@@ -7,9 +7,8 @@
 [ext_resource type="Script" uid="uid://cb82diggp6ccs" path="res://Systems/NPCs/CulturalNPC.gd" id="7_npc"]
 [ext_resource type="Script" uid="uid://dj2jvj2b7t8fh" path="res://Tests/Experimental_Papua_Scenes/Performance_Testing/PapuaScene_FPSDisplay.gd" id="11_fps_script"]
 [ext_resource type="Script" uid="uid://db48b5a3q2j7o" path="res://Player Controller/InteractionController.gd" id="12_interaction_controller"]
-[ext_resource type="Script" path="res://Systems/Terrain3D/Core/Terrain3DController.gd" id="13_terrain_controller"]
+[ext_resource type="Script" uid="uid://omvrlficn7sy" path="res://Scenes/IndonesiaTimur/PapuaScene_TerrainController.gd" id="13_terrain_controller"]
 [ext_resource type="Script" uid="uid://b2y2mbnr51v7l" path="res://Systems/Terrain3D/Core/Terrain3DInitializer.gd" id="14_terrain3d_initializer"]
-[ext_resource type="Script" uid="uid://s4enblkqdapk" path="res://Systems/Camera/SimpleCameraManager.gd" id="15_camera_manager"]
 [ext_resource type="Terrain3DAssets" uid="uid://dal3jhw6241qg" path="res://demo/data/assets.tres" id="16_terrain3d_assets"]
 
 [sub_resource type="Environment" id="Environment_papua"]
@@ -283,7 +282,10 @@ T - Show Terrain Info
 R - Regenerate Terrain
 
 🏔️ Terrain Generation:
-(Keys 1,2,3,4 moved to Research class)
+1 - Basic Noise Terrain
+2 - Complex Multi-Layer
+3 - Hand-Painted Style
+4 - From Image File
 
 🔷 Path System:
 5 - Hexagonal Path System
@@ -328,14 +330,9 @@ autostart = true
 [node name="AudioManager" parent="." instance=ExtResource("2_audio")]
 
 [node name="InventoryManager" parent="." instance=ExtResource("3_inventory")]
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="TerrainController" type="Node3D" parent="."]
 script = ExtResource("13_terrain_controller")
 
 [node name="Terrain3DInitializer" type="Node3D" parent="."]
 script = ExtResource("14_terrain3d_initializer")
-
-[node name="SimpleCameraManager" type="Node3D" parent="."]
-script = ExtResource("15_camera_manager")

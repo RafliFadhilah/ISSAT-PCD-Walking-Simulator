@@ -1,6 +1,9 @@
 class_name CulturalNPC
 extends CulturalInteractableObject
 
+# Static variable to track which NPC has active dialogue
+static var active_dialogue_npc: CulturalNPC = null
+
 @export var npc_name: String
 @export var cultural_region: String
 @export var npc_type: String = "Guide"  # Guide, Vendor, Historian
@@ -16,12 +19,21 @@ var player: CharacterBody3D
 # Dialogue state tracking
 var dialogue_just_ended: bool = false
 var dialogue_end_time: float = 0.0
-var dialogue_cooldown_duration: float = 3.0  # Seconds to wait before allowing new dialogue
+var dialogue_cooldown_duration: float = 1.0  # Reduced to 1 second for better UX
 var dialogue_history: Array = []  # Track dialogue history for navigation
 
 # Cultural knowledge
 var cultural_topics: Array[String] = []
 var current_topic: String = ""
+
+# Quest system variables
+@export var quest_artifact_required: String = ""  # artifact yang diminta NPC ini
+@export var quest_completed: bool = false  # apakah quest sudah selesai
+@export var quest_title: String = ""  # judul quest
+@export var quest_description: String = ""  # deskripsi quest
+
+# Dialogue system instance
+var dialogue_system: NPCDialogueSystem
 
 
 
@@ -42,14 +54,72 @@ func _ready():
 	# Initialize state machine
 	state_machine = NPCStateMachine.new(self)
 	
+	# Setup quest artifact based on NPC type and name
+	setup_quest_artifact()
+	
 	# Initialize dialogue data if empty
 	if dialogue_data.is_empty():
 		setup_default_dialogue()
 	
+	# Initialize dialogue system
+	dialogue_system = NPCDialogueSystem.new(self)
+	
 	if has_node("/root/DebugConfig") and not get_node("/root/DebugConfig").enable_npc_debug:
 		return
 	GameLogger.debug("NPC Ready: " + name)
-	GameLogger.info("CulturalNPC initialized: " + npc_name + " (Type: " + npc_type + ")")
+	GameLogger.info("CulturalNPC initialized: " + npc_name + " (Type: " + npc_type + ") - Quest: " + quest_artifact_required)
+
+func _input(event):
+	# Only process input if this NPC is the active dialogue NPC
+	if active_dialogue_npc != self:
+		return
+		
+	# Handle dialogue input directly for better responsiveness
+	if not has_active_dialogue():
+		# If we don't have active dialogue but we're the active NPC, clear the static reference
+		if active_dialogue_npc == self:
+			active_dialogue_npc = null
+		return
+		
+	if event is InputEventKey and event.pressed:
+		# DEBUG: Log ALL key presses during dialogue
+		GameLogger.info("CulturalNPC (" + npc_name + "): Key pressed during dialogue: " + str(event.physical_keycode) + " (" + str(char(event.physical_keycode)) + ")")
+		
+		# Get current dialogue
+		var current_dialogue = dialogue_history.back() if dialogue_history.size() > 0 else get_initial_dialogue()
+		var options = current_dialogue.get("options", [])
+		
+		GameLogger.debug("CulturalNPC (" + npc_name + "): Current dialogue has " + str(options.size()) + " options")
+		
+		# Handle number keys 1-4 for dialogue choices
+		if event.physical_keycode >= KEY_1 and event.physical_keycode <= KEY_4:
+			var choice_index = event.physical_keycode - KEY_1
+			GameLogger.info("CulturalNPC (" + npc_name + "): Number key " + str(choice_index + 1) + " pressed, options available: " + str(options.size()))
+			
+			if choice_index < options.size():
+				GameLogger.info("CulturalNPC (" + npc_name + "): EXECUTING dialogue choice " + str(choice_index + 1) + "!")
+				_handle_dialogue_choice(choice_index)
+				get_viewport().set_input_as_handled()
+				return
+			else:
+				GameLogger.warning("CulturalNPC (" + npc_name + "): Choice index " + str(choice_index + 1) + " is out of range for " + str(options.size()) + " options")
+		
+		# Handle other dialogue controls
+		elif event.physical_keycode == KEY_X:
+			GameLogger.info("CulturalNPC (" + npc_name + "): X key pressed - ending dialogue")
+			end_visual_dialogue()
+			get_viewport().set_input_as_handled()
+			return
+		elif event.physical_keycode == KEY_LEFT:
+			GameLogger.info("CulturalNPC (" + npc_name + "): Left arrow pressed - going back")
+			_on_back_button_pressed()
+			get_viewport().set_input_as_handled()
+			return
+		elif event.physical_keycode == KEY_RIGHT or event.physical_keycode == KEY_C:
+			GameLogger.info("CulturalNPC (" + npc_name + "): Right arrow/C pressed - closing")
+			_on_close_button_pressed()
+			get_viewport().set_input_as_handled()
+			return
 
 func find_player():
 	# Find the player in the scene tree
@@ -230,6 +300,11 @@ func _interact():
 		GameLogger.debug("Interaction blocked - can_interact is false for " + npc_name)
 		return
 	
+	# Check if there's already an active dialogue with another NPC
+	if active_dialogue_npc != null and active_dialogue_npc != self:
+		GameLogger.debug("Interaction blocked - another NPC (" + active_dialogue_npc.npc_name + ") has active dialogue")
+		return
+	
 	# Check if dialogue just ended and we're still in cooldown
 	if dialogue_just_ended:
 		var current_time = Time.get_unix_time_from_system()
@@ -262,19 +337,27 @@ func _interact():
 	GameLogger.debug("Interaction disabled during dialogue for " + npc_name)
 
 func start_visual_dialogue():
+	# Set this NPC as the active dialogue NPC
+	active_dialogue_npc = self
+	GameLogger.info("CulturalNPC (" + npc_name + "): Starting visual dialogue - set as active dialogue NPC")
+	
 	# Get initial dialogue
 	var initial_dialogue = get_initial_dialogue()
 	if initial_dialogue.is_empty():
 		GameLogger.warning("No dialogue data found for " + npc_name)
+		active_dialogue_npc = null  # Clear if no dialogue
 		return
 	
 	# Display dialogue UI
 	display_dialogue_ui(initial_dialogue)
 	
-	# Set up input handling for dialogue choices
-	call_deferred("_setup_dialogue_input_handling")
+	# NOTE: We now use _input() method for input handling instead of timer polling
+	# Timer system is disabled to prevent conflicts
 
 func display_dialogue_ui(dialogue: Dictionary):
+	# Close all existing dialogue UIs first to prevent conflicts
+	close_all_dialogue_uis()
+	
 	# Add to dialogue history
 	dialogue_history.append(dialogue)
 	
@@ -461,13 +544,18 @@ func display_dialogue_ui(dialogue: Dictionary):
 	else:
 		GameLogger.warning("MessageText node not found in dialog UI")
 	
+	# Get options first for logging
+	var options = dialogue.get("options", [])
+	
+	# Filter options based on quest status using dialogue system
+	if dialogue_system:
+		options = dialogue_system.filter_options_by_quest_status(options)
+	
 	# Clear and add options with vintage styling
 	if options_container_node:
 		# Clear existing options
 		for child in options_container_node.get_children():
 			child.queue_free()
-		
-		var options = dialogue.get("options", [])
 		
 		# Add numbered options with vintage styling
 		for i in range(options.size()):
@@ -488,6 +576,10 @@ func display_dialogue_ui(dialogue: Dictionary):
 	dialogue_ui.visible = true
 	GameLogger.info("=== DIALOGUE STARTED ===")
 	GameLogger.info("NPC: " + dialogue.get("message", "Hello!"))
+	GameLogger.info("Options available: " + str(options.size()))
+	
+	# DEBUG: Verify UI state after creation
+	call_deferred("_verify_dialogue_ui_state")
 
 func _setup_dialogue_input_handling():
 	# CRITICAL: Check if we're still valid before creating timer
@@ -645,9 +737,47 @@ func _handle_consequence_only(consequence: String):
 	"""Handle dialogue consequence without navigation"""
 	if consequence == "share_knowledge":
 		share_cultural_knowledge()
-	elif consequence == "end_dialogue":
+	elif consequence == "end_dialogue" or consequence == "end_conversation":
+		# Handle both "end_dialogue" and "end_conversation" for compatibility
+		GameLogger.info("CulturalNPC (" + npc_name + "): Ending dialogue due to consequence: " + consequence)
 		end_visual_dialogue()
+	elif consequence == "give_artifact_to_npc":
+		# Handle artifact giving through dialogue system
+		if dialogue_system:
+			GameLogger.info("=== CALLING DIALOGUE SYSTEM ===")
+			dialogue_system.handle_give_artifact_to_npc({})
+			# Update the current UI with the result from dialogue system
+			var updated_dialogue = {
+				"message": dialogue_system.current_message,
+				"options": dialogue_system.current_options
+			}
+			# Replace current dialogue in history with updated one
+			if dialogue_history.size() > 0:
+				dialogue_history[-1] = updated_dialogue
+			GameLogger.info("Updating UI with message: " + dialogue_system.current_message)
+			display_dialogue_ui(updated_dialogue)
+		else:
+			GameLogger.error("Dialogue system not initialized for artifact handling")
+	elif consequence == "complete_quest":
+		# Complete the quest by taking the artifact
+		_handle_complete_quest()
+	elif consequence == "quest_accept":
+		# Player accepts the quest
+		GameLogger.info("Player accepted quest: " + quest_title)
 	# Add other consequence handling as needed
+
+func _handle_complete_quest():
+	"""Complete the quest by taking the artifact from player"""
+	if give_artifact_to_npc():
+		GameLogger.info("Quest completed successfully for " + npc_name)
+		# Navigate to quest completed dialogue
+		var completed_dialogue = get_dialogue_by_id("quest_completed")
+		if not completed_dialogue.is_empty():
+			dialogue_history.append(completed_dialogue)
+			display_dialogue_ui(completed_dialogue)
+	else:
+		GameLogger.warning("Failed to complete quest for " + npc_name)
+		update_dialogue_text("There seems to be a problem. Please try again.")
 
 func _handle_dialogue_choice(choice_index: int):
 	# Check if we're still in the tree before processing choice
@@ -779,10 +909,13 @@ func end_visual_dialogue():
 		GameLogger.warning("CulturalNPC: Node invalid during end_visual_dialogue, skipping")
 		return
 	
-	# Hide dialogue UI
-	var dialogue_ui = get_node_or_null("DialogueUI")
-	if dialogue_ui:
-		dialogue_ui.visible = false
+	# Clear active dialogue NPC if this NPC is the active one
+	if active_dialogue_npc == self:
+		active_dialogue_npc = null
+		GameLogger.info("CulturalNPC (" + npc_name + "): Cleared active dialogue NPC")
+	
+	# Close only THIS NPC's dialogue UI, not all UIs to allow other NPCs to interact
+	close_npc_dialogue_ui()
 	
 	# Clean up input timer
 	var input_timer = get_node_or_null("DialogueInputTimer")
@@ -798,10 +931,30 @@ func end_visual_dialogue():
 		typewriter_timer.queue_free()
 		GameLogger.debug("CulturalNPC: Typewriter timer cleaned up")
 	
-	# Mark dialogue as ended
+	# Mark dialogue as ended ONLY for this specific NPC
 	mark_dialogue_ended()
 	
-	GameLogger.info("=== DIALOGUE ENDED ===")
+	GameLogger.info("=== DIALOGUE ENDED for " + npc_name + " ===")
+
+func close_all_dialogue_uis():
+	# Close dialogue UI from ALL NPCs to prevent conflicts
+	var all_npcs = get_tree().get_nodes_in_group("npc")
+	for npc in all_npcs:
+		if npc.has_method("close_npc_dialogue_ui"):
+			npc.close_npc_dialogue_ui()
+		else:
+			# Fallback: directly close dialogue UI
+			var dialogue_ui = npc.get_node_or_null("DialogueUI")
+			if dialogue_ui:
+				dialogue_ui.visible = false
+				GameLogger.debug("Closed dialogue UI for NPC: " + npc.name)
+
+func close_npc_dialogue_ui():
+	# Close this NPC's dialogue UI
+	var dialogue_ui = get_node_or_null("DialogueUI")
+	if dialogue_ui:
+		dialogue_ui.visible = false
+		GameLogger.debug("Closed dialogue UI for NPC: " + npc_name)
 
 func show_interaction_feedback():
 	# Visual feedback when interaction starts
@@ -849,6 +1002,10 @@ func setup_default_dialogue():
 			setup_vendor_dialogue()
 		_:
 			setup_generic_dialogue()
+	
+	# Add quest dialogues for Papua NPCs if not already present
+	if cultural_region == "Indonesia Timur" and quest_artifact_required != "":
+		add_quest_dialogues()
 
 func setup_guide_dialogue():
 	match cultural_region:
@@ -978,6 +1135,11 @@ func setup_guide_dialogue():
 							"consequence": "share_knowledge"
 						},
 						{
+							"text": "I need help with something special (Quest)",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Goodbye",
 							"consequence": "end_conversation"
 						}
@@ -993,6 +1155,11 @@ func setup_guide_dialogue():
 							"consequence": "share_knowledge"
 						},
 						{
+							"text": "About the quest you mentioned",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Thank you",
 							"consequence": "end_conversation"
 						}
@@ -1003,7 +1170,101 @@ func setup_guide_dialogue():
 					"message": "Papua's traditional customs include elaborate ceremonies, unique art forms, and distinctive social structures. Each ethnic group has its own unique cultural practices.",
 					"options": [
 						{
+							"text": "Tell me about ancient artifacts",
+							"next_dialogue": "ancient_artifacts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "About the quest you mentioned",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
 							"text": "Thank you for sharing",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "quest_check",
+					"message": "I am collecting traditional artifacts to preserve our cultural heritage. I specifically need a sacred Noken bag - it's a symbol of Papua's identity and UNESCO-recognized heritage.",
+					"options": [
+						{
+							"text": "I have the Noken you need! (Give Artifact)",
+							"consequence": "give_artifact_to_npc"
+						},
+						{
+							"text": "Tell me more about Noken",
+							"next_dialogue": "quest_info",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Maybe later",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_info",
+					"message": "Noken is a traditional multifunctional bag made from pandan or orchid fibers. It's used for carrying babies, food, and tools. It represents the wisdom and skill of Papua's women artisans.",
+					"options": [
+						{
+							"text": "I have one to give you",
+							"consequence": "give_artifact_to_npc"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Go back to main topic",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_accept",
+					"message": "Thank you for offering to help! Please explore the area and look for a traditional Noken bag. I'll be here waiting when you find it.",
+					"options": [
+						{
+							"text": "I understand, I'll find it",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "give_artifact",
+					"message": "You have the sacred Noken! This is exactly what I needed for our cultural heritage collection. Thank you so much for preserving our traditions!",
+					"options": [
+						{
+							"text": "You're welcome, happy to help",
+							"next_dialogue": "quest_completed",
+							"consequence": "complete_quest"
+						}
+					]
+				},
+				{
+					"id": "quest_completed",
+					"message": "Thanks to you, this beautiful Noken will be preserved and displayed for future generations to learn about Papua's cultural heritage. You have my eternal gratitude!",
+					"options": [
+						{
+							"text": "Tell me about other artifacts",
+							"next_dialogue": "ancient_artifacts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What about traditional customs?",
+							"next_dialogue": "traditional_customs",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'm glad I could help",
 							"consequence": "end_conversation"
 						}
 					]
@@ -1011,12 +1272,417 @@ func setup_guide_dialogue():
 			]
 
 func setup_historian_dialogue():
-	# Historian-specific dialogue
-	setup_guide_dialogue()  # For now, use guide dialogue
+	# Historian-specific dialogue with deeper historical content
+	match cultural_region:
+		"Indonesia Timur":
+			dialogue_data = [
+				{
+					"id": "greeting",
+					"message": "Greetings, I am an archaeologist studying the rich history of Papua. This region holds fascinating archaeological discoveries that span thousands of years.",
+					"options": [
+						{
+							"text": "Tell me about Papua's archaeological sites",
+							"next_dialogue": "archaeological_sites",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What ancient civilizations lived here?",
+							"next_dialogue": "ancient_civilizations",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I heard you need help with research (Quest)",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
+							"text": "Goodbye",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "archaeological_sites",
+					"message": "Papua contains numerous megalithic sites and cave paintings dating back over 40,000 years. These sites reveal evidence of early human migration and sophisticated cultural practices.",
+					"options": [
+						{
+							"text": "What about ancient civilizations?",
+							"next_dialogue": "ancient_civilizations",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me more about the cave paintings",
+							"next_dialogue": "cave_paintings",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "About your research project",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
+							"text": "Thank you for the information",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "ancient_civilizations",
+					"message": "The ancestors of Papua's indigenous peoples developed complex societies with unique technologies, including sophisticated agricultural terracing and metallurgy techniques.",
+					"options": [
+						{
+							"text": "Tell me about archaeological sites",
+							"next_dialogue": "archaeological_sites",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What about cave paintings?",
+							"next_dialogue": "cave_paintings",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "About your research project",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
+							"text": "Fascinating, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "cave_paintings",
+					"message": "The cave paintings in Papua are among the world's oldest rock art, depicting animals, human figures, and spiritual symbols that provide insights into ancient beliefs and daily life.",
+					"options": [
+						{
+							"text": "Tell me about archaeological sites",
+							"next_dialogue": "archaeological_sites",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What about ancient civilizations?",
+							"next_dialogue": "ancient_civilizations",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "About your research project",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
+							"text": "Amazing discoveries, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "quest_check",
+					"message": "For my archaeological research, I desperately need a Kapak Dani - a traditional axe that represents Papua's ancient craftsmanship. It would complete my study on indigenous tool-making techniques.",
+					"options": [
+						{
+							"text": "I have a Kapak Dani for you! (Give Artifact)",
+							"consequence": "give_artifact_to_npc"
+						},
+						{
+							"text": "Tell me about Kapak Dani",
+							"next_dialogue": "quest_info",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'll help you find one",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Maybe later",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_info",
+					"message": "Kapak Dani is a traditional axe crafted by the Dani tribe. It represents centuries of metallurgy knowledge and is both a tool and a symbol of strength. Each one tells a story of Papua's craftsmanship heritage.",
+					"options": [
+						{
+							"text": "I have one to give you",
+							"consequence": "give_artifact_to_npc"
+						},
+						{
+							"text": "I'll help you find one",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Go back to main topic",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_accept",
+					"message": "Excellent! Please explore the area carefully. Traditional tools like the Kapak Dani are often found near ancient settlements or ceremonial sites. I'll be here waiting for your discovery.",
+					"options": [
+						{
+							"text": "I'll find it for your research",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "give_artifact",
+					"message": "Incredible! This Kapak Dani is exactly what I needed for my research! The craftsmanship is extraordinary - you can see the ancient metallurgy techniques in every detail. Thank you so much!",
+					"options": [
+						{
+							"text": "Happy to help your research",
+							"next_dialogue": "quest_completed",
+							"consequence": "complete_quest"
+						}
+					]
+				},
+				{
+					"id": "quest_completed",
+					"message": "This Kapak Dani will be invaluable for my archaeological documentation. Future researchers will learn so much about Papua's ancient craftsmanship techniques thanks to your contribution!",
+					"options": [
+						{
+							"text": "Tell me about archaeological sites",
+							"next_dialogue": "archaeological_sites",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What about ancient civilizations?",
+							"next_dialogue": "ancient_civilizations",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Glad I could contribute to research",
+							"consequence": "end_conversation"
+						}
+					]
+				}
+			]
+		_:
+			# Fallback for other regions
+			setup_guide_dialogue()
 
 func setup_vendor_dialogue():
-	# Vendor-specific dialogue
-	setup_guide_dialogue()  # For now, use guide dialogue
+	# Vendor-specific dialogue focused on traditional crafts and trade
+	match cultural_region:
+		"Indonesia Timur":
+			dialogue_data = [
+				{
+					"id": "greeting",
+					"message": "Welcome to my workshop! I am a traditional artisan specializing in Papua's ancient crafts. Each piece I create carries the wisdom of our ancestors.",
+					"options": [
+						{
+							"text": "What traditional crafts do you make?",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me about the materials you use",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I heard you need inspiration (Quest)",
+							"next_dialogue": "quest_check",
+							"consequence": "quest"
+						},
+						{
+							"text": "Goodbye",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "traditional_crafts",
+					"message": "I specialize in creating Noken bags, traditional masks, koteka, and ceremonial weapons like the Kapak Dani. Each piece has cultural significance and tells a story.",
+					"options": [
+						{
+							"text": "What materials do you use?",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "How are these techniques passed down?",
+							"next_dialogue": "techniques",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me about Noken bags",
+							"next_dialogue": "noken_details",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Thank you for sharing",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "materials",
+					"message": "We use natural materials from the forest: pandan leaves for Noken, bird feathers for decoration, wood from sacred trees, and stones for tools. Everything is sustainably harvested.",
+					"options": [
+						{
+							"text": "What crafts do you make with these?",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "How do you learn these techniques?",
+							"next_dialogue": "techniques",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me about Noken bags",
+							"next_dialogue": "noken_details",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Interesting, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "techniques",
+					"message": "These techniques are passed down through generations in our families. Young artisans learn by watching and practicing under the guidance of master craftsmen, preserving our cultural heritage.",
+					"options": [
+						{
+							"text": "What traditional crafts do you make?",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What materials do you use?",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Tell me about Noken bags",
+							"next_dialogue": "noken_details",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Thank you for preserving these traditions",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "noken_details",
+					"message": "Noken is a traditional multifunctional bag made from pandan or orchid fibers. It's not just a bag - it's a symbol of Papua's identity, used for carrying babies, food, and tools.",
+					"options": [
+						{
+							"text": "What other crafts do you make?",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What materials do you use?",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "How do you learn these techniques?",
+							"next_dialogue": "techniques",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Amazing cultural heritage, thank you",
+							"consequence": "end_conversation"
+						}
+					]
+				},
+				{
+					"id": "quest_check",
+					"message": "As an artisan, I need inspiration for my next masterpiece. I'm looking for a Cenderawasih Pegunungan sculpture - it represents Papua's natural beauty and would inspire my future works.",
+					"options": [
+						{
+							"text": "I have the sculpture you need! (Give Artifact)",
+							"consequence": "give_artifact_to_npc"
+						},
+						{
+							"text": "Tell me about Cenderawasih Pegunungan",
+							"next_dialogue": "quest_info",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Maybe later",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_info",
+					"message": "Cenderawasih Pegunungan is the Bird of Paradise, a symbol of Papua's incredible biodiversity. The sculpture captures the essence of our natural heritage and inspires artistic creation.",
+					"options": [
+						{
+							"text": "I have one for you",
+							"consequence": "give_artifact_to_npc"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Go back to main topic",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_accept",
+					"message": "Wonderful! Look for the Cenderawasih Pegunungan sculpture around the area. It represents the spirit of Papua's nature and will be perfect for inspiring my artistic vision.",
+					"options": [
+						{
+							"text": "I'll find it for your art",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "give_artifact",
+					"message": "Magnificent! This Cenderawasih Pegunungan sculpture is absolutely perfect! The artistry is breathtaking - I can already envision the masterpieces this will inspire. Thank you so much!",
+					"options": [
+						{
+							"text": "Happy to inspire your art",
+							"next_dialogue": "quest_completed",
+							"consequence": "complete_quest"
+						}
+					]
+				},
+				{
+					"id": "quest_completed",
+					"message": "With this beautiful sculpture as inspiration, I will create works that honor both Papua's natural beauty and our artistic traditions. Your contribution will inspire generations of art!",
+					"options": [
+						{
+							"text": "Tell me about your crafts",
+							"next_dialogue": "traditional_crafts",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "What materials do you use?",
+							"next_dialogue": "materials",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Glad I could inspire your art",
+							"consequence": "end_conversation"
+						}
+					]
+				}
+			]
+		_:
+			# Fallback for other regions
+			setup_guide_dialogue()
 
 func setup_generic_dialogue():
 	dialogue_data = [
@@ -1047,8 +1713,36 @@ func get_dialogue_by_id(dialogue_id: String) -> Dictionary:
 
 func get_initial_dialogue() -> Dictionary:
 	if dialogue_data.size() > 0:
-		return dialogue_data[0]
+		var initial = dialogue_data[0]
+		# Update quest dialogue based on completion status
+		update_quest_dialogue_options()
+		return initial
 	return {}
+
+func update_quest_dialogue_options():
+	"""Update dialogue options based on quest completion status"""
+	if cultural_region != "Indonesia Timur" or quest_artifact_required == "":
+		return
+	
+	# Find quest_check dialogue and update it based on quest status
+	for dialogue in dialogue_data:
+		if dialogue.get("id") == "quest_check":
+			if quest_completed:
+				# Quest completed - change to show completed status
+				dialogue["message"] = "Thanks to your help, I now have the " + quest_artifact_required + " I needed! It's perfectly preserved in our cultural heritage collection."
+				dialogue["options"] = [
+					{
+						"text": "Tell me about the " + quest_artifact_required,
+						"next_dialogue": "quest_completed",
+						"consequence": "share_knowledge"
+					},
+					{
+						"text": "I'm glad I could help",
+						"next_dialogue": "greeting"
+					}
+				]
+			# If quest not completed, keep original options
+			break
 
 # Legacy methods for backward compatibility
 func start_interaction():
@@ -1089,6 +1783,190 @@ func setup_cultural_topics():
 				"Traditional Customs"
 			]
 
+func setup_quest_artifact():
+	# Setup quest artifacts based on NPC type and name in Papua region
+	if cultural_region == "Indonesia Timur":
+		match npc_name:
+			"Cultural Guide":
+				quest_artifact_required = "noken"
+				quest_title = "Sacred Noken Collection"
+				quest_description = "I need the traditional Noken bag to complete my cultural heritage display. Can you help me find it?"
+			"Archaeologist":
+				quest_artifact_required = "kapak_dani"
+				quest_title = "Ancient Tool Research"
+				quest_description = "For my archaeological research, I need the Kapak Dani - a traditional axe that represents Papua's craftsmanship heritage."
+			"Tribal Elder":
+				quest_artifact_required = "koteka"
+				quest_title = "Traditional Attire Preservation"
+				quest_description = "The Koteka is an important piece of our cultural identity. I need it to teach younger generations about our traditions."
+			"Artisan":
+				quest_artifact_required = "cenderawasih_pegunungan"
+				quest_title = "Bird of Paradise Art"
+				quest_description = "As an artisan, I need the Cenderawasih Pegunungan sculpture to inspire my future works and show visitors Papua's natural beauty."
+	
+	GameLogger.info("Quest assigned to " + npc_name + ": " + quest_artifact_required)
+
+func add_quest_dialogues():
+	"""Add quest dialogues to NPCs that don't have them yet (like Tribal Elder)"""
+	# Check if quest dialogues already exist
+	var has_quest_dialogue = false
+	for dialogue in dialogue_data:
+		if dialogue.get("id") == "quest_check":
+			has_quest_dialogue = true
+			break
+	
+	if has_quest_dialogue:
+		return  # Quest dialogues already exist
+	
+	# Add quest option to greeting if it doesn't exist
+	var greeting_dialogue = null
+	for dialogue in dialogue_data:
+		if dialogue.get("id") == "greeting":
+			greeting_dialogue = dialogue
+			break
+	
+	if greeting_dialogue:
+		# Add quest option to greeting
+		var quest_option = {
+			"text": "I heard you need something special (Quest)",
+			"next_dialogue": "quest_check",
+			"consequence": "quest"
+		}
+		greeting_dialogue.get("options", []).insert(-1, quest_option)  # Insert before "Goodbye"
+		
+		# Add quest dialogues based on artifact type
+		var quest_dialogues = get_quest_dialogues_for_artifact(quest_artifact_required)
+		dialogue_data.append_array(quest_dialogues)
+		
+		GameLogger.info("Added quest dialogues for " + npc_name + " (" + quest_artifact_required + ")")
+
+func get_quest_dialogues_for_artifact(artifact_name: String) -> Array:
+	"""Generate quest dialogues based on artifact type"""
+	match artifact_name:
+		"koteka":
+			return [
+				{
+					"id": "quest_check",
+					"message": "I am preserving our traditional attire for future generations. I need a Koteka - it's an important symbol of Papua's cultural identity and traditional clothing.",
+					"options": [
+						{
+							"text": "I have a Koteka for you! (Give Artifact)",
+							"consequence": "give_artifact_to_npc"
+						},
+						{
+							"text": "Tell me about Koteka",
+							"next_dialogue": "quest_info",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Maybe later",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_info",
+					"message": "Koteka is traditional clothing of Papua highlands, representing our cultural identity. It's important for teaching younger generations about our heritage and traditions.",
+					"options": [
+						{
+							"text": "I have one for you",
+							"consequence": "give_artifact_to_npc"
+						},
+						{
+							"text": "I'll help you find it",
+							"next_dialogue": "quest_accept",
+							"consequence": "quest_accept"
+						},
+						{
+							"text": "Go back to main topic",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "quest_accept",
+					"message": "Thank you for helping preserve our traditions! Please look for a Koteka in the area. It's essential for our cultural education programs.",
+					"options": [
+						{
+							"text": "I'll find it for cultural preservation",
+							"next_dialogue": "greeting"
+						}
+					]
+				},
+				{
+					"id": "give_artifact",
+					"message": "Excellent! This Koteka is exactly what we needed for our cultural preservation program. Now I can properly teach the younger generation about our traditional attire. Thank you!",
+					"options": [
+						{
+							"text": "Happy to preserve traditions",
+							"next_dialogue": "quest_completed",
+							"consequence": "complete_quest"
+						}
+					]
+				},
+				{
+					"id": "quest_completed",
+					"message": "Thanks to your help, this Koteka will be preserved and used to educate future generations about Papua's traditional clothing and cultural identity. You've made a lasting contribution!",
+					"options": [
+						{
+							"text": "Tell me more about traditions",
+							"next_dialogue": "traditional_customs",
+							"consequence": "share_knowledge"
+						},
+						{
+							"text": "Glad I could help preserve culture",
+							"consequence": "end_conversation"
+						}
+					]
+				}
+			]
+		_:
+			return []  # Default empty if no specific quest dialogue
+
+func has_required_artifact() -> bool:
+	# Check if player has the required artifact in inventory
+	var inventory = Global.cultural_inventory
+	if not inventory:
+		inventory = get_tree().get_first_node_in_group("inventory")
+	if not inventory:
+		# Try alternative paths
+		inventory = get_node_or_null("/root/Player/CulturalInventory")
+	
+	if inventory and inventory.has_method("has_item"):
+		var has_artifact = inventory.has_item(quest_artifact_required)
+		GameLogger.info("Checking for artifact '" + quest_artifact_required + "': " + str(has_artifact))
+		return has_artifact
+	
+	GameLogger.warning("Could not find inventory to check for artifact: " + quest_artifact_required)
+	return false
+
+func give_artifact_to_npc() -> bool:
+	# Remove artifact from player inventory and mark quest complete
+	var inventory = Global.cultural_inventory
+	if not inventory:
+		inventory = get_tree().get_first_node_in_group("inventory")
+	if not inventory:
+		# Try alternative paths
+		inventory = get_node_or_null("/root/Player/CulturalInventory")
+	
+	if inventory and inventory.has_method("remove_item"):
+		if inventory.remove_item(quest_artifact_required):
+			quest_completed = true
+			GameLogger.info("Quest completed! " + npc_name + " received " + quest_artifact_required)
+			return true
+		else:
+			GameLogger.warning("Failed to remove artifact: " + quest_artifact_required)
+	else:
+		GameLogger.error("Inventory not found or doesn't have remove_item method")
+	
+	GameLogger.warning("Failed to remove artifact from inventory: " + quest_artifact_required)
+	return false
+
 func share_cultural_knowledge():
 	if cultural_topics.size() > 0:
 		var topic = cultural_topics[randi() % cultural_topics.size()]
@@ -1105,18 +1983,19 @@ func share_cultural_knowledge():
 func mark_dialogue_ended():
 	dialogue_just_ended = true
 	dialogue_end_time = Time.get_unix_time_from_system()
-	# Keep can_interact false until cooldown expires or player explicitly presses E again
+	# Only disable interaction for THIS specific NPC during cooldown
 	can_interact = false
-	GameLogger.debug("Dialogue ended for " + npc_name + " - cooldown started, interaction disabled")
+	GameLogger.debug("Dialogue ended for " + npc_name + " - cooldown started, interaction disabled for this NPC only")
 	
-	# Start a timer to re-enable interaction after cooldown
+	# Start a timer to re-enable interaction after cooldown for THIS NPC
 	var cooldown_timer = get_tree().create_timer(dialogue_cooldown_duration)
 	cooldown_timer.timeout.connect(_on_dialogue_cooldown_expired)
 
 func _on_dialogue_cooldown_expired():
+	# Only re-enable interaction for THIS specific NPC
 	dialogue_just_ended = false
 	can_interact = true
-	GameLogger.debug("Dialogue cooldown expired for " + npc_name + " - interaction re-enabled")
+	GameLogger.debug("Dialogue cooldown expired for " + npc_name + " - interaction re-enabled for this NPC")
 
 func get_knowledge_for_topic(topic: String) -> String:
 	# This would be loaded from a knowledge database
@@ -1325,3 +2204,41 @@ func _exit_tree():
 		EventBus.unsubscribe(self)
 	
 	GameLogger.debug("CulturalNPC: Cleanup complete for " + npc_name)
+
+func has_active_dialogue() -> bool:
+	"""Check if this NPC currently has an active dialogue"""
+	var dialogue_ui = get_node_or_null("DialogueUI")
+	var is_active = dialogue_ui and dialogue_ui.visible
+	
+	# DEBUG: Log active dialogue state
+	if is_active:
+		GameLogger.debug("CulturalNPC (" + npc_name + "): Has active dialogue - UI visible: " + str(dialogue_ui.visible))
+	
+	return is_active
+
+func is_dialogue_input_active() -> bool:
+	"""Check if dialogue input handling is currently active"""
+	var input_timer = get_node_or_null("DialogueInputTimer")
+	return input_timer and not input_timer.is_stopped()
+
+func _verify_dialogue_ui_state():
+	"""Debug function to verify dialogue UI state"""
+	var dialogue_ui = get_node_or_null("DialogueUI")
+	if dialogue_ui:
+		GameLogger.info("CulturalNPC (" + npc_name + "): DialogueUI state verification:")
+		GameLogger.info("  - UI exists: true")
+		GameLogger.info("  - UI visible: " + str(dialogue_ui.visible))
+		GameLogger.info("  - Dialogue history size: " + str(dialogue_history.size()))
+		GameLogger.info("  - has_active_dialogue(): " + str(has_active_dialogue()))
+		
+		# Check current dialogue
+		if dialogue_history.size() > 0:
+			var current_dialogue = dialogue_history.back()
+			var options = current_dialogue.get("options", [])
+			GameLogger.info("  - Current dialogue options: " + str(options.size()))
+			for i in range(options.size()):
+				GameLogger.info("    Option " + str(i + 1) + ": " + options[i].get("text", ""))
+		else:
+			GameLogger.warning("  - No dialogue in history!")
+	else:
+		GameLogger.error("CulturalNPC (" + npc_name + "): DialogueUI not found!")

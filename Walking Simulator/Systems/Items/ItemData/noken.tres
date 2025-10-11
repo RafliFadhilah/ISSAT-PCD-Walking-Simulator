@@ -1,0 +1,16 @@
+[gd_resource type="CulturalItem" script_class="CulturalItem" format=3 uid="uid://noken_item"]
+
+[ext_resource type="Script" path="res://Systems/Items/CulturalItem.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://l5731g1ynjgh" path="res://Assets/Images/noken.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Noken"
+icon = ExtResource("2_icon")
+cultural_region = "Indonesia Timur"
+historical_period = "Traditional Era"
+cultural_significance = "UNESCO-recognized traditional bag that represents Papua women's skill and cultural heritage. Used for carrying daily necessities."
+description = "Traditional Papua bag made from pandan leaves or bark fibers. Recognized by UNESCO as Intangible Cultural Heritage."
+educational_value = 4
+rarity = "Rare"
+max_stack_size = 1

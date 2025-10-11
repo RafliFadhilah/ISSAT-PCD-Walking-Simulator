@@ -4,7 +4,7 @@ extends CharacterBody3D
 # Player state
 var current_region: String = ""
 var is_interacting: bool = false
-@export var debug_mode: bool = false  # Disabled to reduce console clutter
+@export var debug_mode: bool = true
 
 # Movement parameters
 @export var max_speed: float = 4.0
@@ -218,6 +218,8 @@ func _handle_movement(delta):
 		position.y = 1.0
 		player_velocity.y = 0
 
+	move_and_slide()
+
 func _handle_camera(_delta):
 	if camera_input != Vector2.ZERO:
 		# Apply camera rotation
@@ -227,9 +229,8 @@ func _handle_camera(_delta):
 		# Clamp pitch
 		camera.rotation.x = clamp(camera.rotation.x, min_pitch, max_pitch)
 		
-		# Debug output removed - was cluttering console
-		# if debug_mode:
-		#	print("Camera input: ", camera_input)
+		if debug_mode:
+			print("Camera input: ", camera_input)
 		
 		# Reset input
 		camera_input = Vector2.ZERO

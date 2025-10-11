@@ -27,6 +27,15 @@ var sfx_volume: float = 0.8
 # Language settings (for international audience)
 var current_language: String = "en"  # Default to English
 
+# Topeng Nusantara settings
+var selected_mask_type: String = ""  # "preset" or "custom"
+var selected_mask_id: int = -1       # For preset masks (1-7)
+var custom_mask_components: Dictionary = {
+	"base": -1,
+	"mata": -1,
+	"mulut": -1
+}
+
 # Region-specific data
 var region_data: Dictionary = {
 	"Indonesia Barat": {
@@ -94,6 +103,8 @@ func add_cultural_knowledge(region: String, knowledge: String):
 		GlobalSignals.on_learn_cultural_info.emit(knowledge, region)
 
 func collect_artifact(region: String, artifact: String):
+	print("Global.collect_artifact() called with region: ", region, ", artifact: ", artifact)
+	
 	if not region in collected_artifacts:
 		collected_artifacts[region] = []
 	
@@ -102,16 +113,86 @@ func collect_artifact(region: String, artifact: String):
 		print("Collected artifact: ", artifact, " in ", region)
 		
 		# Update inventory if available
+		print("Checking cultural_inventory: ", cultural_inventory)
 		if cultural_inventory:
-			# Load the cultural item resource
+			# Load the cultural item resource with better error handling
 			var item_path = "res://Systems/Items/ItemData/" + artifact + ".tres"
+			print("Loading item from path: ", item_path)
+			print("Resource exists: ", ResourceLoader.exists(item_path))
+			
 			if ResourceLoader.exists(item_path):
+				# Try loading with load() first
 				var item = load(item_path)
-				cultural_inventory.add_cultural_artifact(item, region)
+				print("Loaded with load(): ", item)
+				
+				if item == null:
+					# Try with ResourceLoader.load()
+					print("Trying ResourceLoader.load()...")
+					item = ResourceLoader.load(item_path)
+					print("Loaded with ResourceLoader.load(): ", item)
+				
+				if item != null:
+					print("Item class: ", item.get_class())
+					print("Item has display_name: ", "display_name" in item)
+					print("Item has icon property: ", "icon" in item)
+					if "display_name" in item:
+						print("Item display_name: ", item.display_name)
+					if "icon" in item:
+						print("Item icon: ", item.icon)
+						print("Item icon type: ", item.icon.get_class() if item.icon else "null")
+					cultural_inventory.add_cultural_artifact(item, region)
+				else:
+					print("ERROR: Both load methods returned null!")
+					# Create a fallback CulturalItem with icon
+					var fallback_item = CulturalItem.new()
+					fallback_item.display_name = artifact
+					fallback_item.cultural_region = region
+					fallback_item.description = "Collected " + artifact
+					
+					# Try to load icon separately
+					var icon_path = "res://Assets/Images/" + artifact + ".png"
+					if ResourceLoader.exists(icon_path):
+						var icon_texture = load(icon_path)
+						if icon_texture:
+							fallback_item.icon = icon_texture
+							print("Loaded icon for fallback item: ", icon_texture)
+						else:
+							print("Failed to load icon from: ", icon_path)
+					else:
+						print("Icon file not found at: ", icon_path)
+					
+					print("Created fallback item: ", fallback_item.display_name)
+					cultural_inventory.add_cultural_artifact(fallback_item, region)
+			else:
+				print("ERROR: Item resource not found at: ", item_path)
+				# Create a fallback CulturalItem with icon
+				var fallback_item = CulturalItem.new()
+				fallback_item.display_name = artifact
+				fallback_item.cultural_region = region
+				fallback_item.description = "Collected " + artifact
+				
+				# Try to load icon separately
+				var icon_path = "res://Assets/Images/" + artifact + ".png"
+				if ResourceLoader.exists(icon_path):
+					var icon_texture = load(icon_path)
+					if icon_texture:
+						fallback_item.icon = icon_texture
+						print("Loaded icon for fallback item: ", icon_texture)
+					else:
+						print("Failed to load icon from: ", icon_path)
+				else:
+					print("Icon file not found at: ", icon_path)
+				
+				print("Created fallback item for missing resource: ", fallback_item.display_name)
+				cultural_inventory.add_cultural_artifact(fallback_item, region)
+		else:
+			print("ERROR: cultural_inventory is null!")
 		
 		# Play collection audio
 		if audio_manager:
 			audio_manager.play_cultural_audio("artifact_collection", region)
+	else:
+		print("Artifact already collected: ", artifact)
 
 func get_session_progress() -> float:
 	var current_region_data = region_data.get(current_region, {})

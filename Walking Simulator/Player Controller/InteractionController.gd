@@ -102,6 +102,7 @@ func update_nearest_npc():
 		return
 	
 	var nearest_distance = INF
+	var previous_nearest = nearest_npc
 	nearest_npc = null
 	
 	GameLogger.debug("Updating nearest NPC. NPCs in range: " + str(npcs_in_range.size()))
@@ -119,6 +120,12 @@ func update_nearest_npc():
 		GameLogger.info("DEBUG: Selected nearest NPC: " + nearest_npc.name + " (distance: " + str(nearest_distance) + "m)")
 	else:
 		GameLogger.info("DEBUG: No NPCs in range")
+		# Clear any NPC-related interactable
+		if current_interactable and current_interactable is CulturalInteractableObject and previous_nearest:
+			GameLogger.info("DEBUG: Clearing NPC interactable due to no NPCs in range")
+			on_exit_interaction_range()
+			current_interactable = null
+			is_near_interactable = false
 	
 	# Update current interactable if we have a nearest NPC
 	if nearest_npc and nearest_npc != current_interactable:
@@ -161,74 +168,87 @@ func _process(_delta):
 	# Check if we can process changes (anti-flicker)
 	var can_process_changes = (current_time - last_interaction_time) >= interaction_cooldown
 	
-	# Fallback: Check for NPCs in range manually if signal system isn't working
-	if npcs_in_range.is_empty():
-		GameLogger.debug("NPCs in range is empty, running fallback check")
+	# Clear previous interactable if we're not near anything
+	var found_interactable = false
+	var new_interactable = null
+	
+	# Fallback: Check for NPCs in range manually ONLY every 60 frames and if npcs_in_range is empty
+	if npcs_in_range.is_empty() and frame_count % 60 == 0:
+		GameLogger.debug("Running periodic fallback check for NPCs")
 		check_for_npcs_in_range()
 	
-	# Priority 1: Check for NPC interactions (Area3D based)
-	if nearest_npc:
-		# We have an NPC in range, check if it can interact
-		if nearest_npc.can_interact:
-			if current_interactable != nearest_npc:
-				if current_interactable:
-					GameLogger.info("DEBUG: Switching from " + current_interactable.name + " to " + nearest_npc.name)
-					on_exit_interaction_range()
-				current_interactable = nearest_npc
-				is_near_interactable = true
-				GameLogger.debug("Entering NPC interaction range with: " + nearest_npc.name + " (Time: " + str(current_time) + ")")
-				on_enter_interaction_range(nearest_npc)
-				last_interaction_time = current_time
-			
-			# Handle interaction input for NPC
-			if Input.is_action_just_pressed("interact"):
-				GameLogger.info("Interaction key pressed with NPC: " + nearest_npc.name)
-				on_interact_pressed(nearest_npc)
-		else:
-			# NPC is in range but can't interact (e.g., in cooldown)
-			if current_interactable == nearest_npc:
-				on_exit_interaction_range()
-				current_interactable = null
-				is_near_interactable = false
-				GameLogger.debug("NPC " + nearest_npc.name + " cannot interact, hiding prompt")
-		return
-	
-	# If we reach here, no NPCs are in range, so hide any existing prompt
-	if current_interactable is CulturalInteractableObject and not nearest_npc:
-		on_exit_interaction_range()
-		current_interactable = null
-		is_near_interactable = false
-		GameLogger.debug("No NPCs in range, ensuring prompt is hidden")
-	
-	# Priority 2: Check for raycast-based interactions (non-NPC objects)
+	# Priority 1: Check for raycast-based interactions (artifacts have priority over NPC)
 	var object = get_collider()
 	
-	# Check for new interactable only if cooldown allows
-	if object and object is CulturalInteractableObject and can_process_changes:
-		GameLogger.debug("Found CulturalInteractableObject: " + object.name + " (Time: " + str(current_time) + ")")
-		if object.can_interact and can_interact_with_object(object, current_time):
-			current_interactable = object
-			is_near_interactable = true
-			GameLogger.debug("Entering interaction range with: " + object.name + " (Time: " + str(current_time) + ")")
-			on_enter_interaction_range(object)
-			last_interaction_time = current_time
+	# Debug: Print collision detection
+	if object:
+		print("RayCast3D detected collision with: ", object.name, " (Type: ", object.get_class(), ")")
+	
+	# If raycast hits a StaticBody3D, check if its parent is a CulturalInteractableObject
+	if object:
+		print("Checking object parent...")
+		if object is CulturalInteractableObject:
+			print("Object is CulturalInteractableObject")
+			new_interactable = object
+			found_interactable = true
+		elif object.get_parent() and object.get_parent() is CulturalInteractableObject:
+			# StaticBody3D child of WorldCulturalItem
+			print("Parent is CulturalInteractableObject: ", object.get_parent().name)
+			new_interactable = object.get_parent()
+			found_interactable = true
+		else:
+			print("No valid interactable found - Parent: ", object.get_parent())
+	
+	# Priority 2: If no artifact in raycast, check for NPC interactions (Area3D based)
+	if not found_interactable and nearest_npc and nearest_npc.can_interact:
+		# Double check distance to nearest NPC to ensure it's actually in range
+		var player = get_parent()
+		if player:
+			var distance_to_npc = player.global_position.distance_to(nearest_npc.global_position)
+			var interaction_range = 3.0
+			if nearest_npc.has_method("get_interaction_range"):
+				interaction_range = nearest_npc.get_interaction_range()
+			elif "interaction_range" in nearest_npc:
+				interaction_range = nearest_npc.interaction_range
 			
-			# Handle interaction input
-			if Input.is_action_just_pressed("interact"):
-				GameLogger.info("Interaction key pressed with: " + object.name)
-				on_interact_pressed(object)
-		elif current_interactable == object:
-			# Object is no longer interactable
-			GameLogger.debug("Object no longer interactable: " + object.name)
+			if distance_to_npc <= interaction_range:
+				new_interactable = nearest_npc
+				found_interactable = true
+			else:
+				# NPC is too far, remove from list
+				if npcs_in_range.has(nearest_npc):
+					npcs_in_range.erase(nearest_npc)
+					update_nearest_npc()
+	
+	# Handle interaction state changes
+	if found_interactable and can_process_changes:
+		if new_interactable != current_interactable:
+			# Switching interactables - close any existing dialogues
+			if current_interactable:
+				GameLogger.info("DEBUG: Switching from " + current_interactable.name + " to " + new_interactable.name)
+				on_exit_interaction_range()
+				# If switching from NPC to another NPC, ensure dialog cleanup
+				if current_interactable.has_method("close_npc_dialogue_ui"):
+					current_interactable.close_npc_dialogue_ui()
+			
+			current_interactable = new_interactable
+			is_near_interactable = true
+			GameLogger.debug("Entering interaction range with: " + new_interactable.name + " (Time: " + str(current_time) + ")")
+			on_enter_interaction_range(new_interactable)
+			last_interaction_time = current_time
+		
+		# Handle interaction input
+		if Input.is_action_just_pressed("interact"):
+			GameLogger.info("Interaction key pressed with: " + new_interactable.name)
+			on_interact_pressed(new_interactable)
+			
+	elif not found_interactable:
+		# No interactables found, clear current interactable
+		if current_interactable:
+			GameLogger.debug("Exiting interaction range - no interactables found")
 			on_exit_interaction_range()
 			current_interactable = null
 			is_near_interactable = false
-	elif current_interactable and not object:
-		# No object in raycast, exit interaction
-		GameLogger.debug("Exiting interaction range - no object in raycast")
-		on_exit_interaction_range()
-		current_interactable = null
-		is_near_interactable = false
 
 func check_for_npcs_in_range():
 	# Manual fallback to check for NPCs in range
@@ -239,6 +259,27 @@ func check_for_npcs_in_range():
 	var npcs = get_tree().get_nodes_in_group("npc")
 	GameLogger.debug("Fallback: Found " + str(npcs.size()) + " NPCs in 'npc' group")
 	
+	# First, aggressively clean up NPCs that are too far
+	var npcs_to_remove = []
+	for npc in npcs_in_range:
+		var distance = player.global_position.distance_to(npc.global_position)
+		var interaction_range = 3.0
+		if npc.has_method("get_interaction_range"):
+			interaction_range = npc.get_interaction_range()
+		elif "interaction_range" in npc:
+			interaction_range = npc.interaction_range
+		
+		if distance > interaction_range * 1.2:  # Add 20% buffer for stability
+			npcs_to_remove.append(npc)
+	
+	for npc in npcs_to_remove:
+		npcs_in_range.erase(npc)
+		GameLogger.info("Aggressive cleanup: Removed NPC " + npc.name + " from range list")
+	
+	if npcs_to_remove.size() > 0:
+		update_nearest_npc()
+	
+	# Then check for new NPCs
 	for npc in npcs:
 		# Check for CulturalInteractableObject (main NPC type)
 		if npc is CulturalInteractableObject or npc.has_method("_interact"):
@@ -269,12 +310,14 @@ func check_for_npcs_in_range():
 		else:
 			GameLogger.debug("Fallback: Node " + npc.name + " is in 'npc' group but not a recognized NPC type")
 	
-			# DEBUG: Log current state after fallback check (only when it changes)
-		if npcs_in_range.size() > 0:
-			var nearest_name: String = "None"
-			if nearest_npc:
-				nearest_name = nearest_npc.name
-			GameLogger.debug("DEBUG: After fallback - NPCs in range: " + str(npcs_in_range.size()) + ", Nearest: " + nearest_name)
+	# DEBUG: Log current state after fallback check (only when it changes)
+	if npcs_in_range.size() > 0:
+		var nearest_name: String = "None"
+		if nearest_npc:
+			nearest_name = nearest_npc.name
+		GameLogger.debug("DEBUG: After fallback - NPCs in range: " + str(npcs_in_range.size()) + ", Nearest: " + nearest_name)
+	else:
+		GameLogger.debug("DEBUG: After fallback - No NPCs in range")
 
 func on_enter_interaction_range(interactable: CulturalInteractableObject):
 	# Only show interaction prompt if the interactable can actually interact

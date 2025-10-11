@@ -1,0 +1,56 @@
+[gd_scene load_steps=14 format=3 uid="uid://cambosokg6qnq"]
+
+[ext_resource type="PackedScene" uid="uid://c8l7r04yc5ato" path="res://Scenes/Food/Food.tscn" id="1_hrs6w"]
+[ext_resource type="Script" path="res://Scripts/Food/Cuko.cs" id="2_cfjds"]
+[ext_resource type="ArrayMesh" uid="uid://h8egi0eutto6" path="res://Assets/Food/Cuko/object/Cuko.obj" id="3_v44bg"]
+[ext_resource type="Texture2D" uid="uid://dl3gahcqk67th" path="res://Assets/Food/Cuko/texture/syouyu.png" id="4_ejpt7"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_00m8o"]
+radius = 0.389546
+height = 1.80337
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wntex"]
+albedo_color = Color(0.8246, 0, 0.149117, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7comg"]
+transparency = 1
+blend_mode = 1
+albedo_texture = ExtResource("4_ejpt7")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aj1t3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a5phu"]
+blend_mode = 3
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_peljb"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ba1hy"]
+blend_mode = 1
+albedo_color = Color(0.868985, 0.868985, 0.868985, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ds33j"]
+blend_mode = 1
+albedo_color = Color(0.281187, 0.281187, 0.281187, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d7rpa"]
+
+[node name="Cuko" instance=ExtResource("1_hrs6w")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, 0, 0, 0)
+script = ExtResource("2_cfjds")
+
+[node name="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.711269, 0)
+shape = SubResource("CapsuleShape3D_00m8o")
+
+[node name="MeshInstance3D" parent="StaticBody3D" index="1"]
+mesh = ExtResource("3_v44bg")
+surface_material_override/0 = SubResource("StandardMaterial3D_wntex")
+surface_material_override/1 = SubResource("StandardMaterial3D_7comg")
+surface_material_override/2 = SubResource("StandardMaterial3D_aj1t3")
+surface_material_override/3 = SubResource("StandardMaterial3D_a5phu")
+surface_material_override/4 = SubResource("StandardMaterial3D_peljb")
+surface_material_override/5 = SubResource("StandardMaterial3D_ba1hy")
+surface_material_override/6 = SubResource("StandardMaterial3D_ds33j")
+surface_material_override/7 = SubResource("StandardMaterial3D_d7rpa")

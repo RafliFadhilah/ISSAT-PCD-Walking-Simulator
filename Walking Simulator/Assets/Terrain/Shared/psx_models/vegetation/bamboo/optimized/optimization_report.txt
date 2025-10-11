@@ -1,0 +1,32 @@
+=== Bamboo Optimization Report ===
+Generated: 2025-09-02T19:44:54
+
+Source Files:
+  - res://Assets/Sketchfab/as01_bambusa_vulgaris_golden_bamboo.glb
+
+Output Directory: res://Assets/Terrain/Shared/psx_models/vegetation/bamboo/optimized
+
+Extracted Bamboo Biomes:
+
+🎯 SMALL BIOMES (< 5 MB) - Good for scattered placement:
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_1_001.glb (1.28033065795898 MB)
+
+🎯 MEDIUM BIOMES (5-20 MB) - Perfect for terrain biomes:
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_2_001.glb (11.4091873168945 MB)
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_3_001.glb (8.6092529296875 MB)
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_4_001.glb (5.49053573608398 MB)
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_5_001.glb (8.59503936767578 MB)
+
+🎯 LARGE BIOMES (20-50 MB) - Good for focal points:
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_6_001.glb (29.3563499450684 MB)
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_7_001.glb (41.2125053405762 MB)
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_9_001.glb (29.8543891906738 MB)
+
+⚠️ VERY LARGE BIOMES (> 50 MB) - Consider further optimization:
+  - as01_bambusa_vulgaris_golden_bamboo_ABC_AS01_BambusaVulgaris_8_001.glb (82.881706237793 MB)
+
+💡 RECOMMENDATIONS:
+  - For Papua & Tambora terrain: Use MEDIUM BIOMES (5-20 MB)
+  - For scattered placement: Use SMALL BIOMES (< 5 MB)
+  - For focal points: Use LARGE BIOMES (20-50 MB)
+  - Avoid VERY LARGE BIOMES for performance reasons

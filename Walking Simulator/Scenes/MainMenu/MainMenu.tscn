@@ -71,7 +71,13 @@ text = "Explore 3D Map"
 [node name="EthnicitDetectionButton" type="Button" parent="MainMenuContainer/MainButtons"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
-text = "Deteksi Etnis"
+text = "Ethnic Detection
+"
+
+[node name="TopengNusantaraButton" type="Button" parent="MainMenuContainer/MainButtons"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "Topeng Nusantara"
 
 [node name="LoadGameButton" type="Button" parent="MainMenuContainer/MainButtons"]
 custom_minimum_size = Vector2(200, 50)
@@ -525,6 +531,7 @@ text = "Back to Main Menu"
 
 [connection signal="pressed" from="MainMenuContainer/MainButtons/StartGameButton" to="." method="_on_start_game_pressed"]
 [connection signal="pressed" from="MainMenuContainer/MainButtons/EthnicitDetectionButton" to="." method="_on_ethnicity_detection_pressed"]
+[connection signal="pressed" from="MainMenuContainer/MainButtons/TopengNusantaraButton" to="." method="_on_topeng_nusantara_pressed"]
 [connection signal="pressed" from="MainMenuContainer/MainButtons/HowToPlayButton" to="." method="_on_how_to_play_pressed"]
 [connection signal="pressed" from="MainMenuContainer/MainButtons/AboutUsButton" to="." method="_on_about_us_pressed"]
 [connection signal="pressed" from="MainMenuContainer/MainButtons/CreditsButton" to="." method="_on_credits_pressed"]

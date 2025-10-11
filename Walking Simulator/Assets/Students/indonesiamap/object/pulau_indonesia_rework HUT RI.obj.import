@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://b5cvlinw138vf"
+path="res://.godot/imported/pulau_indonesia_rework HUT RI.obj-2f8dea5e433f169850890b4e3401c3fa.mesh"
+
+[deps]
+
+files=["res://.godot/imported/pulau_indonesia_rework HUT RI.obj-2f8dea5e433f169850890b4e3401c3fa.mesh"]
+
+source_file="res://Assets/Students/indonesiamap/object/pulau_indonesia_rework HUT RI.obj"
+dest_files=["res://.godot/imported/pulau_indonesia_rework HUT RI.obj-2f8dea5e433f169850890b4e3401c3fa.mesh", "res://.godot/imported/pulau_indonesia_rework HUT RI.obj-2f8dea5e433f169850890b4e3401c3fa.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

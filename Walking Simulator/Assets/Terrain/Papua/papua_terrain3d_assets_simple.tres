@@ -1,0 +1,5 @@
+[gd_resource type="Terrain3DAssets" load_steps=1 format=3 uid="uid://drxp4eifso0b1"]
+
+[resource]
+mesh_list = Array[Terrain3DMeshAsset]([])
+texture_list = Array[Terrain3DTextureAsset]([])

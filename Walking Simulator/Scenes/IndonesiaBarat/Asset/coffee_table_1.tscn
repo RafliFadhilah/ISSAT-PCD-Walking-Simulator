@@ -1,0 +1,37 @@
+[gd_scene load_steps=9 format=3 uid="uid://byr14ooqsm6yq"]
+
+[ext_resource type="PackedScene" uid="uid://chq1chjevbeft" path="res://Assets/PSX/PSX Mega/Models/coffee_table_1.fbx" id="1_4xv2c"]
+[ext_resource type="Texture2D" uid="uid://ck5h0dx5hhva7" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_diff_1k.jpg" id="2_rhi3s"]
+[ext_resource type="Texture2D" uid="uid://0k6ot8n520qs" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_ao_1k.jpg" id="3_128kb"]
+[ext_resource type="Texture2D" uid="uid://bg32xik78jbwi" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_disp_1k.jpg" id="4_wsr3k"]
+[ext_resource type="Texture2D" uid="uid://b4ahfkdw3u3io" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_nor_gl_1k.jpg" id="5_brer3"]
+[ext_resource type="Texture2D" uid="uid://dysu6y0ts8nin" path="res://Assets/Textures/Indonesia Barat/dark_wooden_planks_1k/textures/dark_wooden_planks_rough_1k.jpg" id="6_48bk7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ronnd"]
+albedo_texture = ExtResource("2_rhi3s")
+metallic_specular = 0.0
+roughness = 0.0
+roughness_texture = ExtResource("6_48bk7")
+normal_enabled = true
+normal_scale = -5.08
+normal_texture = ExtResource("5_brer3")
+ao_enabled = true
+ao_texture = ExtResource("3_128kb")
+heightmap_enabled = true
+heightmap_scale = 16.0
+heightmap_texture = ExtResource("4_wsr3k")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rhi3s"]
+size = Vector3(1.6778, 0.138008, 0.630249)
+
+[node name="coffee_table_1" instance=ExtResource("1_4xv2c")]
+
+[node name="coffee_table_1" parent="." index="0"]
+material_override = SubResource("StandardMaterial3D_ronnd")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="coffee_table_1" index="0"]
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="coffee_table_1/StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00375366, 0.611417, -0.00225839)
+shape = SubResource("BoxShape3D_rhi3s")

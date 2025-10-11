@@ -12,6 +12,12 @@ extends Control
 @onready var webcam_feed = $MainContainer/CameraContainer/WebcamContainer/WebcamFeed
 @onready var camera_status_label = $MainContainer/CameraContainer/WebcamContainer/WebcamFeed/CameraStatusLabel
 @onready var loading_spinner = $LoadingOverlay/LoadingContainer/LoadingSpinner
+# Label FPS dan Confidence
+@onready var fps_label = $MainContainer/CameraContainer/WebcamContainer/FPSLabel
+@onready var confidence_label = $MainContainer/ResultContainer/ConfidenceLabel
+
+# Tombol skip ke map
+@onready var skip_to_map_button = $MainContainer/ButtonContainer/SkipToMapButton
 
 # Webcam Manager - akan di-load secara manual
 var webcam_manager: Node
@@ -23,6 +29,8 @@ var is_detecting: bool = false
 var detected_ethnicity_result: String = ""
 var spinner_rotation: float = 0.0
 var webcam_frames_received: int = 0
+var last_frame_time: float = 0.0
+var current_fps: float = 0.0
 
 # Simulasi data etnis
 var ethnicity_data = {
@@ -58,9 +66,15 @@ func _ready():
 	reset_ui()
 	setup_loading_spinner()
 
+	# Inisialisasi label FPS dan confidence
+	if fps_label:
+		fps_label.text = "FPS: 0.0"
+	if confidence_label:
+		confidence_label.text = "Confidence: 0%"
+
 func setup_webcam_manager():
-	"""Setup WebcamManager untuk real webcam"""
-	print("=== Setting up WebcamManager ===")
+	"""Setup WebcamManagerUDP untuk real webcam"""
+	print("=== Setting up WebcamManagerUDP ===")
 	
 	# Verifikasi node tersedia
 	if not webcam_feed:
@@ -74,15 +88,15 @@ func setup_webcam_manager():
 	# Setup placeholder image dulu
 	setup_webcam_placeholder()
 	
-	# Load WebcamManager script dengan path yang benar
-	var webcam_script = load("res://Scenes/EthnicityDetection/WebcamClient/WebcamManager.gd")
+	# Load WebcamManagerUDP script untuk UDP connection
+	var webcam_script = load("res://Scenes/EthnicityDetection/WebcamClient/WebcamManagerUDP.gd")
 	if webcam_script == null:
-		print("Error: Could not load WebcamManager.gd")
-		camera_status_label.text = "Error: WebcamManager tidak ditemukan"
-		camera_status_label.modulate = Color(1, 0, 0, 0.8)
+		print("❌ Error: Could not load WebcamManagerUDP.gd")
+		camera_status_label.text = "❌ Script tidak ditemukan"
+		camera_status_label.modulate = Color(1, 0, 0, 0.9)
 		return
 	
-	print("Creating WebcamManager instance...")
+	print("Creating WebcamManagerUDP instance...")
 	webcam_manager = webcam_script.new()
 	add_child(webcam_manager)
 	
@@ -105,15 +119,15 @@ func setup_webcam_manager():
 		print("✅ error_message signal connected")
 	else:
 		print("❌ error_message signal not found")
-	
+		
 	# Update status
-	camera_status_label.text = "Mencoba koneksi ke webcam server..."
+	camera_status_label.text = "🔗 Menghubungkan ke UDP webcam server (port 8888)..."
 	camera_status_label.modulate = Color(1, 1, 0, 0.8)
 	
 	# Coba koneksi ke webcam server
-	print("Attempting to connect to webcam server...")
+	print("Attempting UDP connection to webcam server...")
 	webcam_manager.connect_to_webcam_server()
-	print("WebcamManager setup complete")
+	print("WebcamManagerUDP setup complete")
 
 func setup_webcam_placeholder():
 	"""Buat placeholder image untuk webcam"""
@@ -136,61 +150,44 @@ func setup_webcam_placeholder():
 	webcam_feed.texture = placeholder_texture
 
 func _on_webcam_frame_received(texture: ImageTexture):
-	"""Callback ketika frame webcam diterima"""
-	print("Frame received! Size: ", texture.get_size())
-	
+	"""Optimized frame handler"""
 	if not webcam_feed:
-		print("ERROR: webcam_feed node is null!")
 		return
 	
 	webcam_feed.texture = texture
 	webcam_frames_received += 1
-	
-	# Update status untuk menunjukkan webcam aktif
+
+	# Hitung FPS real time dari interval antar frame webcam
+	var now = Time.get_ticks_msec() / 1000.0
+	if last_frame_time > 0.0:
+		var dt = now - last_frame_time
+		if dt > 0.0:
+			current_fps = 1.0 / dt
+	last_frame_time = now
+	if fps_label:
+		fps_label.text = "FPS: %.1f" % current_fps
+
+	# Less frequent UI updates
 	if webcam_frames_received == 1:
-		print("First frame received, updating status...")
-		camera_status_label.text = "Webcam aktif - Frame: " + str(webcam_frames_received)
+		camera_status_label.text = "🎥 Webcam aktif"
 		camera_status_label.modulate = Color(0, 1, 0, 0.8)
 		
-		# Hide status label setelah beberapa saat
-		var hide_timer = Timer.new()
-		hide_timer.wait_time = 3.0
-		hide_timer.one_shot = true
-		hide_timer.timeout.connect(func(): 
-			if camera_status_label:
-				camera_status_label.visible = false
-		)
-		add_child(hide_timer)
-		hide_timer.start()
-	elif webcam_frames_received % 30 == 0:  # Update setiap 30 frame
-		camera_status_label.text = "Webcam aktif - Frame: " + str(webcam_frames_received)
+		# Hide status after 2 seconds
+		await get_tree().create_timer(2.0).timeout
+		if camera_status_label:
+			camera_status_label.visible = false
+	# Remove frequent frame counter updates for better performance
 
 func _on_webcam_connection_changed(connected: bool):
 	"""Callback ketika status koneksi webcam berubah"""
 	if connected:
-		camera_status_label.text = "✅ Webcam terhubung - Siap deteksi!"
+		camera_status_label.text = "🎥 UDP webcam terhubung"
 		camera_status_label.modulate = Color(0, 1, 0, 0.9)
-		print("Webcam server connected")
+		print("🎉 UDP webcam server connected successfully")
 	else:
-		camera_status_label.text = "❌ Webcam terputus - Cek server Python"
+		camera_status_label.text = "❌ UDP koneksi terputus"
 		camera_status_label.modulate = Color(1, 0, 0, 0.9)
-		camera_status_label.visible = true
-		
-		# Jangan gunakan await dalam callback - bisa crash saat node di-destroy
-		# Gunakan timer sebagai gantinya
-		if webcam_manager and not webcam_manager.get_connection_status():
-			var reconnect_timer = Timer.new()
-			reconnect_timer.wait_time = 3.0
-			reconnect_timer.one_shot = true
-			reconnect_timer.timeout.connect(func():
-				if is_inside_tree() and webcam_manager and not webcam_manager.get_connection_status():
-					camera_status_label.text = "🔄 Mencoba koneksi ulang..."
-					camera_status_label.modulate = Color(1, 1, 0, 0.9)
-					webcam_manager.connect_to_webcam_server()
-				reconnect_timer.queue_free()
-			)
-			add_child(reconnect_timer)
-			reconnect_timer.start()
+		print("⛓️‍💥 UDP webcam server disconnected")
 
 func _on_webcam_error(message: String):
 	"""Callback ketika terjadi error webcam"""
@@ -230,6 +227,7 @@ func _process(delta):
 		if spinner_rotation >= 360:
 			spinner_rotation -= 360
 		loading_spinner.rotation_degrees = spinner_rotation
+	# FPS diupdate langsung di _on_webcam_frame_received agar akurat
 
 func setup_timers():
 	# Timer untuk simulasi deteksi (lebih cepat)
@@ -240,7 +238,7 @@ func setup_timers():
 	
 	# Timer untuk redirect
 	redirect_timer = Timer.new()
-	redirect_timer.wait_time = 2.0  # Dikurangi dari 3 detik
+	redirect_timer.wait_time = 30.0
 	redirect_timer.timeout.connect(_on_redirect_to_scene)
 	redirect_timer.one_shot = true
 	add_child(redirect_timer)
@@ -253,6 +251,12 @@ func reset_ui():
 	status_label.text = "Mencari wajah..."
 	start_button.text = "Mulai Deteksi"
 	face_frame.border_color = Color(0, 1, 0, 0)
+	if skip_to_map_button:
+		skip_to_map_button.visible = false
+	if fps_label:
+		fps_label.text = "FPS: 0.0"
+	if confidence_label:
+		confidence_label.text = "Confidence: 0%"
 
 func _on_start_detection_pressed():
 	if not is_detecting:
@@ -303,20 +307,38 @@ func detection_complete():
 	
 	result_container.visible = true
 	start_button.visible = false
+
+	# Tampilkan tombol skip ke map
+	if skip_to_map_button:
+		skip_to_map_button.visible = true
 	
-	# Mulai countdown redirect (lebih cepat)
+	# Simulasi confidence random antara 80-99%
+	var confidence = randi() % 20 + 80
+	if confidence_label:
+		confidence_label.text = "Confidence: %d%%" % confidence
+	
+	# Mulai countdown redirect (30 detik)
 	redirect_timer.start()
-	redirect_label.text = "Mengarahkan ke region budaya yang sesuai dalam 2 detik..."
+	redirect_label.text = "Mengarahkan ke region budaya yang sesuai dalam 30 detik..."
 	
 	# Animate countdown
 	create_countdown_animation()
+
+func _on_skip_to_map_pressed():
+	# Langsung redirect ke scene map sesuai hasil deteksi
+	if detected_ethnicity_result != "":
+		loading_overlay.visible = true
+		spinner_rotation = 0.0
+		var target_scene = ethnicity_data[detected_ethnicity_result]["scene"]
+		cleanup_resources()
+		get_tree().change_scene_to_file(target_scene)
 
 func create_countdown_animation():
 	var countdown_timer = Timer.new()
 	countdown_timer.wait_time = 1.0
 	add_child(countdown_timer)
 	
-	var countdown_data = [2]  # Mulai dari 2 detik
+	var countdown_data = [30]  # Mulai dari 30 detik
 	countdown_timer.timeout.connect(func():
 		countdown_data[0] -= 1
 		if countdown_data[0] > 0:
