@@ -986,6 +986,7 @@ transform = Transform3D(0.781041, 0, -0.62448, 0, 1, 0, 0.62448, 0, 0.781041, 3.
 script = ExtResource("5_c4fgr")
 npc_name = "Tribal Elder"
 cultural_region = "Indonesia Timur"
+npc_type = "Tribal Elder"
 quest_artifact_required = "koteka"
 quest_title = "Traditional Attire Preservation"
 quest_description = "Our village needs the sacred Koteka for the upcoming ceremony. Can you help us find this important traditional item?"
@@ -1697,7 +1698,7 @@ collision_layer = 4
 shape = SubResource("BoxShape3D_wfpka")
 
 [node name="noken" parent="ManualAssets/Artifacts" instance=ExtResource("18_06ni3")]
-transform = Transform3D(1.05011, 0, -1.70214, 0, 2, 0, 1.70214, 0, 1.05011, -236.818, -6.3012, 118.911)
+transform = Transform3D(1.05011, 0, -1.70214, 0, 2, 0, 1.70214, 0, 1.05011, -30.0359, 0.805233, -8.24937)
 script = ExtResource("16_wfpka")
 item_name = "noken"
 cultural_region = "Indonesia Timur"

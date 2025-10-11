@@ -3,9 +3,14 @@ extends Node3D
 # Controller for region scenes with back button functionality
 
 func _ready():
+	# DON'T clear NPC states here - NPCs handle their own initialization
+	# The RegionSceneController is initialized AFTER NPCs in the scene tree
+	# so calling emergency_clear here would reset flags AFTER NPCs set them
+	
 	# Start the region session
 	var region_name = get_region_name()
-	Global.start_region_session(region_name)
+	if Global:
+		Global.start_region_session(region_name)
 	
 	# Register with GameSceneManager (if available)
 	if has_node("/root/GameSceneManager"):
