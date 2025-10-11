@@ -38,6 +38,10 @@ project/assembly_name="Indonesian Cultural Heritage Exhibition"
 
 enabled=PackedStringArray("res://addons/boujie_water_shader/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
+[filesystem]
+
+import/blender/enabled=false
+
 [input]
 
 ui_cancel={

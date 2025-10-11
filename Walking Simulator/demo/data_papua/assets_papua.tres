@@ -1,9 +1,9 @@
-[gd_resource type="Terrain3DAssets" load_steps=72 format=3 uid="uid://cr4bb2vj6hp7c"]
+[gd_resource type="Terrain3DAssets" load_steps=72 format=3 uid="uid://dal3jhw6241qg"]
 
 [ext_resource type="PackedScene" uid="uid://bn5nf4esciwex" path="res://demo/assets/models/LODExample.tscn" id="1_4jrdu"]
 [ext_resource type="PackedScene" uid="uid://ghmmrkmkvmh1" path="res://Assets/PSX/PSX Forest/Oak_Tree_2.fbx" id="2_adagb"]
-[ext_resource type="Texture2D" uid="uid://c88j3oj0lf6om" path="res://Assets/Terrain/Shared/demo_assets/textures/rock023_alb_ht.png" id="2_pog6b"]
-[ext_resource type="Texture2D" uid="uid://ddprscrpsofah" path="res://Assets/Terrain/Shared/demo_assets/textures/ground037_alb_ht.png" id="3_g8f2m"]
+[ext_resource type="Texture2D" uid="uid://c88j3oj0lf6om" path="res://demo/assets/textures/rock023_alb_ht.png" id="2_pog6b"]
+[ext_resource type="Texture2D" uid="uid://ddprscrpsofah" path="res://demo/assets/textures/ground037_alb_ht.png" id="3_g8f2m"]
 [ext_resource type="PackedScene" uid="uid://42t1q14nfxt" path="res://Assets/PSX/PSX Forest/Moss_Fern_Blob_1.fbx" id="3_rh1ov"]
 [ext_resource type="Texture2D" uid="uid://c307hdmos4gtm" path="res://demo/assets/textures/rock023_nrm_rgh.png" id="3_wncaf"]
 [ext_resource type="PackedScene" uid="uid://b3jg5hbdtgban" path="res://Assets/PSX/PSX Forest/Moss_Fern_Blob_2.fbx" id="4_0vcnd"]
