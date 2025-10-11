@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bkf0yli2ifbr0"]
 
-[ext_resource type="PackedScene" uid="uid://27q72ck8xq0j" path="res://Assets/Models/Indonesia Barat/female_hand.glb" id="1_hxaak"]
+[ext_resource type="PackedScene" uid="uid://27q72ck8xq0j" path="res://Assets/Hunyuan/Indonesia Barat/female_hand.glb" id="1_hxaak"]
 [ext_resource type="Script" uid="uid://dbx8fn0aoqtgk" path="res://Systems/IndonesiaBarat/cook mechanic/hand.gd" id="2_ml4kv"]
 
 [node name="Hand" instance=ExtResource("1_hxaak")]
@@ -13,4 +13,4 @@ transform = Transform3D(1, 0, 0, 0, 2.22045e-16, 1, 0, -1, 2.22045e-16, 0.696509
 transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, -0.684481, -3.51302, 16.1183)
 
 [node name="PickAnchor" type="Node3D" parent="." index="1"]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0.018259, 0.227991)
+transform = Transform3D(10, 0, 0, 0, -4.37114e-07, 10, 0, -10, -4.37114e-07, 0, 0.018259, 0.316314)

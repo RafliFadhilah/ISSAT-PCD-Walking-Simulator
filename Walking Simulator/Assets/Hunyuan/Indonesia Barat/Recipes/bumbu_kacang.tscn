@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cdmy7tbsdd0nn"]
+
+[ext_resource type="PackedScene" uid="uid://6452wyo83nkp" path="res://Assets/Hunyuan/Indonesia Barat/Recipes/Raw/BumbuKacang.glb" id="1_t7v8a"]
+
+[node name="BumbuKacang" instance=ExtResource("1_t7v8a")]
+
+[node name="material" parent="." index="0"]
+transform = Transform3D(0.04, 0, 0, 0, -1.74846e-09, -0.04, 0, 0.04, -1.74846e-09, 0, 0, 0)

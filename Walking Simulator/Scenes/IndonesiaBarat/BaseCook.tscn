@@ -1,18 +1,18 @@
-[gd_scene load_steps=47 format=3 uid="uid://fpvdfqfmhf0k"]
+[gd_scene load_steps=46 format=3 uid="uid://fpvdfqfmhf0k"]
 
 [ext_resource type="Script" uid="uid://cg4776h0bot4o" path="res://Systems/IndonesiaBarat/base_cook.gd" id="1_1gg5b"]
 [ext_resource type="PackedScene" uid="uid://byr14ooqsm6yq" path="res://Scenes/IndonesiaBarat/Asset/coffee_table_1.tscn" id="1_fjxop"]
-[ext_resource type="PackedScene" uid="uid://d11gfr5vouf8c" path="res://Assets/Models/Indonesia Barat/North/Rumah5/pasar light5.glb" id="1_n3cnu"]
-[ext_resource type="PackedScene" uid="uid://bltd6sujf7xpb" path="res://Assets/Models/Indonesia Barat/North/Rumah1/Lightver/rumah light1.glb" id="2_1gg5b"]
+[ext_resource type="PackedScene" uid="uid://d11gfr5vouf8c" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah5/pasar light5.glb" id="1_n3cnu"]
+[ext_resource type="PackedScene" uid="uid://bltd6sujf7xpb" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah1/Lightver/rumah light1.glb" id="2_1gg5b"]
 [ext_resource type="ArrayMesh" uid="uid://bkios1ea1tvqq" path="res://Assets/Students/kompor/d5615d3b280860bf53f7efd9e4f4c720.obj" id="2_4gsfl"]
 [ext_resource type="Script" uid="uid://tj6mewptslrv" path="res://Systems/IndonesiaBarat/cook mechanic/cook_game_manager.gd" id="2_w2e7r"]
-[ext_resource type="PackedScene" uid="uid://cnas0ns62s1lu" path="res://Assets/Models/Indonesia Barat/North/Rumah3/pasar light3.glb" id="3_iuoee"]
+[ext_resource type="PackedScene" uid="uid://cnas0ns62s1lu" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah3/pasar light3.glb" id="3_iuoee"]
 [ext_resource type="Script" uid="uid://vitpcx4k0fc" path="res://Systems/IndonesiaBarat/cook mechanic/pot_manager.gd" id="3_w2e7r"]
 [ext_resource type="ArrayMesh" uid="uid://wee1ucwt5ppf" path="res://Assets/Students/cookingpot/object/CookingPot.obj" id="3_y0ltf"]
 [ext_resource type="ArrayMesh" uid="uid://py0b3xy0bm1y" path="res://Assets/Students/foodbox/objek/Foodbox.obj" id="4_4gsfl"]
-[ext_resource type="PackedScene" uid="uid://cu0l6rmdae5no" path="res://Assets/Models/Indonesia Barat/North/Rumah2/rumah2.glb" id="4_32gdy"]
+[ext_resource type="PackedScene" uid="uid://cu0l6rmdae5no" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah2/rumah2.glb" id="4_32gdy"]
 [ext_resource type="Texture2D" uid="uid://cjrhgwk6syd48" path="res://Assets/Students/foodbox/texture/Foodbox_Foodbox_mat_AlbedoTransparency.png" id="5_kcr1m"]
-[ext_resource type="PackedScene" uid="uid://bhfr0s4mnb37h" path="res://Assets/Models/Indonesia Barat/North/Rumah1/Lightver/rumah light1.tscn" id="5_u4j8q"]
+[ext_resource type="PackedScene" uid="uid://bhfr0s4mnb37h" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah1/Lightver/rumah light1.tscn" id="5_u4j8q"]
 [ext_resource type="Texture2D" uid="uid://7g8u1kwmaje0" path="res://Assets/Students/foodbox/texture/Foodbox_Foodbox_mat_Normal.png" id="7_itisc"]
 [ext_resource type="Texture2D" uid="uid://b7cw32eygpqg5" path="res://Assets/Students/knife/texture/knife2.png" id="8_qnpcw"]
 [ext_resource type="ArrayMesh" uid="uid://bnte3fwv060p" path="res://Assets/Students/knife/object/knife2.obj" id="9_du4to"]
@@ -26,7 +26,6 @@
 [ext_resource type="Script" uid="uid://c4w3q3v1ac6ki" path="res://Systems/UI/Cooking Game/pot_display_ui.gd" id="21_8inw4"]
 [ext_resource type="PackedScene" uid="uid://cwgmnhcg1t38c" path="res://Scenes/IndonesiaBarat/Asset/bahan_makanan_dummy.tscn" id="22_j0hop"]
 [ext_resource type="PackedScene" uid="uid://bkf0yli2ifbr0" path="res://Scenes/IndonesiaBarat/Asset/Hand.tscn" id="22_u4j8q"]
-[ext_resource type="PackedScene" uid="uid://cdmy7tbsdd0nn" path="res://Assets/Models/Indonesia Barat/Recipes/bumbu_kacang.tscn" id="26_giy0y"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_j0hop"]
 size = Vector3(56.8953, 10.2532, 20.1951)
@@ -125,11 +124,6 @@ normal_texture = ExtResource("7_itisc")
 [sub_resource type="SphereShape3D" id="SphereShape3D_u4j8q"]
 radius = 0.0285252
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dpe0t"]
-metallic = 1.0
-metallic_specular = 0.0
-roughness = 0.55
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fjxop"]
 metallic = 1.0
 roughness = 0.75
@@ -139,6 +133,11 @@ emission_energy_multiplier = 16.0
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kcr1m"]
 metallic = 1.0
 roughness = 0.52
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dpe0t"]
+metallic = 1.0
+metallic_specular = 0.0
+roughness = 0.55
 
 [node name="BaseCook" type="Node3D"]
 script = ExtResource("1_1gg5b")
@@ -211,7 +210,7 @@ transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
 [node name="Decoration" type="Node3D" parent="."]
 
 [node name="Knife2" type="MeshInstance3D" parent="Decoration"]
-transform = Transform3D(0.278546, -0.11141, 0, -4.8699e-09, -1.21756e-08, -0.3, 0.11141, 0.278546, -1.31134e-08, -1.00038, 2.02678, 0.116816)
+transform = Transform3D(0.278546, -0.11141, 0, -4.8699e-09, -1.21756e-08, -0.3, 0.11141, 0.278546, -1.31134e-08, -0.783465, 2.02678, 0.116816)
 material_override = SubResource("StandardMaterial3D_lxqvn")
 material_overlay = SubResource("StandardMaterial3D_n3cnu")
 mesh = ExtResource("9_du4to")
@@ -245,12 +244,15 @@ script = ExtResource("21_8inw4")
 [node name="FoodBox" type="Node3D" parent="."]
 
 [node name="Foodbox1" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.85918, 1.75781, 0.439855)
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 2.11496, 1.77302, 0.439855)
 mesh = ExtResource("4_4gsfl")
 surface_material_override/0 = SubResource("StandardMaterial3D_6mneh")
 
-[node name="BahanMakananDummy" parent="FoodBox/Foodbox1" instance=ExtResource("22_j0hop")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0449558, 0)
+[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0419282, 0)
+
+[node name="BahanMakananDummy" parent="FoodBox/Foodbox1/Anchor" instance=ExtResource("22_j0hop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00302757, 0)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
@@ -259,28 +261,8 @@ collision_mask = 2
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox1/StaticBody3D"]
 shape = SubResource("SphereShape3D_u4j8q")
 
-[node name="BumbuKacang" parent="FoodBox/Foodbox1" instance=ExtResource("26_giy0y")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0379309, 0)
-
-[node name="Foodbox4" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.85994, 1.78073, -0.427631)
-gi_mode = 2
-mesh = ExtResource("4_4gsfl")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
-collision_mask = 2
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox4/StaticBody3D"]
-shape = SubResource("SphereShape3D_u4j8q")
-
-[node name="BahanMakananDummy2" parent="FoodBox/Foodbox4" instance=ExtResource("22_j0hop")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0473865, 0)
-
 [node name="Foodbox2" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -1.72974, 1.7354, 0.415089)
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -2.09187, 1.7354, 0.415089)
 material_overlay = SubResource("StandardMaterial3D_fjxop")
 gi_mode = 2
 mesh = ExtResource("4_4gsfl")
@@ -293,11 +275,14 @@ collision_mask = 2
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox2/StaticBody3D"]
 shape = SubResource("SphereShape3D_u4j8q")
 
-[node name="BahanMakananDummy4" parent="FoodBox/Foodbox2" instance=ExtResource("22_j0hop")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0440093, 0)
+[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0418833, 0)
+
+[node name="BahanMakananDummy4" parent="FoodBox/Foodbox2/Anchor" instance=ExtResource("22_j0hop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00212596, 0)
 
 [node name="Foodbox3" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -1.72974, 1.74468, -0.441354)
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -2.03614, 1.74468, -0.441354)
 material_overlay = SubResource("StandardMaterial3D_kcr1m")
 mesh = ExtResource("4_4gsfl")
 skeleton = NodePath("../..")
@@ -309,8 +294,111 @@ collision_mask = 2
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox3/StaticBody3D"]
 shape = SubResource("SphereShape3D_u4j8q")
 
-[node name="BahanMakananDummy3" parent="FoodBox/Foodbox3" instance=ExtResource("22_j0hop")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0504236, 0)
+[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0346826, 0)
+
+[node name="BahanMakananDummy3" parent="FoodBox/Foodbox3/Anchor" instance=ExtResource("22_j0hop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0051088, 0)
+
+[node name="Foodbox4" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 2.07071, 1.78073, -0.427631)
+gi_mode = 2
+mesh = ExtResource("4_4gsfl")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox4/StaticBody3D"]
+shape = SubResource("SphereShape3D_u4j8q")
+
+[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00120205, 0.0341337, 0)
+
+[node name="BahanMakananDummy2" parent="FoodBox/Foodbox4/Anchor" instance=ExtResource("22_j0hop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00839376, 0)
+
+[node name="Foodbox5" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.22495, 1.78073, -0.435951)
+gi_mode = 2
+mesh = ExtResource("4_4gsfl")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox5/StaticBody3D"]
+shape = SubResource("SphereShape3D_u4j8q")
+
+[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00120205, 0.0341337, 0)
+
+[node name="BahanMakananDummy2" parent="FoodBox/Foodbox5/Anchor" instance=ExtResource("22_j0hop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00839376, 0)
+
+[node name="Foodbox6" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.22502, 1.78073, 0.397273)
+gi_mode = 2
+mesh = ExtResource("4_4gsfl")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox6/StaticBody3D"]
+shape = SubResource("SphereShape3D_u4j8q")
+
+[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00120205, 0.0341337, 0)
+
+[node name="BahanMakananDummy2" parent="FoodBox/Foodbox6/Anchor" instance=ExtResource("22_j0hop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00839376, 0)
+
+[node name="Foodbox7" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -1.19982, 1.78073, 0.397273)
+gi_mode = 2
+mesh = ExtResource("4_4gsfl")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox7/StaticBody3D"]
+shape = SubResource("SphereShape3D_u4j8q")
+
+[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00120205, 0.0341337, 0)
+
+[node name="BahanMakananDummy2" parent="FoodBox/Foodbox7/Anchor" instance=ExtResource("22_j0hop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00839376, 0)
+
+[node name="Foodbox8" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -1.19982, 1.73892, -0.4158)
+gi_mode = 2
+mesh = ExtResource("4_4gsfl")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox8/StaticBody3D"]
+shape = SubResource("SphereShape3D_u4j8q")
+
+[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00120205, 0.0341337, 0)
+
+[node name="BahanMakananDummy2" parent="FoodBox/Foodbox8/Anchor" instance=ExtResource("22_j0hop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00839376, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-0.999818, -2.79018e-08, -0.0190754, -0.0167866, 0.474949, 0.879853, 0.00905981, 0.880013, -0.474863, 0.030817, 5.02118, -1.49868)
