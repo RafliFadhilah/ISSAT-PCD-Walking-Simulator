@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dunseep33s5pf"]
+[gd_scene load_steps=6 format=3 uid="uid://dunseep33s5pf"]
 
 [ext_resource type="PackedScene" uid="uid://c18gaitq02lx4" path="res://Assets/Sketchfab/old_ropebridge_low_poly/scene.gltf" id="1_yhh87"]
 
@@ -7,6 +7,12 @@ data = PackedVector3Array(-450.096, 70.0144, -41.9592, -450.096, 69.0473, -44.14
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_jj2sk"]
 size = Vector3(127.193, 22.2937, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7cwcn"]
+size = Vector3(8.35052, 0.14856, 5.39233)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5akfg"]
+size = Vector3(1, 0.288574, 5.23584)
 
 [node name="Sketchfab_Scene" instance=ExtResource("1_yhh87")]
 
@@ -22,3 +28,63 @@ shape = SubResource("BoxShape3D_jj2sk")
 [node name="CollisionShape3D3" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="2"]
 transform = Transform3D(7.32656, 0, 0, 0, 9.32858, 0, 0, 0, 1, 0.937283, 21.5719, -47.4705)
 shape = SubResource("BoxShape3D_jj2sk")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="3"]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, -23.576, -82.516, 7.10205)
+shape = SubResource("BoxShape3D_7cwcn")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="4"]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, -134.029, -76.7073, 7.45605)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="5"]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 91.4206, -80.8436, 7.45605)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="6"]
+transform = Transform3D(19.8717, 2.26164, -5.02184e-16, -2.26164, 19.8717, 2.84849e-17, 5.02184e-16, 2.84849e-17, 20, -179.65, -71.2071, 7.45605)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="7"]
+transform = Transform3D(19.8717, 2.26164, -5.02184e-16, -2.26164, 19.8717, 2.84849e-17, 5.02184e-16, 2.84849e-17, 20, -226.404, -65.013, 7.45605)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="8"]
+transform = Transform3D(19.465, 4.59488, -1.02027e-15, -4.59488, 19.465, 1.18789e-16, 1.02027e-15, 1.18788e-16, 20, -268.853, -56.8062, 7.45605)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="9"]
+transform = Transform3D(19.465, 4.59488, -1.02027e-15, -4.59488, 19.465, 1.18789e-16, 1.02027e-15, 1.18788e-16, 20, -315.324, -48.8319, 7.45605)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D11" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="10"]
+transform = Transform3D(19.465, 4.59488, -1.02027e-15, -4.59488, 19.465, 1.18789e-16, 1.02027e-15, 1.18788e-16, 20, -358.97, -39.2269, 7.45605)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D12" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="11"]
+transform = Transform3D(19.465, 4.59488, -1.02027e-15, -4.59488, 19.465, 1.18789e-16, 1.02027e-15, 1.18788e-16, 20, -405.643, -29.4434, 7.45605)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D13" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="12"]
+transform = Transform3D(-19.8613, -2.26045, -0.646704, -2.26164, 19.8717, 8.43775e-08, 0.642555, 0.0731303, -19.9895, 181.237, -72.9377, 11.1043)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D14" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="13"]
+transform = Transform3D(-19.8613, -2.26045, -0.646704, -2.26164, 19.8717, 8.43775e-08, 0.642555, 0.0731303, -19.9895, 227.967, -64.0571, 9.59245)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D15" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="14"]
+transform = Transform3D(-19.4548, -4.59248, -0.646704, -4.59488, 19.465, -1.63015e-14, 0.629407, 0.148577, -19.9895, 270.394, -56.8062, 8.21984)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D16" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="15"]
+transform = Transform3D(-19.4548, -4.59248, -0.646704, -4.59488, 19.465, -1.63015e-14, 0.629407, 0.148577, -19.9895, 316.841, -48.8319, 6.71719)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D17" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="16"]
+transform = Transform3D(-19.4548, -4.59248, -0.646704, -4.59488, 19.465, -1.63015e-14, 0.629407, 0.148577, -19.9895, 360.464, -39.2269, 5.3059)
+shape = SubResource("BoxShape3D_5akfg")
+
+[node name="CollisionShape3D18" type="CollisionShape3D" parent="Sketchfab_model/e668c78a42e84b6da4375de74238d6f0_fbx/RootNode/ropebridge/ropebridge_blinn1_0/StaticBody3D" index="17"]
+transform = Transform3D(-19.4548, -4.59248, -0.646704, -4.59488, 19.465, -1.63015e-14, 0.629407, 0.148577, -19.9895, 407.113, -29.4434, 3.79669)
+shape = SubResource("BoxShape3D_5akfg")
