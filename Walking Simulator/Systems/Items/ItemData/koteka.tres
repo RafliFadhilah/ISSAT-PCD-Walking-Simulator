@@ -1,7 +1,7 @@
 [gd_resource type="CulturalItem" script_class="CulturalItem" load_steps=3 format=3 uid="uid://koteka_item"]
 
 [ext_resource type="Script" path="res://Systems/Items/CulturalItem.gd" id="1_koteka"]
-[ext_resource type="Texture2D" uid="uid://bm6sgr8bvht44" path="res://Assets/Images/koteka.png" id="2_koteka"]
+[ext_resource type="Texture2D" uid="uid://bm6sgr8bvht44" path="res://Assets/Images/Item/Indonesia Timur/koteka.png" id="2_koteka"]
 
 [resource]
 script = ExtResource("1_koteka")

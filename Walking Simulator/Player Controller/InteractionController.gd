@@ -20,6 +20,11 @@ var min_reinteraction_delay: float = 3.0  # Minimum 3 seconds between interactio
 var npcs_in_range: Array[CulturalInteractableObject] = []
 var nearest_npc: CulturalInteractableObject = null
 
+# Artifact interaction tracking
+var artifacts_in_range: Array[CulturalInteractableObject] = []
+var nearest_artifact: CulturalInteractableObject = null
+var artifact_interaction_range: float = 3.0  # Default range for artifacts
+
 func _ready():
 	# Set up the prompt label styling
 	setup_prompt_label()
@@ -177,29 +182,41 @@ func _process(_delta):
 		GameLogger.debug("Running periodic fallback check for NPCs")
 		check_for_npcs_in_range()
 	
-	# Priority 1: Check for raycast-based interactions (artifacts have priority over NPC)
-	var object = get_collider()
+	# Check for artifacts in range (every frame for better responsiveness)
+	check_for_artifacts_in_range()
 	
-	# Debug: Print collision detection
-	if object:
-		print("RayCast3D detected collision with: ", object.name, " (Type: ", object.get_class(), ")")
+	# Priority 1: Check for artifact interactions (artifacts have highest priority)
+	if nearest_artifact and nearest_artifact.can_interact:
+		new_interactable = nearest_artifact
+		found_interactable = true
 	
-	# If raycast hits a StaticBody3D, check if its parent is a CulturalInteractableObject
-	if object:
-		print("Checking object parent...")
-		if object is CulturalInteractableObject:
-			print("Object is CulturalInteractableObject")
-			new_interactable = object
-			found_interactable = true
-		elif object.get_parent() and object.get_parent() is CulturalInteractableObject:
-			# StaticBody3D child of WorldCulturalItem
-			print("Parent is CulturalInteractableObject: ", object.get_parent().name)
-			new_interactable = object.get_parent()
-			found_interactable = true
-		else:
-			print("No valid interactable found - Parent: ", object.get_parent())
+	# Priority 2: Check for raycast-based interactions (fallback for objects without distance check)
+	if not found_interactable:
+		var object = get_collider()
+	# Priority 2: Check for raycast-based interactions (fallback for objects without distance check)
+	if not found_interactable:
+		var object = get_collider()
 	
-	# Priority 2: If no artifact in raycast, check for NPC interactions (Area3D based)
+		# Debug: Print collision detection
+		if object:
+			print("RayCast3D detected collision with: ", object.name, " (Type: ", object.get_class(), ")")
+		
+		# If raycast hits a StaticBody3D, check if its parent is a CulturalInteractableObject
+		if object:
+			print("Checking object parent...")
+			if object is CulturalInteractableObject:
+				print("Object is CulturalInteractableObject")
+				new_interactable = object
+				found_interactable = true
+			elif object.get_parent() and object.get_parent() is CulturalInteractableObject:
+				# StaticBody3D child of WorldCulturalItem
+				print("Parent is CulturalInteractableObject: ", object.get_parent().name)
+				new_interactable = object.get_parent()
+				found_interactable = true
+			else:
+				print("No valid interactable found - Parent: ", object.get_parent())
+	
+	# Priority 3: If no artifact or raycast hit, check for NPC interactions (Area3D based)
 	if not found_interactable and nearest_npc and nearest_npc.can_interact:
 		# Double check distance to nearest NPC to ensure it's actually in range
 		var player = get_parent()
@@ -318,6 +335,69 @@ func check_for_npcs_in_range():
 		GameLogger.debug("DEBUG: After fallback - NPCs in range: " + str(npcs_in_range.size()) + ", Nearest: " + nearest_name)
 	else:
 		GameLogger.debug("DEBUG: After fallback - No NPCs in range")
+
+func check_for_artifacts_in_range():
+	# Check for artifacts in range using distance calculation
+	var player = get_parent()
+	if not player:
+		return
+	
+	var artifacts = get_tree().get_nodes_in_group("artifact")
+	
+	# Clear artifacts that are too far
+	var artifacts_to_remove = []
+	for artifact in artifacts_in_range:
+		if not artifacts.has(artifact):
+			artifacts_to_remove.append(artifact)
+			continue
+			
+		var distance = player.global_position.distance_to(artifact.global_position)
+		if distance > artifact_interaction_range * 1.2:  # Add 20% buffer
+			artifacts_to_remove.append(artifact)
+	
+	for artifact in artifacts_to_remove:
+		artifacts_in_range.erase(artifact)
+		GameLogger.debug("Removed artifact from range: " + artifact.name)
+	
+	# Check for new artifacts in range
+	for artifact in artifacts:
+		if artifact is CulturalInteractableObject or artifact.has_method("_interact"):
+			var distance = player.global_position.distance_to(artifact.global_position)
+			
+			if distance <= artifact_interaction_range:
+				# Artifact is in range
+				if not artifacts_in_range.has(artifact):
+					artifacts_in_range.append(artifact)
+					GameLogger.info("Artifact entered range: " + artifact.name + " (distance: " + str(distance) + "m)")
+			else:
+				# Artifact is out of range
+				if artifacts_in_range.has(artifact):
+					artifacts_in_range.erase(artifact)
+					GameLogger.debug("Artifact left range: " + artifact.name)
+	
+	# Update nearest artifact
+	update_nearest_artifact()
+
+func update_nearest_artifact():
+	var player = get_parent()
+	if not player:
+		return
+	
+	var nearest_distance = INF
+	var previous_nearest = nearest_artifact
+	nearest_artifact = null
+	
+	for artifact in artifacts_in_range:
+		if artifact.can_interact:
+			var distance = player.global_position.distance_to(artifact.global_position)
+			if distance < nearest_distance:
+				nearest_distance = distance
+				nearest_artifact = artifact
+	
+	if nearest_artifact and nearest_artifact != previous_nearest:
+		GameLogger.info("Nearest artifact updated: " + nearest_artifact.name + " (distance: " + str(nearest_distance) + "m)")
+	elif not nearest_artifact and previous_nearest:
+		GameLogger.debug("No artifacts in range")
 
 func on_enter_interaction_range(interactable: CulturalInteractableObject):
 	# Only show interaction prompt if the interactable can actually interact

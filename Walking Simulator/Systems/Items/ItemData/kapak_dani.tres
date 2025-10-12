@@ -1,7 +1,7 @@
 [gd_resource type="CulturalItem" script_class="CulturalItem" format=3 uid="uid://kapak_dani_item"]
 
 [ext_resource type="Script" path="res://Systems/Items/CulturalItem.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://bdsmd6ilsa3tx" path="res://Assets/Images/kapak_dani.png" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://bdsmd6ilsa3tx" path="res://Assets/Images/Item/Indonesia Timur/kapak_dani.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_script")

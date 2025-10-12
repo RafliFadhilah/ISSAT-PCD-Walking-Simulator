@@ -1,0 +1,109 @@
+[gd_scene load_steps=2 format=3 uid="uid://dxqonbo0twax4"]
+
+[ext_resource type="Script" uid="uid://dj2jvj2b7t8fh" path="res://Tests/Experimental_Papua_Scenes/Performance_Testing/PapuaScene_FPSDisplay.gd" id="1_hisvh"]
+
+[node name="UI" type="CanvasLayer"]
+
+[node name="CulturalInfoPanel" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NPCDialogueUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SimpleRadarSystem" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TerrainControls" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InventorySystem" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DebugUI" type="CanvasLayer" parent="."]
+
+[node name="MovementDebug" type="Label" parent="DebugUI"]
+visible = false
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -100.0
+offset_right = 400.0
+offset_bottom = -20.0
+grow_vertical = 0
+text = "🎮 Controls:
+WASD - Move
+Mouse - Look around
+M - Toggle mouse mode
+Shift - Run
+Space - Jump
+ESC - Exit
+
+�️ MANUAL ASSET PLACEMENT MODE
+✋ No runtime generation
+📝 Use Godot Editor to place assets
+🌲 Assets organized in ManualAssets container
+
+📁 Asset Categories Available:
+- Trees (Vegetation)
+- Rocks (Geological features)
+- Traditional Buildings
+- Cultural Artifacts
+- NPCs (Non-Player Characters)
+
+� Drag & Drop assets from FileSystem
+🎯 Assets will snap to terrain when placed
+📍 Organize by category in scene tree"
+vertical_alignment = 1
+
+[node name="FPSDisplay" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 60.0
+grow_horizontal = 0
+script = ExtResource("1_hisvh")
+
+[node name="FPSLabel" type="Label" parent="FPSDisplay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "FPS: --"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="FPSUpdateTimer" type="Timer" parent="FPSDisplay"]
+wait_time = 0.5
+autostart = true

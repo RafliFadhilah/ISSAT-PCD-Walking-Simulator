@@ -150,7 +150,7 @@ func collect_artifact(region: String, artifact: String):
 					fallback_item.description = "Collected " + artifact
 					
 					# Try to load icon separately
-					var icon_path = "res://Assets/Images/" + artifact + ".png"
+					var icon_path = "res://Assets/Images/Item/Indonesia Timur/" + artifact + ".png"
 					if ResourceLoader.exists(icon_path):
 						var icon_texture = load(icon_path)
 						if icon_texture:

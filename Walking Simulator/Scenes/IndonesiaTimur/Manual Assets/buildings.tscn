@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://tmkscvv51v13"]
+
+[ext_resource type="PackedScene" uid="uid://c5islfmhf004a" path="res://Assets/Trellis/rumah_papua.glb" id="1_j4erf"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_shlqg"]
+
+[node name="Buildings" type="Node3D"]
+
+[node name="rumah_papua" parent="." instance=ExtResource("1_j4erf")]
+transform = Transform3D(6.95261, 0, -7.18758, 0, 10, 0, 7.18758, 0, 6.95261, -31.23, 3.35259, -25.026)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="rumah_papua"]
+transform = Transform3D(0.764321, 0, -2.98023e-08, 0, 0.734419, 0, 0, 0, 0.772026, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="rumah_papua/StaticBody3D"]
+shape = SubResource("CylinderShape3D_shlqg")
+
+[node name="rumah_papua2" parent="." instance=ExtResource("1_j4erf")]
+transform = Transform3D(6.95261, 0, -7.18758, 0, 10, 0, 7.18758, 0, 6.95261, 3.0819, 3.35259, -25.026)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="rumah_papua2"]
+transform = Transform3D(0.764321, 0, -2.98023e-08, 0, 0.734419, 0, 0, 0, 0.772026, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="rumah_papua2/StaticBody3D"]
+shape = SubResource("CylinderShape3D_shlqg")
+
+[node name="rumah_papua3" parent="." instance=ExtResource("1_j4erf")]
+transform = Transform3D(-2.06785, 0, -9.78387, 0, 10, 0, 9.78387, 0, -2.06785, -19.7309, 3.35259, -25.026)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="rumah_papua3"]
+transform = Transform3D(0.764321, 0, -2.98023e-08, 0, 0.734419, 0, 0, 0, 0.772026, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="rumah_papua3/StaticBody3D"]
+shape = SubResource("CylinderShape3D_shlqg")
+
+[node name="rumah_papua4" parent="." instance=ExtResource("1_j4erf")]
+transform = Transform3D(9.99045, 0, 0.43689, 0, 10, 0, -0.43689, 0, 9.99045, -8.44069, 3.35259, -25.026)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="rumah_papua4"]
+transform = Transform3D(0.764321, 0, -2.98023e-08, 0, 0.734419, 0, 0, 0, 0.772026, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="rumah_papua4/StaticBody3D"]
+shape = SubResource("CylinderShape3D_shlqg")

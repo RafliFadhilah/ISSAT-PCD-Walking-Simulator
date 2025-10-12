@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://cp7josdwg6ykq"]
+
+[ext_resource type="PackedScene" uid="uid://bc4v1k37r617j" path="res://Assets/PSX/PSX Nature/Models/GLB/tree_stump_1.glb" id="1_yc1fq"]
+[ext_resource type="PackedScene" uid="uid://bt175dd0v2cqd" path="res://Assets/PSX/PSX Nature/Models/GLB/tree_log_1.glb" id="2_mvken"]
+[ext_resource type="PackedScene" uid="uid://dunseep33s5pf" path="res://Resources/Scenes/bridge.tscn" id="3_dkjg4"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_mgnbb"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_ovpw7"]
+height = 2.56531
+radius = 0.640625
+
+[node name="Misc" type="Node3D"]
+
+[node name="tree_stump_12" parent="." instance=ExtResource("1_yc1fq")]
+transform = Transform3D(1.99672, 0, 0, 0, 1.99672, 0, 0, 0, 1.99672, -5.89674, 0.0614271, -8.8718)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="tree_stump_12"]
+transform = Transform3D(0.59098, 0, 0, 0, 0.494439, 0, 0, 0, 0.576105, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="tree_stump_12/StaticBody3D"]
+shape = SubResource("CylinderShape3D_mgnbb")
+
+[node name="tree_log_12" parent="." instance=ExtResource("2_mvken")]
+transform = Transform3D(2.00549, 0, 0, 0, 2.00549, 0, 0, 0, 2.00549, -0.420815, -0.0220966, -6.52854)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="tree_log_12"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="tree_log_12/StaticBody3D"]
+transform = Transform3D(-0.0324971, -1.19316, -0.169702, 0.563372, -0.0826532, -9.18753e-17, -0.014566, -0.534802, 0.37861, -0.0447922, -0.00310308, 0.054081)
+shape = SubResource("CylinderShape3D_ovpw7")
+
+[node name="Bridge" parent="." instance=ExtResource("3_dkjg4")]
+transform = Transform3D(2.47874, 0, 1.68993, 0, 3, 0, -1.68993, 0, 2.47874, -192.076, -7.51925, 85.1524)
