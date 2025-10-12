@@ -5,9 +5,29 @@ extends CulturalInteractableObject
 @export var collection_animation: PackedScene
 @export var collection_sound: AudioStream
 
+@export_group("Visual Animation")
+@export var enable_floating: bool = true
+@export var float_amplitude: float = 0.3  ## Height of floating motion (meters)
+@export var float_speed: float = 2.0  ## Speed of floating motion
+@export var enable_rotation: bool = true
+@export var rotation_speed: Vector3 = Vector3(0, 1.0, 0)  ## Rotation speed per axis (radians/sec)
+@export var start_offset: float = 0.0  ## Phase offset for multiple artifacts
+
 var is_collected: bool = false
 
+# Animation variables
+var original_position: Vector3
+var time_passed: float = 0.0
+
 func _ready():
+	# Store original position for floating animation
+	original_position = position
+	
+	# Random start offset if not set
+	if start_offset == 0.0:
+		start_offset = randf() * TAU  # Random phase between 0 and 2π
+	time_passed = start_offset
+	
 	# Add to artifact group for radar detection
 	add_to_group("artifact")
 	
@@ -21,6 +41,22 @@ func _ready():
 	
 	# Connect to global signals
 	GlobalSignals.on_collect_artifact.connect(_on_artifact_collected)
+
+func _process(delta: float):
+	if is_collected:
+		return
+	
+	# Update time
+	time_passed += delta
+	
+	# Floating animation
+	if enable_floating:
+		var float_offset = sin(time_passed * float_speed) * float_amplitude
+		position.y = original_position.y + float_offset
+	
+	# Rotation animation
+	if enable_rotation:
+		rotation += rotation_speed * delta
 
 func _interact():
 	print("_interact() called on: ", item_name)

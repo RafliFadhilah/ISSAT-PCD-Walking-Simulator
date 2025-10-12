@@ -58,33 +58,11 @@ curve = SubResource("Curve_u4j8q")
 frequency = 0.0007
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0nieh"]
-resource_local_to_scene = false
-resource_name = ""
-width = 512
-height = 512
-invert = false
-in_3d_space = false
-generate_mipmaps = true
 seamless = true
-seamless_blend_skirt = 0.1
-as_normal_map = false
-bump_strength = 8.0
-normalize = true
 noise = SubResource("FastNoiseLite_j0hop")
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_qxb7o"]
-resource_local_to_scene = false
-resource_name = ""
-width = 512
-height = 512
-invert = false
-in_3d_space = false
-generate_mipmaps = true
 seamless = true
-seamless_blend_skirt = 0.1
-as_normal_map = false
-bump_strength = 8.0
-normalize = true
 noise = SubResource("FastNoiseLite_j0hop")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iqb40"]

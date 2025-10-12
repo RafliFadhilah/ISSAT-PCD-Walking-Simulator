@@ -34,7 +34,7 @@
 [ext_resource type="PackedScene" uid="uid://xdym5rlkmx71" path="res://Assets/PSX/PSX Nature/Models/GLB/grass_2.glb" id="24_iprm0"]
 [ext_resource type="PackedScene" uid="uid://7nkviswttv4k" path="res://Assets/PSX/PSX Nature/Models/GLB/grass_3.glb" id="25_gw86a"]
 [ext_resource type="PackedScene" uid="uid://dra0dqexoxdby" path="res://Assets/PSX/PSX Nature/Models/GLB/grass_4.glb" id="26_6oo3q"]
-[ext_resource type="PackedScene" uid="uid://cxhjdnqhho0fc" path="res://Assets/Sketchfab/banana_tree/scene.gltf" id="27_iprm0"]
+[ext_resource type="PackedScene" uid="uid://cxhjdnqhho0fc" path="res://Assets/Sketchfab/Indonesia Timur/banana_tree/scene.gltf" id="27_iprm0"]
 [ext_resource type="Texture2D" uid="uid://cd65tfojwq7ch" path="res://Assets/Textures/brown_mud_leaves_01_alb_ht.png" id="35_xbvx2"]
 [ext_resource type="Texture2D" uid="uid://dlobsntodyjf6" path="res://Assets/Textures/brown_mud_leaves_01_nor_rg.png" id="36_iprm0"]
 
