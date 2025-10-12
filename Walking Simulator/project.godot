@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Indonesian Cultural Heritage Exhibition"
+config/name="Issat ril"
 run/main_scene="res://Scenes/SplashScreen/SplashScreen.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"

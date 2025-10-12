@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://fpvdfqfmhf0k"]
+[gd_scene load_steps=43 format=3 uid="uid://fpvdfqfmhf0k"]
 
 [ext_resource type="Script" uid="uid://cg4776h0bot4o" path="res://Systems/IndonesiaBarat/base_cook.gd" id="1_1gg5b"]
 [ext_resource type="PackedScene" uid="uid://byr14ooqsm6yq" path="res://Scenes/IndonesiaBarat/Asset/coffee_table_1.tscn" id="1_fjxop"]
@@ -11,9 +11,8 @@
 [ext_resource type="ArrayMesh" uid="uid://wee1ucwt5ppf" path="res://Assets/Students/cookingpot/object/CookingPot.obj" id="3_y0ltf"]
 [ext_resource type="ArrayMesh" uid="uid://py0b3xy0bm1y" path="res://Assets/Students/foodbox/objek/Foodbox.obj" id="4_4gsfl"]
 [ext_resource type="PackedScene" uid="uid://cu0l6rmdae5no" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah2/rumah2.glb" id="4_32gdy"]
-[ext_resource type="Texture2D" uid="uid://cjrhgwk6syd48" path="res://Assets/Students/foodbox/texture/Foodbox_Foodbox_mat_AlbedoTransparency.png" id="5_kcr1m"]
+[ext_resource type="Script" uid="uid://deowx76kv2ig7" path="res://Systems/UI/Cooking Game/ui_manager.gd" id="4_w2e7r"]
 [ext_resource type="PackedScene" uid="uid://bhfr0s4mnb37h" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah1/Lightver/rumah light1.tscn" id="5_u4j8q"]
-[ext_resource type="Texture2D" uid="uid://7g8u1kwmaje0" path="res://Assets/Students/foodbox/texture/Foodbox_Foodbox_mat_Normal.png" id="7_itisc"]
 [ext_resource type="Texture2D" uid="uid://b7cw32eygpqg5" path="res://Assets/Students/knife/texture/knife2.png" id="8_qnpcw"]
 [ext_resource type="ArrayMesh" uid="uid://bnte3fwv060p" path="res://Assets/Students/knife/object/knife2.obj" id="9_du4to"]
 [ext_resource type="Texture2D" uid="uid://4f1a8lxxgnd3" path="res://Assets/Textures/Indonesia Barat/rock_tile_floor_1k/textures/rock_tile_floor_diff_1k.jpg" id="9_qnpcw"]
@@ -23,7 +22,7 @@
 [ext_resource type="Shader" uid="uid://co6j1jydalg8s" path="res://Systems/Shaders/sylize-sky.gdshader" id="12_j0hop"]
 [ext_resource type="Texture2D" uid="uid://dw1pylj1pjdx7" path="res://Assets/Textures/Indonesia Barat/rock_tile_floor_1k/textures/rock_tile_floor_rough_1k.jpg" id="13_lxqvn"]
 [ext_resource type="Texture2D" uid="uid://daxk3dhpxwmn6" path="res://Assets/Textures/Indonesia Barat/Sun.png" id="13_w2e7r"]
-[ext_resource type="Script" uid="uid://c4w3q3v1ac6ki" path="res://Systems/UI/Cooking Game/pot_display_ui.gd" id="21_8inw4"]
+[ext_resource type="Script" path="res://Systems/UI/Cooking Game/pot_display_ui.gd" id="21_8inw4"]
 [ext_resource type="PackedScene" uid="uid://cwgmnhcg1t38c" path="res://Scenes/IndonesiaBarat/Asset/bahan_makanan_dummy.tscn" id="22_j0hop"]
 [ext_resource type="PackedScene" uid="uid://bkf0yli2ifbr0" path="res://Scenes/IndonesiaBarat/Asset/Hand.tscn" id="22_u4j8q"]
 
@@ -114,13 +113,6 @@ roughness = 0.33
 height = 4.31805
 radius = 2.07715
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6mneh"]
-albedo_texture = ExtResource("5_kcr1m")
-metallic = 1.0
-metallic_specular = 0.0
-normal_enabled = true
-normal_texture = ExtResource("7_itisc")
-
 [sub_resource type="SphereShape3D" id="SphereShape3D_u4j8q"]
 radius = 0.0285252
 
@@ -134,11 +126,6 @@ emission_energy_multiplier = 16.0
 metallic = 1.0
 roughness = 0.52
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dpe0t"]
-metallic = 1.0
-metallic_specular = 0.0
-roughness = 0.55
-
 [node name="BaseCook" type="Node3D"]
 script = ExtResource("1_1gg5b")
 
@@ -147,6 +134,13 @@ script = ExtResource("2_w2e7r")
 
 [node name="PotManager" type="Node3D" parent="GameManager"]
 script = ExtResource("3_w2e7r")
+
+[node name="UIManager" type="Control" parent="GameManager"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_w2e7r")
 
 [node name="WorldEnvironment" type="Node3D" parent="."]
 
@@ -246,7 +240,6 @@ script = ExtResource("21_8inw4")
 [node name="Foodbox1" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 2.11496, 1.77302, 0.439855)
 mesh = ExtResource("4_4gsfl")
-surface_material_override/0 = SubResource("StandardMaterial3D_6mneh")
 
 [node name="Anchor" type="Node3D" parent="FoodBox/Foodbox1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0419282, 0)
@@ -305,7 +298,6 @@ transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 2.07071, 1.78073, -0.42763
 gi_mode = 2
 mesh = ExtResource("4_4gsfl")
 skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox4"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
@@ -325,7 +317,6 @@ transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.22495, 1.78073, -0.43595
 gi_mode = 2
 mesh = ExtResource("4_4gsfl")
 skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
@@ -345,7 +336,6 @@ transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1.22502, 1.78073, 0.397273
 gi_mode = 2
 mesh = ExtResource("4_4gsfl")
 skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox6"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
@@ -360,46 +350,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00120205, 0.0341337, 0)
 [node name="BahanMakananDummy2" parent="FoodBox/Foodbox6/Anchor" instance=ExtResource("22_j0hop")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00839376, 0)
 
-[node name="Foodbox7" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -1.19982, 1.78073, 0.397273)
-gi_mode = 2
-mesh = ExtResource("4_4gsfl")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
-collision_mask = 2
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox7/StaticBody3D"]
-shape = SubResource("SphereShape3D_u4j8q")
-
-[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00120205, 0.0341337, 0)
-
-[node name="BahanMakananDummy2" parent="FoodBox/Foodbox7/Anchor" instance=ExtResource("22_j0hop")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00839376, 0)
-
-[node name="Foodbox8" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -1.19982, 1.73892, -0.4158)
-gi_mode = 2
-mesh = ExtResource("4_4gsfl")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_dpe0t")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="FoodBox/Foodbox8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0347775, 0)
-collision_mask = 2
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="FoodBox/Foodbox8/StaticBody3D"]
-shape = SubResource("SphereShape3D_u4j8q")
-
-[node name="Anchor" type="Node3D" parent="FoodBox/Foodbox8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00120205, 0.0341337, 0)
-
-[node name="BahanMakananDummy2" parent="FoodBox/Foodbox8/Anchor" instance=ExtResource("22_j0hop")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00839376, 0)
-
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-0.999818, -2.79018e-08, -0.0190754, -0.0167866, 0.474949, 0.879853, 0.00905981, 0.880013, -0.474863, 0.030817, 5.02118, -1.49868)
 fov = 65.2626
@@ -408,3 +358,9 @@ fov = 65.2626
 
 [node name="Hand" parent="." instance=ExtResource("22_u4j8q")]
 transform = Transform3D(1, 0, 0, 0, 0.353475, -0.935444, 0, 0.935444, 0.353475, 0, 3.34324, -1.02684)
+
+[node name="DisplayUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
