@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://3v1h04y52tn3"
-path="res://.godot/imported/Tusuk Sate.glb-d312f02c9c07ce6db3202a867a3df44a.scn"
+path="res://.godot/imported/Tusuk Sate.glb-d6a10e7b16ff725e37999ad8a90d5147.scn"
 
 [deps]
 
-source_file="res://Assets/Hunyuan/Indonesia Barat/Recipes/Tusuk Sate.glb"
-dest_files=["res://.godot/imported/Tusuk Sate.glb-d312f02c9c07ce6db3202a867a3df44a.scn"]
+source_file="res://Assets/Hunyuan/Indonesia Barat/Recipes/Raw/Tusuk Sate.glb"
+dest_files=["res://.godot/imported/Tusuk Sate.glb-d6a10e7b16ff725e37999ad8a90d5147.scn"]
 
 [params]
 

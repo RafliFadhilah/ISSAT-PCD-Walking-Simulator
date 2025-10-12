@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bocyem1by6sqq"
-path.s3tc="res://.godot/imported/Tusuk Sate_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png-f02737bd515596f40657de04d55374aa.s3tc.ctex"
+uid="uid://0u5wr46lnle3"
+path.s3tc="res://.godot/imported/Tusuk Sate_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png-dd00ae6c26fdbd42cc8a156cf3a388eb.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://Assets/Hunyuan/Indonesia Barat/Recipes/Tusuk Sate_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png"
-dest_files=["res://.godot/imported/Tusuk Sate_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png-f02737bd515596f40657de04d55374aa.s3tc.ctex"]
+source_file="res://Assets/Hunyuan/Indonesia Barat/Recipes/Raw/Tusuk Sate_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png"
+dest_files=["res://.godot/imported/Tusuk Sate_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png-dd00ae6c26fdbd42cc8a156cf3a388eb.s3tc.ctex"]
 
 [params]
 

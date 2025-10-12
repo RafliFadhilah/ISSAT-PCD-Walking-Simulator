@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ddn6wsy1upqu0"
-path.s3tc="res://.godot/imported/Tusuk Sate_texture_pbr_20250901_normal.png-44463a02b76a4a37491113e317018d15.s3tc.ctex"
+uid="uid://cvm6350nq2d44"
+path.s3tc="res://.godot/imported/Tusuk Sate_texture_pbr_20250901_normal.png-3b8afadc287eaf61b1c85d8b758dae5a.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://Assets/Hunyuan/Indonesia Barat/Recipes/Tusuk Sate_texture_pbr_20250901_normal.png"
-dest_files=["res://.godot/imported/Tusuk Sate_texture_pbr_20250901_normal.png-44463a02b76a4a37491113e317018d15.s3tc.ctex"]
+source_file="res://Assets/Hunyuan/Indonesia Barat/Recipes/Raw/Tusuk Sate_texture_pbr_20250901_normal.png"
+dest_files=["res://.godot/imported/Tusuk Sate_texture_pbr_20250901_normal.png-3b8afadc287eaf61b1c85d8b758dae5a.s3tc.ctex"]
 
 [params]
 
@@ -28,7 +28,7 @@ compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=1
-roughness/src_normal="res://Assets/Hunyuan/Indonesia Barat/Recipes/Tusuk Sate_texture_pbr_20250901_normal.png"
+roughness/src_normal="res://Assets/Hunyuan/Indonesia Barat/Recipes/Raw/Tusuk Sate_texture_pbr_20250901_normal.png"
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
