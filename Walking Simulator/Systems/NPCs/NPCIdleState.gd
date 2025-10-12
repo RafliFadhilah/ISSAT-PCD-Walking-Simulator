@@ -14,6 +14,9 @@ func enter():
 	npc.interaction_prompt = "Press E to talk to " + npc.npc_name
 	idle_timer = 0.0
 	look_around_timer = 0.0
+	
+	# Play idle animation when entering idle state
+	npc.play_animation("idle", 0.3)
 
 func update(delta: float):
 	# Check if player is nearby

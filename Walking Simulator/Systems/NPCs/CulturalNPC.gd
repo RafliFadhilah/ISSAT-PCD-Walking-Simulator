@@ -47,6 +47,11 @@ var state_machine: NPCStateMachine
 var player_distance: float = 0.0
 var player: CharacterBody3D
 
+# Animation system
+var animation_player: AnimationPlayer
+var current_animation: String = ""
+var animation_state: String = "idle"  # idle, walking, victory
+
 # Dialogue state tracking
 var dialogue_just_ended: bool = false
 var dialogue_end_time: float = 0.0
@@ -123,6 +128,9 @@ func _ready():
 	setup_npc()
 	connect_signals()
 	find_player()
+	
+	# Initialize animation system
+	setup_animation_system()
 	
 	# Initialize state machine
 	state_machine = NPCStateMachine.new(self)
@@ -278,6 +286,93 @@ func setup_npc():
 	
 	GameLogger.debug("NPC " + npc_name + " setup complete - Interaction range: " + str(interaction_range))
 
+func setup_animation_system():
+	"""Setup animation system for the NPC"""
+	# Look for AnimationPlayer in the NPC model hierarchy
+	animation_player = _find_animation_player(self)
+	
+	if animation_player:
+		GameLogger.info("NPC " + npc_name + " - AnimationPlayer found: " + animation_player.name)
+		
+		# List available animations for debugging
+		if animation_player.has_animation_library(""):
+			var library = animation_player.get_animation_library("")
+			var anim_list = library.get_animation_list()
+			GameLogger.info("Available animations for " + npc_name + ": " + str(anim_list))
+			
+			# Verify each animation exists
+			for anim in ["breathing_idle", "walking", "victory"]:
+				if animation_player.has_animation(anim):
+					GameLogger.info("  - " + anim + ": OK")
+				else:
+					GameLogger.warning("  - " + anim + ": NOT FOUND")
+		
+		# Start with idle animation
+		play_animation("idle")
+		GameLogger.info("Started idle animation for " + npc_name)
+	else:
+		GameLogger.warning("NPC " + npc_name + " - No AnimationPlayer found in hierarchy")
+
+func _find_animation_player(node: Node) -> AnimationPlayer:
+	"""Recursively search for AnimationPlayer in node hierarchy"""
+	if node is AnimationPlayer:
+		return node
+	
+	for child in node.get_children():
+		if child is AnimationPlayer:
+			return child
+		var result = _find_animation_player(child)
+		if result:
+			return result
+	
+	return null
+
+func play_animation(anim_name: String, blend_time: float = 0.2):
+	"""Play an animation with blending"""
+	if not animation_player:
+		return
+	
+	# Map animation names to actual animation resource names
+	var animation_map = {
+		"idle": "breathing_idle",
+		"walking": "walking",
+		"victory": "victory",
+		"talking": "breathing_idle"  # Fallback to idle for talking (talking animation not in library)
+	}
+	
+	var target_animation = animation_map.get(anim_name, anim_name)
+	
+	# Check if animation exists
+	if not animation_player.has_animation(target_animation):
+		GameLogger.warning("Animation not found: " + target_animation + " for NPC " + npc_name)
+		return
+	
+	# Don't restart the same animation if it's already playing
+	if current_animation == target_animation and animation_player.is_playing():
+		return
+	
+	# Play animation with blending
+	if current_animation != "" and blend_time > 0:
+		animation_player.play(target_animation, -1, 1.0, false)
+	else:
+		animation_player.play(target_animation)
+	
+	current_animation = target_animation
+	animation_state = anim_name
+	
+	GameLogger.info("NPC " + npc_name + " - Playing animation: " + target_animation + " (requested: " + anim_name + ")")
+
+func stop_animation():
+	"""Stop current animation"""
+	if animation_player and animation_player.is_playing():
+		animation_player.stop()
+		current_animation = ""
+
+func set_animation_state(state: String):
+	"""Set animation state (idle, walking, victory)"""
+	animation_state = state
+	play_animation(state)
+
 func setup_interaction_area():
 	# Create an Area3D for better interaction detection
 	var interaction_area = Area3D.new()
@@ -425,7 +520,7 @@ func _interact():
 	# Visual feedback for interaction
 	show_interaction_feedback()
 	
-	# Change to interacting state
+	# Change to interacting state (will handle animation)
 	if state_machine:
 		state_machine.change_state(state_machine.get_interacting_state())
 	
@@ -1081,6 +1176,13 @@ func end_visual_dialogue():
 	# CRITICAL: Re-enable player input after dialogue ends
 	# Release mouse and keyboard capture
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	# Return to idle state (state machine will handle animation)
+	if animation_state != "victory" and state_machine:
+		state_machine.change_state(state_machine.get_idle_state())
+		GameLogger.info("Dialogue ended, returning to idle state for " + npc_name)
+	else:
+		GameLogger.info("Dialogue ended but victory animation is playing for " + npc_name)
 	
 	GameLogger.info("=== DIALOGUE ENDED for " + npc_name + " ===")
 	
@@ -2262,6 +2364,28 @@ func give_artifact_to_npc() -> bool:
 		if inventory.remove_item(quest_artifact_required):
 			quest_completed = true
 			GameLogger.info("Quest completed! " + npc_name + " received " + quest_artifact_required)
+			
+			# Play victory animation when receiving item
+			play_animation("victory", 0.2)
+			GameLogger.info("Playing victory animation for " + npc_name)
+			
+			# Return to idle after victory animation finishes
+			if animation_player and animation_player.has_animation("victory"):
+				var victory_anim = animation_player.get_animation("victory")
+				var victory_duration = victory_anim.length
+				GameLogger.info("Victory animation duration: " + str(victory_duration) + " seconds")
+				
+				# Wait for animation to finish, then return to idle
+				var timer = get_tree().create_timer(victory_duration)
+				timer.timeout.connect(func():
+					if is_instance_valid(self):
+						play_animation("idle", 0.5)
+						GameLogger.info("Victory animation complete, returning to idle for " + npc_name)
+				)
+			else:
+				# If no victory animation, just stay in idle
+				GameLogger.warning("No victory animation found for " + npc_name)
+			
 			return true
 		else:
 			GameLogger.warning("Failed to remove artifact: " + quest_artifact_required)

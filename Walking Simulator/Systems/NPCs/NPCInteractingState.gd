@@ -14,6 +14,9 @@ func enter():
 	# Face the player
 	face_player()
 	
+	# Keep idle animation during interaction (talking animation not available)
+	npc.play_animation("idle", 0.3)
+	
 	# Start interaction
 	start_interaction()
 
@@ -49,6 +52,10 @@ func end_interaction():
 		"region": npc.cultural_region,
 		"action": "end_interaction"
 	}, 1, "npc_system")
+	
+	# Return to idle animation (only if not playing victory)
+	if npc.animation_state != "victory":
+		npc.play_animation("idle", 0.5)
 	
 	# Clean up dialogue system
 	if dialogue_system:

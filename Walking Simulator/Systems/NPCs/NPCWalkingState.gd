@@ -15,6 +15,9 @@ func enter():
 	set_new_target_position()
 	walk_timer = 0.0
 	reached_target = false
+	
+	# Play walking animation when entering walking state
+	npc.play_animation("walking", 0.3)
 
 func update(delta: float):
 	# Check if player is nearby (priority over walking)
