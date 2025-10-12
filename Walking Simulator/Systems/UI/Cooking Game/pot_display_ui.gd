@@ -202,7 +202,16 @@ func update_display(inventory: Dictionary) -> void:
 		cook_button.disabled = inventory.is_empty()
 
 func resize_to_content():
-	await get_tree().process_frame
+	# Jangan lanjut jika node tidak ada di scene tree (misal saat keluar scene)
+	if not is_inside_tree():
+		return
+	var tree := get_tree()
+	if tree == null:
+		return
+	await tree.process_frame
+	# Setelah menunggu frame, cek lagi apakah masih di tree
+	if not is_inside_tree():
+		return
 	var margin_container: MarginContainer = get_node_or_null("MarginContainer")
 	if not margin_container:
 		return
@@ -225,7 +234,12 @@ func _on_pot_manager_inventory_updated(inventory: Dictionary) -> void:
 
 func center_ui():
 	# Re-center UI di layar
-	var viewport_size = get_viewport().get_visible_rect().size
+	if not is_inside_tree():
+		return
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	var viewport_size = viewport.get_visible_rect().size
 	position = Vector2(
 		(viewport_size.x - size.x) / 2,
 		((viewport_size.y - size.y) / 2) 

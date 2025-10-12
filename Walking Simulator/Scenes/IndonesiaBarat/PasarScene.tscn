@@ -241,14 +241,14 @@ collision_layer = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.0122, 1.01166, -10.0056)
 shape = SubResource("BoxShape3D_b21cr")
 
-[node name="FoodstallSate2" parent="Environment/MarketStalls" instance=ExtResource("11_b21cr")]
+[node name="FoodstallSate" parent="Environment/MarketStalls" instance=ExtResource("11_b21cr")]
 transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, 9.59219, 1.74372, 9.45722)
 
-[node name="Stall4Collision" type="StaticBody3D" parent="Environment/MarketStalls/FoodstallSate2"]
+[node name="Stall4Collision" type="StaticBody3D" parent="Environment/MarketStalls/FoodstallSate"]
 transform = Transform3D(-1.45705e-08, 0, 0.333333, 0, 0.333333, 0, -0.333333, 0, -1.45705e-08, -3.14975, -0.58124, 3.1924)
 collision_layer = 2
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/MarketStalls/FoodstallSate2/Stall4Collision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/MarketStalls/FoodstallSate/Stall4Collision"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.63399, 1.49171, 9.47303)
 shape = SubResource("BoxShape3D_c6ods")
 
@@ -407,12 +407,13 @@ environment = SubResource("Environment_eh7bu")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0639839, -3.8147e-06, 0.249287)
 
 [node name="Soto" parent="CulturalArtifacts" instance=ExtResource("31_kvwbo")]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, -9.25953, 1.71587, -9.69489)
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, -9.25953, 1.91171, -9.14674)
 script = ExtResource("6_world_item")
+item_name = "Soto"
+cultural_region = "Indonesia Barat"
 
 [node name="SotoRecipeCollision" type="StaticBody3D" parent="CulturalArtifacts/Soto"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.00818, 0.628515, -1.56321)
-collision_layer = 4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CulturalArtifacts/Soto/SotoRecipeCollision"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.893301, -0.582269, 1.57073)
@@ -421,6 +422,8 @@ shape = SubResource("CylinderShape3D_qxb7o")
 [node name="Lotek" parent="CulturalArtifacts" instance=ExtResource("36_0nieh")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 8.01222, 1.73937, -7.94207)
 script = ExtResource("6_world_item")
+item_name = "Lotek"
+cultural_region = "Indonesia Barat"
 
 [node name="LotekRecipeCollision" type="StaticBody3D" parent="CulturalArtifacts/Lotek"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -16.0244, -3.47874, 15.8841)
@@ -429,7 +432,7 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -16.0244, -3.47874, 15.8841)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.99747, 1.76325, -7.97658)
 shape = SubResource("CylinderShape3D_artifact")
 
-[node name="BasoRecipe" type="CSGCylinder3D" parent="CulturalArtifacts"]
+[node name="Baso" type="CSGCylinder3D" parent="CulturalArtifacts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.30592, 1.5, 8.81926)
 radius = 0.3
 height = 0.2
@@ -438,17 +441,18 @@ script = ExtResource("6_world_item")
 item_name = "BasoRecipe"
 cultural_region = "Indonesia Barat"
 
-[node name="BasoRecipeCollision" type="StaticBody3D" parent="CulturalArtifacts/BasoRecipe"]
+[node name="BasoRecipeCollision" type="StaticBody3D" parent="CulturalArtifacts/Baso"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, -1.5, -8)
-collision_layer = 4
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CulturalArtifacts/BasoRecipe/BasoRecipeCollision"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CulturalArtifacts/Baso/BasoRecipeCollision"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.98045, 1.60352, 7.95763)
 shape = SubResource("CylinderShape3D_3bogi")
 
 [node name="Sate" parent="CulturalArtifacts" instance=ExtResource("37_qxb7o")]
 transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 8.43008, 1.65524, 8.4389)
 script = ExtResource("6_world_item")
+item_name = "Sate"
+cultural_region = "Indonesia Barat"
 
 [node name="SateRecipeCollision" type="StaticBody3D" parent="CulturalArtifacts/Sate"]
 transform = Transform3D(3.33333, 0, 0, 0, 3.33333, 0, 0, 0, 3.33333, -26.6662, -5.51748, -26.8034)

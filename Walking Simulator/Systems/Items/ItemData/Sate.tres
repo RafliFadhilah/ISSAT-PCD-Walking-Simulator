@@ -1,0 +1,13 @@
+[gd_resource type="CulturalItemResource" format=3]
+
+[resource]
+item_name = "Sate"
+cultural_region = "Indonesia Barat"
+description = "Daging tusuk yang dibakar dengan bumbu kacang yang lezat, makanan favorit Indonesia."
+collection_message = "Anda menemukan resep Sate! Apakah ingin memasak sekarang?"
+trigger_cooking_game = true
+cooking_recipe = {
+	"Daging": 3,
+	"Bumbu Kacang": 1
+}
+cooking_scene_path = "res://Scenes/IndonesiaBarat/BaseCook.tscn"

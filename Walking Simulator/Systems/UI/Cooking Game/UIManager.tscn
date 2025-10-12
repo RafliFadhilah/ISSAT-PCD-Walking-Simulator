@@ -1,0 +1,149 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpqvmuo1kj4h1"]
+
+[ext_resource type="Script" uid="uid://deowx76kv2ig7" path="res://Systems/UI/Cooking Game/ui_manager.gd" id="1_ui_mgr"]
+
+[node name="UIManager" type="Control"]
+z_index = 1000
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ui_mgr")
+
+[node name="RecipePanel" type="Control" parent="."]
+z_index = 2100
+layout_mode = 3
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 336.0
+offset_bottom = 170.0
+mouse_filter = 1
+
+[node name="Panel" type="PanelContainer" parent="RecipePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="RecipePanel/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="RecipePanel/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="RecipePanel/Panel/Margin/VBox"]
+layout_mode = 2
+text = "Resep yang harus dibuat:"
+
+[node name="ContentLabel" type="Label" parent="RecipePanel/Panel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "-"
+autowrap_mode = 2
+
+[node name="LoadingOverlay" type="Control" parent="."]
+visible = false
+z_index = 2000
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BG" type="ColorRect" parent="LoadingOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Center" type="CenterContainer" parent="LoadingOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Text" type="Label" parent="LoadingOverlay/Center"]
+layout_mode = 2
+text = "Sedang Memasak..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResultDialog" type="Control" parent="."]
+visible = false
+z_index = 3000
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dim" type="ColorRect" parent="ResultDialog"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Center" type="CenterContainer" parent="ResultDialog"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="ResultDialog/Center"]
+custom_minimum_size = Vector2(480, 200)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="ResultDialog/Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="ResultDialog/Center/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ResultLabel" type="Label" parent="ResultDialog/Center/Panel/Margin/VBox"]
+layout_mode = 2
+text = "Hasil Memasak"
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="ResultDialog/Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="RetryButton" type="Button" parent="ResultDialog/Center/Panel/Margin/VBox/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Coba Lagi"
+
+[node name="ExitButton" type="Button" parent="ResultDialog/Center/Panel/Margin/VBox/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Keluar"

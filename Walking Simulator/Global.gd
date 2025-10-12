@@ -36,6 +36,24 @@ var custom_mask_components: Dictionary = {
 	"mulut": -1
 }
 
+# Cooking game integration
+var current_cooking_recipe: Dictionary = {}
+var current_cooking_food: String = ""
+
+func set_cooking_data(food_name: String, recipe_data: Dictionary) -> void:
+	# Called before entering cooking scene
+	current_cooking_food = food_name
+	current_cooking_recipe = recipe_data.duplicate(true) if recipe_data != null else {}
+	GameLogger.info("Global: Cooking data set for " + food_name)
+
+func has_cooking_data() -> bool:
+	return not current_cooking_recipe.is_empty()
+
+func clear_cooking_data() -> void:
+	current_cooking_recipe.clear()
+	current_cooking_food = ""
+	GameLogger.info("Global: Cooking data cleared")
+
 # Region-specific data
 var region_data: Dictionary = {
 	"Indonesia Barat": {

@@ -36,7 +36,7 @@ var command_manager: CulturalCommandManager
 
 # References
 @onready var camera: Camera3D = $Camera3D
-@onready var interaction_controller: Node = $InteractionController
+@onready var interaction_controller: Node = get_node_or_null("Camera3D/InteractionController")
 @onready var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity") * gravity_modifier
 
 func _ready():
@@ -62,6 +62,8 @@ func _connect_signals():
 		interaction_controller.interaction_started.connect(_on_interaction_started)
 	if interaction_controller and interaction_controller.has_signal("interaction_ended"):
 		interaction_controller.interaction_ended.connect(_on_interaction_ended)
+	elif not interaction_controller and debug_mode:
+		GameLogger.warning("PlayerController: InteractionController node not found at 'Camera3D/InteractionController'")
 
 func _setup_command_manager():
 	# Initialize command manager

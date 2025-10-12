@@ -33,8 +33,8 @@ func _ready():
 	# Add to artifact group for radar detection
 	add_to_group("artifact")
 	
-	# Set up interaction prompt (InteractionController will prefix with [E])
-	interaction_prompt = get_interaction_prompt()
+	# Set up interaction prompt
+	interaction_prompt = "Press E to collect " + item_name
 	
 	# Debug print
 	print("WorldCulturalItem ready: ", item_name, " in region: ", cultural_region)
@@ -67,14 +67,6 @@ func _interact():
 		collect_item()
 	else:
 		print("Item already collected!")
-
-func get_interaction_prompt() -> String:
-	# Provide a clear, localized prompt depending on item type
-	var food_recipes = ["Soto", "Lotek", "Sate"]
-	if item_name in food_recipes:
-		return "Masak " + item_name
-	# Default for non-food cultural items
-	return "Ambil " + (item_name if item_name else "Artefak Budaya")
 
 func collect_item():
 	if is_collected:

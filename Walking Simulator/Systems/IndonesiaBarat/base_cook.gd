@@ -9,7 +9,12 @@ extends Node3D
 
 var held_object: Node3D = null
 
-func _process(delta: float) -> void:
+func _ready() -> void:
+	# Bebaskan kursor saat masuk ke scene memasak
+	# (di scene FPS sebelumnya kursor dikunci/CAPTURED)
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func _process(_delta: float) -> void:
 	var mouse_pos = get_viewport().get_mouse_position()
 	var from = camera.project_ray_origin(mouse_pos)
 	var dir = camera.project_ray_normal(mouse_pos)

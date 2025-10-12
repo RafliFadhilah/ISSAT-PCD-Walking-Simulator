@@ -11,7 +11,7 @@
 [ext_resource type="ArrayMesh" uid="uid://wee1ucwt5ppf" path="res://Assets/Students/cookingpot/object/CookingPot.obj" id="3_y0ltf"]
 [ext_resource type="ArrayMesh" uid="uid://py0b3xy0bm1y" path="res://Assets/Students/foodbox/objek/Foodbox.obj" id="4_4gsfl"]
 [ext_resource type="PackedScene" uid="uid://cu0l6rmdae5no" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah2/rumah2.glb" id="4_32gdy"]
-[ext_resource type="Script" uid="uid://deowx76kv2ig7" path="res://Systems/UI/Cooking Game/ui_manager.gd" id="4_w2e7r"]
+[ext_resource type="PackedScene" uid="uid://cpqvmuo1kj4h1" path="res://Systems/UI/Cooking Game/UIManager.tscn" id="4_w2e7r"]
 [ext_resource type="PackedScene" uid="uid://bhfr0s4mnb37h" path="res://Assets/Hunyuan/Indonesia Barat/North/Rumah1/Lightver/rumah light1.tscn" id="5_u4j8q"]
 [ext_resource type="Texture2D" uid="uid://b7cw32eygpqg5" path="res://Assets/Students/knife/texture/knife2.png" id="8_qnpcw"]
 [ext_resource type="ArrayMesh" uid="uid://bnte3fwv060p" path="res://Assets/Students/knife/object/knife2.obj" id="9_du4to"]
@@ -22,7 +22,7 @@
 [ext_resource type="Shader" uid="uid://co6j1jydalg8s" path="res://Systems/Shaders/sylize-sky.gdshader" id="12_j0hop"]
 [ext_resource type="Texture2D" uid="uid://dw1pylj1pjdx7" path="res://Assets/Textures/Indonesia Barat/rock_tile_floor_1k/textures/rock_tile_floor_rough_1k.jpg" id="13_lxqvn"]
 [ext_resource type="Texture2D" uid="uid://daxk3dhpxwmn6" path="res://Assets/Textures/Indonesia Barat/Sun.png" id="13_w2e7r"]
-[ext_resource type="Script" path="res://Systems/UI/Cooking Game/pot_display_ui.gd" id="21_8inw4"]
+[ext_resource type="Script" uid="uid://b81j6035ul50a" path="res://Systems/UI/Cooking Game/pot_display_ui.gd" id="21_8inw4"]
 [ext_resource type="PackedScene" uid="uid://cwgmnhcg1t38c" path="res://Scenes/IndonesiaBarat/Asset/bahan_makanan_dummy.tscn" id="22_j0hop"]
 [ext_resource type="PackedScene" uid="uid://bkf0yli2ifbr0" path="res://Scenes/IndonesiaBarat/Asset/Hand.tscn" id="22_u4j8q"]
 
@@ -135,12 +135,7 @@ script = ExtResource("2_w2e7r")
 [node name="PotManager" type="Node3D" parent="GameManager"]
 script = ExtResource("3_w2e7r")
 
-[node name="UIManager" type="Control" parent="GameManager"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("4_w2e7r")
+[node name="UIManager" parent="GameManager" instance=ExtResource("4_w2e7r")]
 
 [node name="WorldEnvironment" type="Node3D" parent="."]
 
@@ -255,7 +250,7 @@ collision_mask = 2
 shape = SubResource("SphereShape3D_u4j8q")
 
 [node name="Foodbox2" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -2.09187, 1.7354, 0.415089)
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -1.31448, 1.7354, 0.415089)
 material_overlay = SubResource("StandardMaterial3D_fjxop")
 gi_mode = 2
 mesh = ExtResource("4_4gsfl")
@@ -275,7 +270,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0418833, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00212596, 0)
 
 [node name="Foodbox3" type="MeshInstance3D" parent="FoodBox" groups=["Interactable"]]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -2.03614, 1.74468, -0.441354)
+transform = Transform3D(8.23186, 0, -5.67772, 0, 10, 0, 5.67772, 0, 8.23186, -1.61892, 1.74468, -0.562945)
 material_overlay = SubResource("StandardMaterial3D_kcr1m")
 mesh = ExtResource("4_4gsfl")
 skeleton = NodePath("../..")
@@ -358,9 +353,3 @@ fov = 65.2626
 
 [node name="Hand" parent="." instance=ExtResource("22_u4j8q")]
 transform = Transform3D(1, 0, 0, 0, 0.353475, -0.935444, 0, 0.935444, 0.353475, 0, 3.34324, -1.02684)
-
-[node name="DisplayUI" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0

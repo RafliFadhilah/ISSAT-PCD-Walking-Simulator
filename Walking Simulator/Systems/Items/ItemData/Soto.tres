@@ -1,0 +1,13 @@
+[gd_resource type="CulturalItemResource" format=3]
+
+[resource]
+item_name = "Soto"
+cultural_region = "Indonesia Barat"
+description = "Sup tradisional Indonesia dengan kuah kaldu yang kaya rasa, berisi daging dan sayuran segar."
+collection_message = "Anda menemukan resep Soto! Apakah ingin memasak sekarang?"
+trigger_cooking_game = true
+cooking_recipe = {
+	"Ayam": 1,
+	"Bumbu Kacang": 2
+}
+cooking_scene_path = "res://Scenes/IndonesiaBarat/BaseCook.tscn"

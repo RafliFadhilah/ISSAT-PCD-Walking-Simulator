@@ -25,6 +25,9 @@ var json_tools_instance = jsonTools.new()
 var recipe_ingredient = {}
 var win_condition_met: bool = false
 
+# Untuk artifact cooking
+var is_artifact_cooking: bool = false
+
 
 func _ready() -> void:
 	# Hubungkan sinyal
@@ -53,8 +56,20 @@ func setup_game_data() -> void:
 	# Set reference pot ke UI untuk floating display
 	pot_ui.set_pot_reference(pot_node)
 
-	# Muat data resep dan asset
-	load_food_data(food_name)
+	# Check if cooking from artifact
+	if Global.has_method("has_cooking_data") and Global.has_cooking_data():
+		print("=== COOKING FROM ARTIFACT ===")
+		is_artifact_cooking = true
+		food_name = Global.current_cooking_food if Global.current_cooking_food != "" else "Soto"
+		recipe_ingredient = Global.current_cooking_recipe
+		print("Artifact recipe loaded: ", recipe_ingredient)
+	else:
+		print("=== COOKING FROM DEFAULT RECIPES ===")
+		is_artifact_cooking = false
+		# Muat data resep default
+		load_food_data(food_name)
+	
+	# Load assets
 	load_food_assets()
 	
 	# Tampilkan panel resep sejak awal
@@ -214,4 +229,25 @@ func _on_exit_cooking() -> void:
 	# Tampilkan kembali pot UI 
 	enable_cooking_input()
 
-	print("Keluar dari mode memasak.")
+	# If cooking from artifact, return to PasarScene
+	if is_artifact_cooking:
+		return_to_pasar_scene()
+	else:
+		print("Keluar dari mode memasak.")
+
+func return_to_pasar_scene():
+	print("=== RETURNING TO PASAR SCENE ===")
+
+	# Recapture mouse for FPS control when returning to PasarScene
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	# Clear Global cooking data
+	if Global.has_method("clear_cooking_data"):
+		Global.clear_cooking_data()
+	else:
+		Global.current_cooking_recipe = {}
+		Global.current_cooking_food = ""
+	
+	# Return to PasarScene
+	var pasar_scene_path = "res://Scenes/IndonesiaBarat/PasarScene.tscn"
+	get_tree().change_scene_to_file(pasar_scene_path)

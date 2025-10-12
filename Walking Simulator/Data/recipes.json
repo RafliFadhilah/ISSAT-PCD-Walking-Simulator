@@ -1,9 +1,25 @@
 {
-    "Soto": {
-        "id" : 1,
-        "ingredients" :{
-            "Ayam": 1, 
-            "Bumbu Kacang": 2
-        }
+  "Soto": {
+    "id": 1,
+    "ingredients": {
+      "Ayam": 1,
+      "Bumbu Kacang": 2
     }
+  },
+  "Lotek": {
+    "id": 2,
+    "ingredients": {
+      "Tahu": 1,
+      "Tempe": 1,
+      "Bumbu Kacang": 3
+    }
+  },
+  "Sate": {
+    "id": 3,
+    "ingredients": {
+      "Daging Sapi": 2,
+      "Bumbu Kacang": 1,
+      "Kecap": 1
+    }
+  }
 }

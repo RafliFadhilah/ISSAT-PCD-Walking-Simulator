@@ -1,0 +1,13 @@
+[gd_resource type="CulturalItemResource" format=3]
+
+[resource]
+item_name = "Lotek"
+cultural_region = "Indonesia Barat"
+description = "Salad sayuran segar dengan bumbu kacang yang gurih, makanan khas Sunda."
+collection_message = "Anda menemukan resep Lotek! Apakah ingin memasak sekarang?"
+trigger_cooking_game = true
+cooking_recipe = {
+	"Tahu": 2,
+	"Bumbu Kacang": 1
+}
+cooking_scene_path = "res://Scenes/IndonesiaBarat/BaseCook.tscn"
